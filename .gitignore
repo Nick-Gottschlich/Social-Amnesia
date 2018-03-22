@@ -1,0 +1,8 @@
+# Secrets File
+secrets.py
+
+# Text editor files
+/.vscode/*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
