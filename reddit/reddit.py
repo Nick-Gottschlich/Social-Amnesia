@@ -9,4 +9,10 @@ reddit = praw.Reddit(client_id=CLIENT_ID,
                      username=REDDIT_USERNAME,
                      password=REDDIT_PASSWORD)
 
-print(reddit.read_only)  # Output: False
+# print(reddit.read_only)  # Output: False
+# print(reddit.user)
+
+# print(reddit.redditor('socialScrubberTest').comments)
+
+for comment in reddit.redditor('socialScrubberTester').comments.new(limit=None):
+    print(comment.body.split('\n', 1)[0][:79])
