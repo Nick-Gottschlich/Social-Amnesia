@@ -1,5 +1,6 @@
 # Secrets File
 secrets.py
+secrets.pyc
 
 # Text editor files
 /.vscode/*
