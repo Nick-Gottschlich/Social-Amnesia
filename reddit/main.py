@@ -18,22 +18,15 @@ reddit = praw.Reddit(
 #lets have a python dictionary that will hold state stuff, that will eventually be factored out to a different file
 state = {}
 
-def setState(hoursToSave):
-  # print(arrow.now())
-  # this is the arrow thing at `hoursToSave` hours ago
-  # print(arrow.now().replace(hours = -hoursToSave))
-
+def setState(hoursToSave=0):
   state['user'] = reddit.redditor(REDDIT_USERNAME)
-
   state['recentlyPostedCutoff'] = arrow.now().replace(hours=-hoursToSave)
-  print(state)
 
 # Get and delete comments
 def deleteComments():
   for comment in state['user'].comments.new(limit=None):
-    print(comment.body)
-    print(arrow.get(comment.created_utc))
     timeCreated = arrow.get(comment.created_utc)
+
     if (timeCreated > state['recentlyPostedCutoff']):
       print (f'Comment `{comment.body}` is more recent than cutoff. skipping')
     else:
@@ -44,9 +37,14 @@ def deleteComments():
 # Get and delete submissions
 def deleteSubmissions():
   for submission in state['user'].submissions.new(limit=None):
-    print(submission.title)
-    # submission.delete()
-    # print(f'Comment `{submission.title}` Deleted`')
+    timeCreated = arrow.get(submission.created_utc)
+
+    if (timeCreated > state['recentlyPostedCutoff']):
+      print (f'Comment `{submission.title}` is more recent than cutoff. skipping')
+    else:
+      # submission.delete()
+      # print(f'Comment `{submission.title}` Deleted`')
+      print (f'TESTING: We would delete `{submission.title}`')
 
 # Builds and runs the tkinter UI
 def createUI():
@@ -71,10 +69,8 @@ def createUI():
   root.mainloop()
 
 def main():
-  hoursToSave = 72
-  setState(hoursToSave)
-  deleteComments()
-  # createUI()
+  setState()
+  createUI()
 
 if __name__ == "__main__":
   main()
