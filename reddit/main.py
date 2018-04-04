@@ -61,7 +61,7 @@ def createUI():
   setHoursButton = Button(
     frame,
     text="Set Hours To Keep",
-    command=lambda: setState(72)
+    command=lambda: setState(int(hoursEntry.get()))
   )
 
   deleteCommentsButton = Button(
