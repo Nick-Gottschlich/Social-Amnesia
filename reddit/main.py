@@ -1,5 +1,5 @@
 import praw
-import tkinter as tk
+from tkinter import *
 import arrow
 
 from secrets import CLIENT_ID, CLIENT_SECRET, REDDIT_USERNAME, REDDIT_PASSWORD
@@ -21,6 +21,9 @@ state = {}
 def setState(hoursToSave=0):
   state['user'] = reddit.redditor(REDDIT_USERNAME)
   state['recentlyPostedCutoff'] = arrow.now().replace(hours=-hoursToSave)
+
+def printState():
+  print(state)
 
 # Get and delete comments
 def deleteComments():
@@ -48,23 +51,43 @@ def deleteSubmissions():
 
 # Builds and runs the tkinter UI
 def createUI():
-  root = tk.Tk()
-  frame = tk.Frame(root)
-  frame.pack()
+  root = Tk()
+  frame = Frame(root)
+  
+  frame.grid()
 
-  deleteCommentsButton = tk.Button(
+  hoursLabel = Label(frame, text="Hours to keep:")
+  hoursEntry = Entry(frame)
+  setHoursButton = Button(
+    frame,
+    text="Set Hours To Keep",
+    command=lambda: setState(72)
+  )
+
+  deleteCommentsButton = Button(
     frame,
     text='Delete comments',
-    fg='red',
-    command=deleteComments)
-  deleteCommentsButton.pack(side=tk.LEFT)
+    command=deleteComments
+  )
 
-  deleteSubmissionsButton = tk.Button(
+  deleteSubmissionsButton = Button(
     frame,
     text='Delete submissions',
-    fg='red',
-    command=deleteSubmissions)
-  deleteSubmissionsButton.pack(side=tk.LEFT)
+    command=deleteSubmissions
+  )
+
+  showStateButton = Button(
+    frame,
+    text='Show Options',
+    command=printState
+  )
+
+  hoursLabel.grid(row=0, column=0)
+  hoursEntry.grid(row=0, column=1)
+  setHoursButton.grid(row=0, column=2)
+  deleteCommentsButton.grid(row=1, column=0)
+  deleteSubmissionsButton.grid(row=1, column=1)
+  showStateButton.grid(row=2)
 
   root.mainloop()
 
