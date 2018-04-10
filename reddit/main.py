@@ -96,7 +96,7 @@ def createUI():
 
   currentMaxScore = StringVar()
   currentMaxScore.set('Currently set to: 0 upvotes')
-  maxScoreLabel = Label(frame, text='Delete comments less than score:')
+  maxScoreLabel = Label(frame, text='Delete comments/submissions less than score:')
   maxScoreEntryField = Entry(frame)
   maxScoreCurrentlySetLabel = Label(frame, textvariable=currentMaxScore)
   setMaxScoreButton = Button(
