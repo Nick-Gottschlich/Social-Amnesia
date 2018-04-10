@@ -21,6 +21,10 @@ state = {}
 def setInitState():
   state['user'] = reddit.redditor(REDDIT_USERNAME)
 
+# Set's the hours of comments or submissions to save, stores it in state
+#  and updates the UI to show what it's currently set to.
+# hoursToSave: the input recieved from the UI
+# currentHoursToSave: what is stored for the user in the UI
 def setHoursToSave(hoursToSave, currentHoursToSave):
   if (hoursToSave == ''):
     hoursToSave = 0
@@ -67,7 +71,7 @@ def createUI():
   currentHoursToSave = StringVar()
   currentHoursToSave.set('Currently set to: 0 hours')
 
-  hoursTextLabel = Label(frame, text='Hours to keep:')
+  hoursTextLabel = Label(frame, text='Hours of comments/submissions to keep:')
   hoursEntryField = Entry(frame)
   hoursCurrentlySetLabel = Label(frame, textvariable=currentHoursToSave)
   setHoursButton = Button(
