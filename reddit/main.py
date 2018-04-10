@@ -20,6 +20,8 @@ state = {}
 
 def setInitState():
   state['user'] = reddit.redditor(REDDIT_USERNAME)
+  state['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
+  state['maxScore'] = 0
 
 # Set's the hours of comments or submissions to save, stores it in state
 #  and updates the UI to show what it's currently set to.
@@ -34,6 +36,15 @@ def setHoursToSave(hoursToSave, currentHoursToSave):
   state['recentlyPostedCutoff'] = arrow.now().replace(hours=-hoursToSave)
   currentHoursToSave.set(f'Currently set to: {str(hoursToSave)} hours')
 
+def setMaxScore(maxScore, currentMaxScore):
+  if (maxScore == ''):
+    maxScore = 0
+  else:
+    maxScore = int(maxScore)
+  
+  state['maxScore'] = maxScore
+  currentMaxScore.set(f'Currently set to: {str(maxScore)} upvotes')
+
 def printState():
   print(state)
 
@@ -44,6 +55,8 @@ def deleteComments():
 
     if (timeCreated > state['recentlyPostedCutoff']):
       print (f'Comment `{comment.body}` is more recent than cutoff. skipping')
+    elif (comment.score > state['maxScore']):
+      print (f'Comment `{comment.body}` is higher than max score, skipping')
     else:
       # comment.delete()
       # print(f'Comment `{comment.body}` Deleted`')
@@ -56,6 +69,8 @@ def deleteSubmissions():
 
     if (timeCreated > state['recentlyPostedCutoff']):
       print (f'Comment `{submission.title}` is more recent than cutoff. skipping')
+    elif (submission.score > state['maxScore']):
+      print(f'Submission `{submission.title}` is higher than max score, skipping')
     else:
       # submission.delete()
       # print(f'Comment `{submission.title}` Deleted`')
@@ -70,7 +85,6 @@ def createUI():
 
   currentHoursToSave = StringVar()
   currentHoursToSave.set('Currently set to: 0 hours')
-
   hoursTextLabel = Label(frame, text='Hours of comments/submissions to keep:')
   hoursEntryField = Entry(frame)
   hoursCurrentlySetLabel = Label(frame, textvariable=currentHoursToSave)
@@ -78,6 +92,17 @@ def createUI():
     frame,
     text='Set Hours To Keep',
     command=lambda: setHoursToSave(hoursEntryField.get(), currentHoursToSave)
+  )
+
+  currentMaxScore = StringVar()
+  currentMaxScore.set('Currently set to: 0 upvotes')
+  maxScoreLabel = Label(frame, text='Delete comments less than score:')
+  maxScoreEntryField = Entry(frame)
+  maxScoreCurrentlySetLabel = Label(frame, textvariable=currentMaxScore)
+  setMaxScoreButton = Button(
+    frame,
+    text='Set Max Score',
+    command=lambda: setMaxScore(maxScoreEntryField.get(), currentMaxScore)
   )
   
   deleteCommentsButton = Button(
@@ -102,9 +127,13 @@ def createUI():
   hoursEntryField.grid(row=0, column=1)
   setHoursButton.grid(row=0, column=2)
   hoursCurrentlySetLabel.grid(row=0, column=3)
-  deleteCommentsButton.grid(row=1, column=0)
-  deleteSubmissionsButton.grid(row=1, column=1)
-  showStateButton.grid(row=2)
+  maxScoreLabel.grid(row=1, column=0)
+  maxScoreEntryField.grid(row=1, column=1)
+  setMaxScoreButton.grid(row=1, column=2)
+  maxScoreCurrentlySetLabel.grid(row=1, column=3)
+  deleteCommentsButton.grid(row=2, column=0)
+  deleteSubmissionsButton.grid(row=2, column=1)
+  showStateButton.grid(row=3)
 
   root.mainloop()
 
