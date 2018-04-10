@@ -18,9 +18,17 @@ reddit = praw.Reddit(
 #lets have a python dictionary that will hold state stuff, that will eventually be factored out to a different file
 state = {}
 
-def setState(hoursToSave=0):
+def setInitState():
   state['user'] = reddit.redditor(REDDIT_USERNAME)
+
+def setHoursToSave(hoursToSave, currentHoursToSave):
+  if (hoursToSave == ''):
+    hoursToSave = 0
+  else:
+    hoursToSave = int(hoursToSave)
+
   state['recentlyPostedCutoff'] = arrow.now().replace(hours=-hoursToSave)
+  currentHoursToSave.set(f'Currently set to: {str(hoursToSave)} hours')
 
 def printState():
   print(state)
@@ -56,14 +64,18 @@ def createUI():
   
   frame.grid()
 
-  hoursLabel = Label(frame, text="Hours to keep:")
-  hoursEntry = Entry(frame)
+  currentHoursToSave = StringVar()
+  currentHoursToSave.set('Currently set to: 0 hours')
+
+  hoursTextLabel = Label(frame, text='Hours to keep:')
+  hoursEntryField = Entry(frame)
+  hoursCurrentlySetLabel = Label(frame, textvariable=currentHoursToSave)
   setHoursButton = Button(
     frame,
-    text="Set Hours To Keep",
-    command=lambda: setState(int(hoursEntry.get()))
+    text='Set Hours To Keep',
+    command=lambda: setHoursToSave(hoursEntryField.get(), currentHoursToSave)
   )
-
+  
   deleteCommentsButton = Button(
     frame,
     text='Delete comments',
@@ -82,9 +94,10 @@ def createUI():
     command=printState
   )
 
-  hoursLabel.grid(row=0, column=0)
-  hoursEntry.grid(row=0, column=1)
+  hoursTextLabel.grid(row=0, column=0)
+  hoursEntryField.grid(row=0, column=1)
   setHoursButton.grid(row=0, column=2)
+  hoursCurrentlySetLabel.grid(row=0, column=3)
   deleteCommentsButton.grid(row=1, column=0)
   deleteSubmissionsButton.grid(row=1, column=1)
   showStateButton.grid(row=2)
@@ -92,8 +105,8 @@ def createUI():
   root.mainloop()
 
 def main():
-  setState()
+  setInitState()
   createUI()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()
