@@ -23,8 +23,14 @@ def setInitState():
   state['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
   state['maxScore'] = 0
 
-# Set's the hours of comments or submissions to save, stores it in state
-#  and updates the UI to show what it's currently set to.
+
+# prints out the state to console
+def printState():
+  print(state)
+
+
+# Sets the hours of comments or submissions to save, stores it in state
+#  and updates the UI to show what its currently set to.
 # hoursToSave: the input recieved from the UI
 # currentHoursToSave: what is stored for the user in the UI
 def setHoursToSave(hoursToSave, currentHoursToSave):
@@ -36,6 +42,11 @@ def setHoursToSave(hoursToSave, currentHoursToSave):
   state['recentlyPostedCutoff'] = arrow.now().replace(hours=-hoursToSave)
   currentHoursToSave.set(f'Currently set to: {str(hoursToSave)} hours')
 
+
+# Sets the maximum score level, any posts above this store will be skipped over
+#  updates the UI to show what its currently set to.
+# maxScore: the input recieved from the UI
+# currentMaxScore: what is stored for the user in the UI
 def setMaxScore(maxScore, currentMaxScore):
   if (maxScore == ''):
     maxScore = 0
@@ -45,36 +56,40 @@ def setMaxScore(maxScore, currentMaxScore):
   state['maxScore'] = maxScore
   currentMaxScore.set(f'Currently set to: {str(maxScore)} upvotes')
 
-def printState():
-  print(state)
+
+# checks items against possibly whitelisted conditions defined in state, and either skips or deletes
+def checkWhiteList(item, commentBool):
+  if commentBool: 
+    itemString = 'Comment' 
+    itemSnippet = item.body[0:100]
+  else: 
+    itemString = 'Submission'
+    itemSnippet = item.title[0:100]
+
+  timeCreated = arrow.get(item.created_utc)
+
+  if (timeCreated > state['recentlyPostedCutoff']):
+    print(f'{itemString} `{itemSnippet}` is more recent than cutoff. skipping')
+  elif (item.score > state['maxScore']):
+    print (f'{itemString} `{itemSnippet}` is higher than max score, skipping')
+  else:
+    # comment back in once things get real
+    # item.delete()
+    # print(f'{itemString} `{itemSnippet}` Deleted`')
+    print (f'TESTING: We would delete {itemString} `{itemSnippet}`')
+
 
 # Get and delete comments
 def deleteComments():
   for comment in state['user'].comments.new(limit=None):
-    timeCreated = arrow.get(comment.created_utc)
+    checkWhiteList(comment, True)
 
-    if (timeCreated > state['recentlyPostedCutoff']):
-      print (f'Comment `{comment.body}` is more recent than cutoff. skipping')
-    elif (comment.score > state['maxScore']):
-      print (f'Comment `{comment.body}` is higher than max score, skipping')
-    else:
-      # comment.delete()
-      # print(f'Comment `{comment.body}` Deleted`')
-      print (f'TESTING: We would delete `{comment.body}`')
 
 # Get and delete submissions
 def deleteSubmissions():
   for submission in state['user'].submissions.new(limit=None):
-    timeCreated = arrow.get(submission.created_utc)
+    checkWhiteList(submission, False)
 
-    if (timeCreated > state['recentlyPostedCutoff']):
-      print (f'Comment `{submission.title}` is more recent than cutoff. skipping')
-    elif (submission.score > state['maxScore']):
-      print(f'Submission `{submission.title}` is higher than max score, skipping')
-    else:
-      # submission.delete()
-      # print(f'Comment `{submission.title}` Deleted`')
-      print (f'TESTING: We would delete `{submission.title}`')
 
 # Builds and runs the tkinter UI
 def createUI():
@@ -137,9 +152,11 @@ def createUI():
 
   root.mainloop()
 
+
 def main():
   setInitState()
   createUI()
+
 
 if __name__ == '__main__':
   main()
