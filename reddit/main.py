@@ -50,10 +50,13 @@ def setHoursToSave(hoursToSave, currentHoursToSave):
 def setMaxScore(maxScore, currentMaxScore):
   if (maxScore == ''):
     maxScore = 0
+  elif (maxScore == 'Unlimited'):
+    state['maxScore'] = 9999999999
   else:
     maxScore = int(maxScore)
+    state['maxScore'] = maxScore
   
-  state['maxScore'] = maxScore
+  
   currentMaxScore.set(f'Currently set to: {str(maxScore)} upvotes')
 
 
@@ -119,6 +122,11 @@ def createUI():
     text='Set Max Score',
     command=lambda: setMaxScore(maxScoreEntryField.get(), currentMaxScore)
   )
+  setMaxScoreUnlimitedButton = Button(
+      frame,
+      text='Set Unlimited',
+      command=lambda: setMaxScore('Unlimited', currentMaxScore)
+  )
   
   deleteCommentsButton = Button(
     frame,
@@ -145,7 +153,8 @@ def createUI():
   maxScoreLabel.grid(row=1, column=0)
   maxScoreEntryField.grid(row=1, column=1)
   setMaxScoreButton.grid(row=1, column=2)
-  maxScoreCurrentlySetLabel.grid(row=1, column=3)
+  setMaxScoreUnlimitedButton.grid(row=1, column=3)
+  maxScoreCurrentlySetLabel.grid(row=1, column=4)
   deleteCommentsButton.grid(row=2, column=0)
   deleteSubmissionsButton.grid(row=2, column=1)
   showStateButton.grid(row=3)
