@@ -1,5 +1,6 @@
 import praw
 from tkinter import *
+from tkinter import ttk
 import arrow
 
 from secrets import CLIENT_ID, CLIENT_SECRET, REDDIT_USERNAME, REDDIT_PASSWORD
@@ -94,56 +95,54 @@ def deleteSubmissions():
     checkWhiteList(submission, False)
 
 
-# Builds and runs the tkinter UI
-def createUI():
-  root = Tk()
-  frame = Frame(root)
-  
-  frame.grid()
+def buildRedditTab(redditFrame):
+  redditFrame.grid()
 
   currentHoursToSave = StringVar()
   currentHoursToSave.set('Currently set to: 0 hours')
-  hoursTextLabel = Label(frame, text='Hours of comments/submissions to keep:')
-  hoursEntryField = Entry(frame)
-  hoursCurrentlySetLabel = Label(frame, textvariable=currentHoursToSave)
+  hoursTextLabel = Label(
+      redditFrame, text='Hours of comments/submissions to keep:')
+  hoursEntryField = Entry(redditFrame)
+  hoursCurrentlySetLabel = Label(redditFrame, textvariable=currentHoursToSave)
   setHoursButton = Button(
-    frame,
-    text='Set Hours To Keep',
-    command=lambda: setHoursToSave(hoursEntryField.get(), currentHoursToSave)
+      redditFrame,
+      text='Set Hours To Keep',
+      command=lambda: setHoursToSave(hoursEntryField.get(), currentHoursToSave)
   )
 
   currentMaxScore = StringVar()
   currentMaxScore.set('Currently set to: 0 upvotes')
-  maxScoreLabel = Label(frame, text='Delete comments/submissions less than score:')
-  maxScoreEntryField = Entry(frame)
-  maxScoreCurrentlySetLabel = Label(frame, textvariable=currentMaxScore)
+  maxScoreLabel = Label(
+      redditFrame, text='Delete comments/submissions less than score:')
+  maxScoreEntryField = Entry(redditFrame)
+  maxScoreCurrentlySetLabel = Label(redditFrame, textvariable=currentMaxScore)
   setMaxScoreButton = Button(
-    frame,
-    text='Set Max Score',
-    command=lambda: setMaxScore(maxScoreEntryField.get(), currentMaxScore)
+      redditFrame,
+      text='Set Max Score',
+      command=lambda: setMaxScore(maxScoreEntryField.get(), currentMaxScore)
   )
   setMaxScoreUnlimitedButton = Button(
-      frame,
+      redditFrame,
       text='Set Unlimited',
       command=lambda: setMaxScore('Unlimited', currentMaxScore)
   )
-  
+
   deleteCommentsButton = Button(
-    frame,
-    text='Delete comments',
-    command=deleteComments
+      redditFrame,
+      text='Delete comments',
+      command=deleteComments
   )
 
   deleteSubmissionsButton = Button(
-    frame,
-    text='Delete submissions',
-    command=deleteSubmissions
+      redditFrame,
+      text='Delete submissions',
+      command=deleteSubmissions
   )
 
   showStateButton = Button(
-    frame,
-    text='Show Options',
-    command=printState
+      redditFrame,
+      text='Show Options',
+      command=printState
   )
 
   hoursTextLabel.grid(row=0, column=0)
@@ -158,6 +157,22 @@ def createUI():
   deleteCommentsButton.grid(row=2, column=0)
   deleteSubmissionsButton.grid(row=2, column=1)
   showStateButton.grid(row=3)
+
+
+# Builds and runs the tkinter UI
+def createUI():
+  root = Tk()
+  root.title('Social Scrubber')
+
+  tabs = ttk.Notebook(root)
+  
+  redditFrame = ttk.Frame(tabs)
+  
+  buildRedditTab(redditFrame)
+
+  tabs.add(redditFrame, text='reddit')
+
+  tabs.pack(expand=1, fill="both")
 
   root.mainloop()
 
