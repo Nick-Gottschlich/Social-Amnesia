@@ -1,5 +1,6 @@
 import praw
 from tkinter import *
+from tkinter import messagebox
 from tkinter import ttk
 import arrow
 
@@ -12,17 +13,17 @@ redditState = {}
 def printState(self, *args):
     print(redditState)
 
-# def printStuff():
-#     print('🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊'
 
-
-def callback_error(self, *args):
-    print('das an error fam')
+def callbackError(self, *args):
+    print(*args)
+    # reddit error
+    if (str(args[1]) == 'Either `name` or `_data` must be provided.'):
+        print('reddit error')
+        # somehow need to figure out how to modify the reddit text...
+        messagebox.showerror('ERROR', 'Failed to login to reddit!')
 
 # logs into reddit using PRAW
 def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText):
-    Tk.report_callback_exception = callback_error
-
     try:
         reddit = praw.Reddit(
             client_id=clientID,
@@ -32,23 +33,12 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText)
             password=password
         )
     except:
+        # We put pass here to continue on, but in the mean time callbackError() is called
         pass
-
-    # try:
-    #     raise Exception('ayy')
-    # except Exception as inst:
-    #     print(inst)
-        
-
-    # Tk.report_callback_exception = printStuff
-
-    # print('👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺')
-    # print(reddit)
-    # print(reddit.redditor)
     
-    # loginConfirmText.set('reddit login Success!')
-    # loginConfirmText.set('reddit login failure, please try again.')
+    print(reddit)
 
+    loginConfirmText.set(f'Logged in as {username}')
 
     redditState['user'] = reddit.redditor(username)
     redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
@@ -138,17 +128,17 @@ def buildLoginTab(loginFrame):
         loginFrame, text='Enter reddit client secret:')
     redditClientSecretEntry = Entry(loginFrame)
 
-    redditLoginConfirmOrFail = StringVar()
-    redditLoginConfirmOrFail.set('Waiting for Login')
+    redditLoginConfirmText = StringVar()
+    redditLoginConfirmText.set('Waiting for Login')
     redditLoginConfirmedLabel = Label(
-        loginFrame, textvariable=redditLoginConfirmOrFail)
+        loginFrame, textvariable=redditLoginConfirmText)
 
     redditLoginButton = Button(
         loginFrame,
         text='Login to reddit',
         command=lambda: setRedditLogin(redditUsernameEntry.get(), redditPasswordEntry.get(),
                                        redditClientIDEntry.get(), redditClientSecretEntry.get(),
-                                       redditLoginConfirmOrFail)
+                                       redditLoginConfirmText)
     )
 
     redditLabel.grid(row=0, column=0)
@@ -234,6 +224,8 @@ def buildRedditTab(redditFrame):
 
 # Builds and runs the tkinter UI
 def createUI():
+    Tk.report_callback_exception = callbackError
+
     root = Tk()
     root.title('Social Scrubber')
 
