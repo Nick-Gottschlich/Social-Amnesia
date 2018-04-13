@@ -5,31 +5,50 @@ import arrow
 
 USER_AGENT = 'Social Scrubber: v0.0.1 (by /u/JavaOffScript)'
 
-# hardcoded so that it is global
-reddit = praw.Reddit(
-    client_id='',
-    client_secret='',
-    user_agent='',
-    username='',
-    password=''
-)
-
 # lets have a python dictionary that will hold redditState stuff, that will eventually be factored out to a different file
 redditState = {}
 
 # prints out the redditState to console
-def printState():
+def printState(self, *args):
     print(redditState)
 
+# def printStuff():
+#     print('🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊'
+
+
+def callback_error(self, *args):
+    print('das an error fam')
+
 # logs into reddit using PRAW
-def setRedditLogin(username, password, clientID, clientSecret):
-    reddit = praw.Reddit(
-        client_id=clientID,
-        client_secret=clientSecret,
-        user_agent=USER_AGENT,
-        username=username,
-        password=password
-    )
+def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText):
+    Tk.report_callback_exception = callback_error
+
+    try:
+        reddit = praw.Reddit(
+            client_id=clientID,
+            client_secret=clientSecret,
+            user_agent=USER_AGENT,
+            username=username,
+            password=password
+        )
+    except:
+        pass
+
+    # try:
+    #     raise Exception('ayy')
+    # except Exception as inst:
+    #     print(inst)
+        
+
+    # Tk.report_callback_exception = printStuff
+
+    # print('👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺👺')
+    # print(reddit)
+    # print(reddit.redditor)
+    
+    # loginConfirmText.set('reddit login Success!')
+    # loginConfirmText.set('reddit login failure, please try again.')
+
 
     redditState['user'] = reddit.redditor(username)
     redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
@@ -119,11 +138,17 @@ def buildLoginTab(loginFrame):
         loginFrame, text='Enter reddit client secret:')
     redditClientSecretEntry = Entry(loginFrame)
 
+    redditLoginConfirmOrFail = StringVar()
+    redditLoginConfirmOrFail.set('Waiting for Login')
+    redditLoginConfirmedLabel = Label(
+        loginFrame, textvariable=redditLoginConfirmOrFail)
+
     redditLoginButton = Button(
         loginFrame,
         text='Login to reddit',
         command=lambda: setRedditLogin(redditUsernameEntry.get(), redditPasswordEntry.get(),
-                                       redditClientIDEntry.get(), redditClientSecretEntry.get())
+                                       redditClientIDEntry.get(), redditClientSecretEntry.get(),
+                                       redditLoginConfirmOrFail)
     )
 
     redditLabel.grid(row=0, column=0)
@@ -136,8 +161,10 @@ def buildLoginTab(loginFrame):
     redditClientSecretLabel.grid(row=4, column=0)
     redditClientSecretEntry.grid(row=4, column=1)
     redditLoginButton.grid(row=5, column=0)
+    redditLoginConfirmedLabel.grid(row=5, column=1)
 
 
+# creates the tab that will have reddit configuration
 def buildRedditTab(redditFrame):
     redditFrame.grid()
 
