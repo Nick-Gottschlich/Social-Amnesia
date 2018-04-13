@@ -10,39 +10,32 @@ USER_AGENT = 'Social Scrubber: v0.0.1 (by /u/JavaOffScript)'
 redditState = {}
 
 # prints out the redditState to console
-def printState(self, *args):
+def printState():
     print(redditState)
 
 
 def callbackError(self, *args):
-    print(*args)
-    # reddit error
-    if (str(args[1]) == 'Either `name` or `_data` must be provided.'):
-        print('reddit error')
-        # somehow need to figure out how to modify the reddit text...
+    # reddit error, happens if you try to run `reddit.user.me()` and login fails
+    if(str(args[1]) == 'received 401 HTTP response'):
         messagebox.showerror('ERROR', 'Failed to login to reddit!')
 
 # logs into reddit using PRAW
 def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText):
-    try:
-        reddit = praw.Reddit(
-            client_id=clientID,
-            client_secret=clientSecret,
-            user_agent=USER_AGENT,
-            username=username,
-            password=password
-        )
-    except:
-        # We put pass here to continue on, but in the mean time callbackError() is called
-        pass
-    
-    print(reddit)
+    reddit = praw.Reddit(
+        client_id=clientID,
+        client_secret=clientSecret,
+        user_agent=USER_AGENT,
+        username=username,
+        password=password
+    )
 
-    loginConfirmText.set(f'Logged in as {username}')
+    # confirm succesful login
+    if (reddit.user.me() == username):
+        loginConfirmText.set(f'Logged in as {username}')
 
-    redditState['user'] = reddit.redditor(username)
-    redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
-    redditState['maxScore'] = 0
+        redditState['user'] = reddit.redditor(username)
+        redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
+        redditState['maxScore'] = 0
 
 
 # Sets the hours of comments or submissions to save, stores it in redditState
