@@ -3,8 +3,15 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 import arrow
+from time import sleep
+
+# auto import and set a login for development purposes
+from secrets import REDDIT_USERNAME, REDDIT_PASSWORD, CLIENT_ID, CLIENT_SECRET 
 
 USER_AGENT = 'Social Scrubber: v0.0.1 (by /u/JavaOffScript)'
+
+# define tkinter UI
+root = Tk()
 
 # lets have a python dictionary that will hold redditState stuff, that will eventually be factored out to a different file
 redditState = {}
@@ -19,15 +26,28 @@ def callbackError(self, *args):
     if(str(args[1]) == 'received 401 HTTP response'):
         messagebox.showerror('ERROR', 'Failed to login to reddit!')
 
+
 # logs into reddit using PRAW
 def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText):
+    # REAL
+    # reddit = praw.Reddit(
+    #     client_id=clientID,
+    #     client_secret=clientSecret,
+    #     user_agent=USER_AGENT,
+    #     username=username,
+    #     password=password
+    # )
+
+    # ================= FOR TESTING ===================
+    username = REDDIT_USERNAME
     reddit = praw.Reddit(
-        client_id=clientID,
-        client_secret=clientSecret,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
         user_agent=USER_AGENT,
-        username=username,
-        password=password
+        username=REDDIT_USERNAME,
+        password=REDDIT_PASSWORD
     )
+    #================= FOR TESTING ===================
 
     # confirm succesful login
     if (reddit.user.me() == username):
@@ -70,7 +90,7 @@ def setMaxScore(maxScore, currentMaxScore):
 
 
 # checks items against possibly whitelisted conditions defined in redditState, and either skips or deletes
-def checkWhiteList(item, commentBool):
+def checkWhiteList(item, commentBool, currentlyDeletingText):
     if commentBool:
         itemString = 'Comment'
         itemSnippet = item.body[0:100]
@@ -82,25 +102,31 @@ def checkWhiteList(item, commentBool):
 
     if (timeCreated > redditState['recentlyPostedCutoff']):
         print(f'{itemString} `{itemSnippet}` is more recent than cutoff. skipping')
+        currentlyDeletingText.set(f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
     elif (item.score > redditState['maxScore']):
-        print(f'{itemString} `{itemSnippet}` is higher than max score, skipping')
+        print(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
+        currentlyDeletingText.set(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
     else:
         # comment back in once things get real
         # item.delete()
-        # print(f'{itemString} `{itemSnippet}` Deleted`')
+        # print(f'{itemString} `{itemSnippet}` deleted.`')
         print(f'TESTING: We would delete {itemString} `{itemSnippet}`')
+        currentlyDeletingText.set(f'TESTING: We would delete {itemString} `{itemSnippet}`')
+    
+    root.update()
+    sleep(1)
 
 
 # Get and delete comments
-def deleteComments():
+def deleteComments(currentlyDeletingText):
     for comment in redditState['user'].comments.new(limit=None):
-        checkWhiteList(comment, True)
+        checkWhiteList(comment, True, currentlyDeletingText)
 
 
 # Get and delete submissions
-def deleteSubmissions():
+def deleteSubmissions(currentlyDeletingText):
     for submission in redditState['user'].submissions.new(limit=None):
-        checkWhiteList(submission, False)
+        checkWhiteList(submission, False, currentlyDeletingText)
 
 
 def buildLoginTab(loginFrame):
@@ -183,23 +209,27 @@ def buildRedditTab(redditFrame):
         command=lambda: setMaxScore('Unlimited', currentMaxScore)
     )
 
+    currentlyDeletingText = StringVar()
+    currentlyDeletingText.set('')
+    deletionProgressLabel = Label(redditFrame, textvariable=currentlyDeletingText)
+
     deleteCommentsButton = Button(
         redditFrame,
         text='Delete comments',
-        command=deleteComments
+        command=lambda: deleteComments(currentlyDeletingText)
     )
 
     deleteSubmissionsButton = Button(
         redditFrame,
         text='Delete submissions',
-        command=deleteSubmissions
+        command=lambda: deleteSubmissions(currentlyDeletingText)
     )
 
-    showStateButton = Button(
-        redditFrame,
-        text='Show Options',
-        command=printState
-    )
+    # showStateButton = Button(
+    #     redditFrame,
+    #     text='*TEST* Show Options *TEST*',
+    #     command=printState
+    # )
 
     hoursTextLabel.grid(row=0, column=0)
     hoursEntryField.grid(row=0, column=1)
@@ -212,14 +242,16 @@ def buildRedditTab(redditFrame):
     maxScoreCurrentlySetLabel.grid(row=1, column=4)
     deleteCommentsButton.grid(row=2, column=0)
     deleteSubmissionsButton.grid(row=2, column=1)
-    showStateButton.grid(row=3)
+    # showStateButton.grid(row=3)
+    deletionProgressLabel.grid(row=3, column=0)
+
 
 
 # Builds and runs the tkinter UI
 def createUI():
     Tk.report_callback_exception = callbackError
 
-    root = Tk()
+    # root = Tk()
     root.title('Social Scrubber')
 
     tabs = ttk.Notebook(root)
