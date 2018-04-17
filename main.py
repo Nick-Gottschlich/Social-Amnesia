@@ -90,43 +90,81 @@ def setMaxScore(maxScore, currentMaxScore):
 
 
 # checks items against possibly whitelisted conditions defined in redditState, and either skips or deletes
-def checkWhiteList(item, commentBool, currentlyDeletingText):
-    if commentBool:
-        itemString = 'Comment'
-        itemSnippet = item.body[0:100]
-    else:
-        itemString = 'Submission'
-        itemSnippet = item.title[0:100]
+# def checkWhiteList(item, commentBool, currentlyDeletingText, deletionProgressBar):
+#     if commentBool:
+#         itemString = 'Comment'
+#         itemSnippet = item.body[0:100]
+#     else:
+#         itemString = 'Submission'
+#         itemSnippet = item.title[0:100]
 
-    timeCreated = arrow.get(item.created_utc)
+#     timeCreated = arrow.get(item.created_utc)
 
-    if (timeCreated > redditState['recentlyPostedCutoff']):
-        print(f'{itemString} `{itemSnippet}` is more recent than cutoff. skipping')
-        currentlyDeletingText.set(f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
-    elif (item.score > redditState['maxScore']):
-        print(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
-        currentlyDeletingText.set(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
-    else:
-        # comment back in once things get real
-        # item.delete()
-        # print(f'{itemString} `{itemSnippet}` deleted.`')
-        print(f'TESTING: We would delete {itemString} `{itemSnippet}`')
-        currentlyDeletingText.set(f'TESTING: We would delete {itemString} `{itemSnippet}`')
+#     if (timeCreated > redditState['recentlyPostedCutoff']):
+#         print(f'{itemString} `{itemSnippet}` is more recent than cutoff. skipping')
+#         currentlyDeletingText.set(f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
+#     elif (item.score > redditState['maxScore']):
+#         print(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
+#         currentlyDeletingText.set(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
+#     else:
+#         # comment back in once things get real
+#         # item.delete()
+#         # print(f'{itemString} `{itemSnippet}` deleted.`')
+#         print(f'TESTING: We would delete {itemString} `{itemSnippet}`')
+#         currentlyDeletingText.set(f'TESTING: We would delete {itemString} `{itemSnippet}`')
     
-    root.update()
-    sleep(1)
+#     root.update()
+#     sleep(1)
 
 
-# Get and delete comments
-def deleteComments(currentlyDeletingText):
-    for comment in redditState['user'].comments.new(limit=None):
-        checkWhiteList(comment, True, currentlyDeletingText)
+# # Get and delete comments
+# def deleteComments(currentlyDeletingText, deletionProgressBar):
+#     for comment in redditState['user'].comments.new(limit=None):
+#         checkWhiteList(comment, True, currentlyDeletingText, deletionProgressBar)
 
 
-# Get and delete submissions
-def deleteSubmissions(currentlyDeletingText):
-    for submission in redditState['user'].submissions.new(limit=None):
-        checkWhiteList(submission, False, currentlyDeletingText)
+# # Get and delete submissions
+# def deleteSubmissions(currentlyDeletingText, deletionProgressBar):
+#     for submission in redditState['user'].submissions.new(limit=None):
+#         checkWhiteList(submission, False, currentlyDeletingText, deletionProgressBar)
+
+
+def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar):
+    if commentBool:
+        itemArray = redditState['user'].comments.new(limit=None)
+    else:
+        itemArray = redditState['user'].submissions.new(limit=None)
+
+    # count = 1
+    for item in itemArray:
+        if commentBool:
+            itemString = 'Comment'
+            itemSnippet = item.body[0:100]
+        else:
+            itemString = 'Submission'
+            itemSnippet = item.title[0:100]
+
+        timeCreated = arrow.get(item.created_utc)
+
+        if (timeCreated > redditState['recentlyPostedCutoff']):
+            print(f'{itemString} `{itemSnippet}` is more recent than cutoff. skipping')
+            currentlyDeletingText.set(f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
+        elif (item.score > redditState['maxScore']):
+            print(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
+            currentlyDeletingText.set(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
+        else:
+            # comment back in once things get real
+            # item.delete()
+            # print(f'{itemString} `{itemSnippet}` deleted.`')
+            print(f'TESTING: We would delete {itemString} `{itemSnippet}`')
+            currentlyDeletingText.set(f'TESTING: We would delete {itemString} `{itemSnippet}`')
+
+        # print(round((count / itemArray.length) * 100))
+        # deletionProgressBar['value'] = round(
+        #     (count / itemArray.length) * 100, 1)
+        root.update()
+        # count += 1
+        sleep(1)
 
 
 def buildLoginTab(loginFrame):
@@ -213,16 +251,19 @@ def buildRedditTab(redditFrame):
     currentlyDeletingText.set('')
     deletionProgressLabel = Label(redditFrame, textvariable=currentlyDeletingText)
 
+    deletionProgressBar = Progressbar(
+        redditFrame, orient='horizontal', length=100, mode='determinate')
+
     deleteCommentsButton = Button(
         redditFrame,
         text='Delete comments',
-        command=lambda: deleteComments(currentlyDeletingText, deletionProgressBar)
+        command=lambda: deleteItems(True, currentlyDeletingText, deletionProgressBar)
     )
 
     deleteSubmissionsButton = Button(
         redditFrame,
         text='Delete submissions',
-        command=lambda: deleteSubmissions(currentlyDeletingText, deletionProgressBar)
+        command=lambda: deleteItems(False, currentlyDeletingText, deletionProgressBar)
     )
 
     # showStateButton = Button(
@@ -244,7 +285,7 @@ def buildRedditTab(redditFrame):
     deleteSubmissionsButton.grid(row=2, column=1)
     # showStateButton.grid(row=3)
     deletionProgressLabel.grid(row=3, column=0)
-    deletionProgressBar.grid(row=3, column=1)
+    deletionProgressBar.grid(row=4, column=0)
 
 
 
