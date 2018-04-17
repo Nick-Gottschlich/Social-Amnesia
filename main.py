@@ -1,7 +1,7 @@
 import praw
 from tkinter import *
 from tkinter import messagebox
-from tkinter import ttk
+from tkinter.ttk import *
 import arrow
 from time import sleep
 
@@ -216,13 +216,13 @@ def buildRedditTab(redditFrame):
     deleteCommentsButton = Button(
         redditFrame,
         text='Delete comments',
-        command=lambda: deleteComments(currentlyDeletingText)
+        command=lambda: deleteComments(currentlyDeletingText, deletionProgressBar)
     )
 
     deleteSubmissionsButton = Button(
         redditFrame,
         text='Delete submissions',
-        command=lambda: deleteSubmissions(currentlyDeletingText)
+        command=lambda: deleteSubmissions(currentlyDeletingText, deletionProgressBar)
     )
 
     # showStateButton = Button(
@@ -244,6 +244,7 @@ def buildRedditTab(redditFrame):
     deleteSubmissionsButton.grid(row=2, column=1)
     # showStateButton.grid(row=3)
     deletionProgressLabel.grid(row=3, column=0)
+    deletionProgressBar.grid(row=3, column=1)
 
 
 
@@ -254,13 +255,13 @@ def createUI():
     # root = Tk()
     root.title('Social Scrubber')
 
-    tabs = ttk.Notebook(root)
+    tabs = Notebook(root)
 
-    loginFrame = ttk.Frame(tabs)
+    loginFrame = Frame(tabs)
     buildLoginTab(loginFrame)
     tabs.add(loginFrame, text='Login To Accounts')
 
-    redditFrame = ttk.Frame(tabs)
+    redditFrame = Frame(tabs)
     buildRedditTab(redditFrame)
     tabs.add(redditFrame, text='reddit')
 
