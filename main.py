@@ -135,7 +135,7 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar):
     else:
         itemArray = redditState['user'].submissions.new(limit=None)
 
-    # count = 1
+    count = 1
     for item in itemArray:
         if commentBool:
             itemString = 'Comment'
@@ -159,11 +159,12 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar):
             print(f'TESTING: We would delete {itemString} `{itemSnippet}`')
             currentlyDeletingText.set(f'TESTING: We would delete {itemString} `{itemSnippet}`')
 
+        # print(itemArray.length)
         # print(round((count / itemArray.length) * 100))
         # deletionProgressBar['value'] = round(
         #     (count / itemArray.length) * 100, 1)
         root.update()
-        # count += 1
+        count += 1
         sleep(1)
 
 
