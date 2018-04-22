@@ -90,7 +90,7 @@ def setMaxScore(maxScore, currentMaxScore):
     currentMaxScore.set(f'Currently set to: {str(maxScore)} upvotes')
 
 
-def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar):
+def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
     if commentBool:
         totalItems = sum(
             1 for item in redditState['user'].comments.new(limit=None))
@@ -100,8 +100,8 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar):
             1 for item in redditState['user'].submissions.new(limit=None))
         itemArray = redditState['user'].submissions.new(limit=None)
 
-    print(itemArray)
-    print(totalItems)
+    numDeletedItemsText.set(f'0/{str(totalItems)} items processed so far')
+
     count = 1
     for item in itemArray:
         if commentBool:
@@ -114,20 +114,20 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar):
         timeCreated = arrow.get(item.created_utc)
 
         if (timeCreated > redditState['recentlyPostedCutoff']):
-            print(f'{itemString} `{itemSnippet}` is more recent than cutoff. skipping')
+            # print(f'{itemString} `{itemSnippet}` is more recent than cutoff. skipping')
             currentlyDeletingText.set(f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
         elif (item.score > redditState['maxScore']):
-            print(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
+            # print(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
             currentlyDeletingText.set(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
         else:
             # comment back in once things get real
             # item.delete()
             # print(f'{itemString} `{itemSnippet}` deleted.`')
-            print(f'TESTING: We would delete {itemString} `{itemSnippet}`')
+            # print(f'TESTING: We would delete {itemString} `{itemSnippet}`')
             currentlyDeletingText.set(f'TESTING: We would delete {itemString} `{itemSnippet}`')
 
-        # print(itemArray.length)
-        print(round((count / totalItems) * 100))
+        # print(round((count / totalItems) * 100))
+        numDeletedItemsText.set(f'{str(count)}/{str(totalItems)} items processed.')
         deletionProgressBar['value'] = round(
             (count / totalItems) * 100, 1)
         root.update()
@@ -222,16 +222,20 @@ def buildRedditTab(redditFrame):
     deletionProgressBar = Progressbar(
         redditFrame, orient='horizontal', length=100, mode='determinate')
 
+    numDeletedItemsText = StringVar()
+    numDeletedItemsText.set('')
+    numDeletedItemsLabel = Label(redditFrame, textvariable=numDeletedItemsText)
+
     deleteCommentsButton = Button(
         redditFrame,
         text='Delete comments',
-        command=lambda: deleteItems(True, currentlyDeletingText, deletionProgressBar)
+        command=lambda: deleteItems(True, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
     )
 
     deleteSubmissionsButton = Button(
         redditFrame,
         text='Delete submissions',
-        command=lambda: deleteItems(False, currentlyDeletingText, deletionProgressBar)
+        command=lambda: deleteItems(False, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
     )
 
     # showStateButton = Button(
@@ -251,9 +255,9 @@ def buildRedditTab(redditFrame):
     maxScoreCurrentlySetLabel.grid(row=1, column=4)
     deleteCommentsButton.grid(row=2, column=0)
     deleteSubmissionsButton.grid(row=2, column=1)
-    # showStateButton.grid(row=3)
     deletionProgressLabel.grid(row=3, column=0)
-    deletionProgressBar.grid(row=4, column=0)
+    deletionProgressBar.grid(row=3, column=1)
+    numDeletedItemsLabel.grid(row=3, column=2)
 
 
 
