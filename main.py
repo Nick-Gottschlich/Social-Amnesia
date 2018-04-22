@@ -29,7 +29,7 @@ def callbackError(self, *args):
 
 # logs into reddit using PRAW
 def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText):
-    # REAL
+    # ============= REAL =================
     # reddit = praw.Reddit(
     #     client_id=clientID,
     #     client_secret=clientSecret,
@@ -37,6 +37,7 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText)
     #     username=username,
     #     password=password
     # )
+    # ============= REAL =================
 
     # ================= FOR TESTING ===================
     username = REDDIT_USERNAME
@@ -49,7 +50,7 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText)
     )
     #================= FOR TESTING ===================
 
-    # confirm succesful login
+    # confirm successful login
     if (reddit.user.me() == username):
         loginConfirmText.set(f'Logged in as {username}')
 
@@ -60,7 +61,7 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText)
 
 # Sets the hours of comments or submissions to save, stores it in redditState
 #  and updates the UI to show what its currently set to.
-# hoursToSave: the input recieved from the UI
+# hoursToSave: the input received from the UI
 # currentHoursToSave: what is stored for the user in the UI
 def setHoursToSave(hoursToSave, currentHoursToSave):
     if (hoursToSave == ''):
@@ -75,7 +76,7 @@ def setHoursToSave(hoursToSave, currentHoursToSave):
 
 # Sets the maximum score level, any posts above this store will be skipped over
 #  updates the UI to show what its currently set to.
-# maxScore: the input recieved from the UI
+# maxScore: the input received from the UI
 # currentMaxScore: what is stored for the user in the UI
 def setMaxScore(maxScore, currentMaxScore):
     if (maxScore == ''):
@@ -87,46 +88,6 @@ def setMaxScore(maxScore, currentMaxScore):
         redditState['maxScore'] = maxScore
 
     currentMaxScore.set(f'Currently set to: {str(maxScore)} upvotes')
-
-
-# checks items against possibly whitelisted conditions defined in redditState, and either skips or deletes
-# def checkWhiteList(item, commentBool, currentlyDeletingText, deletionProgressBar):
-#     if commentBool:
-#         itemString = 'Comment'
-#         itemSnippet = item.body[0:100]
-#     else:
-#         itemString = 'Submission'
-#         itemSnippet = item.title[0:100]
-
-#     timeCreated = arrow.get(item.created_utc)
-
-#     if (timeCreated > redditState['recentlyPostedCutoff']):
-#         print(f'{itemString} `{itemSnippet}` is more recent than cutoff. skipping')
-#         currentlyDeletingText.set(f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
-#     elif (item.score > redditState['maxScore']):
-#         print(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
-#         currentlyDeletingText.set(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
-#     else:
-#         # comment back in once things get real
-#         # item.delete()
-#         # print(f'{itemString} `{itemSnippet}` deleted.`')
-#         print(f'TESTING: We would delete {itemString} `{itemSnippet}`')
-#         currentlyDeletingText.set(f'TESTING: We would delete {itemString} `{itemSnippet}`')
-    
-#     root.update()
-#     sleep(1)
-
-
-# # Get and delete comments
-# def deleteComments(currentlyDeletingText, deletionProgressBar):
-#     for comment in redditState['user'].comments.new(limit=None):
-#         checkWhiteList(comment, True, currentlyDeletingText, deletionProgressBar)
-
-
-# # Get and delete submissions
-# def deleteSubmissions(currentlyDeletingText, deletionProgressBar):
-#     for submission in redditState['user'].submissions.new(limit=None):
-#         checkWhiteList(submission, False, currentlyDeletingText, deletionProgressBar)
 
 
 def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar):
