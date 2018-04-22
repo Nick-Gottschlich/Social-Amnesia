@@ -131,10 +131,16 @@ def setMaxScore(maxScore, currentMaxScore):
 
 def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar):
     if commentBool:
+        totalItems = sum(
+            1 for item in redditState['user'].comments.new(limit=None))
         itemArray = redditState['user'].comments.new(limit=None)
     else:
+        totalItems = sum(
+            1 for item in redditState['user'].submissions.new(limit=None))
         itemArray = redditState['user'].submissions.new(limit=None)
 
+    print(itemArray)
+    print(totalItems)
     count = 1
     for item in itemArray:
         if commentBool:
@@ -160,9 +166,9 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar):
             currentlyDeletingText.set(f'TESTING: We would delete {itemString} `{itemSnippet}`')
 
         # print(itemArray.length)
-        # print(round((count / itemArray.length) * 100))
-        # deletionProgressBar['value'] = round(
-        #     (count / itemArray.length) * 100, 1)
+        print(round((count / totalItems) * 100))
+        deletionProgressBar['value'] = round(
+            (count / totalItems) * 100, 1)
         root.update()
         count += 1
         sleep(1)
