@@ -1,140 +1,25 @@
-import praw
+# standard python imports
 from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import *
-import arrow
-from time import sleep
 
-# auto import and set a login for development purposes
-from secrets import REDDIT_USERNAME, REDDIT_PASSWORD, CLIENT_ID, CLIENT_SECRET 
-
-USER_AGENT = 'Social Scrubber: v0.0.1 (by /u/JavaOffScript)'
+#local files
+from reddit import setRedditLogin, setHoursToSave, setMaxScore, deleteItems
 
 # define tkinter UI
 root = Tk()
 
-# lets have a python dictionary that will hold redditState stuff, that will eventually be factored out to a different file
-redditState = {}
 
-# prints out the redditState to console
-def printState():
-    print(redditState)
-
-
+# If the user needs to be informed of an error, this will let tkinter take
+#   care of that
 def callbackError(self, *args):
-    # reddit error, happens if you try to run `reddit.user.me()` and login fails
+    # reddit error, happens if you try to run `reddit.user.me()` 
+    #   and login fails
     if(str(args[1]) == 'received 401 HTTP response'):
         messagebox.showerror('ERROR', 'Failed to login to reddit!')
 
 
-# logs into reddit using PRAW
-def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText):
-    # ============= REAL =================
-    # reddit = praw.Reddit(
-    #     client_id=clientID,
-    #     client_secret=clientSecret,
-    #     user_agent=USER_AGENT,
-    #     username=username,
-    #     password=password
-    # )
-    # ============= REAL =================
-
-    # ================= FOR TESTING ===================
-    username = REDDIT_USERNAME
-    reddit = praw.Reddit(
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        user_agent=USER_AGENT,
-        username=REDDIT_USERNAME,
-        password=REDDIT_PASSWORD
-    )
-    #================= FOR TESTING ===================
-
-    # confirm successful login
-    if (reddit.user.me() == username):
-        loginConfirmText.set(f'Logged in as {username}')
-
-        redditState['user'] = reddit.redditor(username)
-        redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
-        redditState['maxScore'] = 0
-
-
-# Sets the hours of comments or submissions to save, stores it in redditState
-#  and updates the UI to show what its currently set to.
-# hoursToSave: the input received from the UI
-# currentHoursToSave: what is stored for the user in the UI
-def setHoursToSave(hoursToSave, currentHoursToSave):
-    if (hoursToSave == ''):
-        hoursToSave = 0
-    else:
-        hoursToSave = int(hoursToSave)
-
-    redditState['recentlyPostedCutoff'] = arrow.now().replace(
-        hours=-hoursToSave)
-    currentHoursToSave.set(f'Currently set to: {str(hoursToSave)} hours')
-
-
-# Sets the maximum score level, any posts above this store will be skipped over
-#  updates the UI to show what its currently set to.
-# maxScore: the input received from the UI
-# currentMaxScore: what is stored for the user in the UI
-def setMaxScore(maxScore, currentMaxScore):
-    if (maxScore == ''):
-        maxScore = 0
-    elif (maxScore == 'Unlimited'):
-        redditState['maxScore'] = 9999999999
-    else:
-        maxScore = int(maxScore)
-        redditState['maxScore'] = maxScore
-
-    currentMaxScore.set(f'Currently set to: {str(maxScore)} upvotes')
-
-
-def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
-    if commentBool:
-        totalItems = sum(
-            1 for item in redditState['user'].comments.new(limit=None))
-        itemArray = redditState['user'].comments.new(limit=None)
-    else:
-        totalItems = sum(
-            1 for item in redditState['user'].submissions.new(limit=None))
-        itemArray = redditState['user'].submissions.new(limit=None)
-
-    numDeletedItemsText.set(f'0/{str(totalItems)} items processed so far')
-
-    count = 1
-    for item in itemArray:
-        if commentBool:
-            itemString = 'Comment'
-            itemSnippet = item.body[0:100]
-        else:
-            itemString = 'Submission'
-            itemSnippet = item.title[0:100]
-
-        timeCreated = arrow.get(item.created_utc)
-
-        if (timeCreated > redditState['recentlyPostedCutoff']):
-            # print(f'{itemString} `{itemSnippet}` is more recent than cutoff. skipping')
-            currentlyDeletingText.set(f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
-        elif (item.score > redditState['maxScore']):
-            # print(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
-            currentlyDeletingText.set(f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
-        else:
-            # comment back in once things get real
-            # item.delete()
-            # print(f'{itemString} `{itemSnippet}` deleted.`')
-            # print(f'TESTING: We would delete {itemString} `{itemSnippet}`')
-            currentlyDeletingText.set(f'TESTING: We would delete {itemString} `{itemSnippet}`')
-
-        # print(round((count / totalItems) * 100))
-        numDeletedItemsText.set(f'{str(count)}/{str(totalItems)} items processed.')
-        deletionProgressBar['value'] = round(
-            (count / totalItems) * 100, 1)
-        root.update()
-        count += 1
-        sleep(1)
-
-
+# Builds the tab that lets the user log into their social media accounts
 def buildLoginTab(loginFrame):
     loginFrame.grid()
 
@@ -161,8 +46,10 @@ def buildLoginTab(loginFrame):
     redditLoginButton = Button(
         loginFrame,
         text='Login to reddit',
-        command=lambda: setRedditLogin(redditUsernameEntry.get(), redditPasswordEntry.get(),
-                                       redditClientIDEntry.get(), redditClientSecretEntry.get(),
+        command=lambda: setRedditLogin(redditUsernameEntry.get(), 
+                                       redditPasswordEntry.get(),
+                                       redditClientIDEntry.get(), 
+                                       redditClientSecretEntry.get(),
                                        redditLoginConfirmText)
     )
 
@@ -179,7 +66,7 @@ def buildLoginTab(loginFrame):
     redditLoginConfirmedLabel.grid(row=5, column=1)
 
 
-# creates the tab that will have reddit configuration
+# Builds the tab that will handle reddit configuration and actions
 def buildRedditTab(redditFrame):
     redditFrame.grid()
 
@@ -229,20 +116,14 @@ def buildRedditTab(redditFrame):
     deleteCommentsButton = Button(
         redditFrame,
         text='Delete comments',
-        command=lambda: deleteItems(True, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
+        command=lambda: deleteItems(True, currentlyDeletingText, deletionProgressBar, numDeletedItemsText, root)
     )
 
     deleteSubmissionsButton = Button(
         redditFrame,
         text='Delete submissions',
-        command=lambda: deleteItems(False, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
+        command=lambda: deleteItems(False, currentlyDeletingText, deletionProgressBar, numDeletedItemsText, root)
     )
-
-    # showStateButton = Button(
-    #     redditFrame,
-    #     text='*TEST* Show Options *TEST*',
-    #     command=printState
-    # )
 
     hoursTextLabel.grid(row=0, column=0)
     hoursEntryField.grid(row=0, column=1)
