@@ -68,9 +68,9 @@ def setTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTime
     yearsText = setText(yearsToSave, 'years')
     
     if (hoursToSave == '0' and daysToSave == '0' and weeksToSave == '0' and yearsToSave == '0'):
-        currentTimeToSave.set(f'Currently set to save [nothing]')
+        currentTimeToSave.set(f'Currently set to save: [nothing]')
     else:
-        currentTimeToSave.set(f'Currently set to save [{yearsText} {weeksText} {daysText} {hoursText}] of items')
+        currentTimeToSave.set(f'Currently set to save: [{yearsText} {weeksText} {daysText} {hoursText}] of items')
 
 
 # Sets the maximum score level, any posts above this store will be skipped over
