@@ -46,19 +46,31 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText)
         redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
         redditState['maxScore'] = 0
 
-# Sets the hours of comments or submissions to save, stores it in redditState
+# Sets the time of comments or submissions to save, stores it in redditState
 #  and updates the UI to show what its currently set to.
-# hoursToSave: the input received from the UI
-# currentHoursToSave: what is stored for the user in the UI
-def setHoursToSave(hoursToSave, currentHoursToSave):
-    if (hoursToSave == ''):
-        hoursToSave = 0
-    else:
-        hoursToSave = int(hoursToSave)
+# ____ToSave: the input received from the UI
+# currentTimeToSave: what is stored for the user in the UI
+def setTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTimeToSave):
+    totalHours = int(hoursToSave) + (int(daysToSave) * 24) + (int(weeksToSave) * 168) + (int(yearsToSave) * 8736)
 
     redditState['recentlyPostedCutoff'] = arrow.now().replace(
-        hours=-hoursToSave)
-    currentHoursToSave.set(f'Currently set to: {str(hoursToSave)} hours')
+        hours=-totalHours)
+
+    def setText(time, text):
+        if (time == '0'):
+            return ''
+        else:
+            return time + text
+
+    hoursText = setText(hoursToSave, 'hours')
+    daysText = setText(daysToSave, 'days')
+    weeksText = setText(weeksToSave, 'weeks')
+    yearsText = setText(yearsToSave, 'years')
+    
+    if (hoursToSave == '0' and daysToSave == '0' and weeksToSave == '0' and yearsToSave == '0'):
+        currentTimeToSave.set(f'Currently set to save [nothing]')
+    else:
+        currentTimeToSave.set(f'Currently set to save [{yearsText} {weeksText} {daysText} {hoursText}] of items')
 
 
 # Sets the maximum score level, any posts above this store will be skipped over

@@ -4,11 +4,10 @@ from tkinter import messagebox
 from tkinter.ttk import *
 
 #local files
-from reddit import setRedditLogin, setHoursToSave, setMaxScore, deleteItems
+from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems
 
 # define tkinter UI
 root = Tk()
-
 
 # If the user needs to be informed of an error, this will let tkinter take
 #   care of that
@@ -17,6 +16,13 @@ def callbackError(self, *args):
     #   and login fails
     if(str(args[1]) == 'received 401 HTTP response'):
         messagebox.showerror('ERROR', 'Failed to login to reddit!')
+
+
+def buildNumberList(max):
+    numList = []
+    for i in range(0, max):
+        numList.append(str(i))
+    return numList
 
 
 # Builds the tab that lets the user log into their social media accounts
@@ -70,20 +76,44 @@ def buildLoginTab(loginFrame):
 def buildRedditTab(redditFrame):
     redditFrame.grid()
 
-    currentHoursToSave = StringVar()
-    currentHoursToSave.set('Currently set to: 0 hours')
-    hoursTextLabel = Label(
-        redditFrame, text='Hours of comments/submissions to keep:')
-    hoursEntryField = Entry(redditFrame)
-    hoursCurrentlySetLabel = Label(
-        redditFrame, textvariable=currentHoursToSave)
-    setHoursButton = Button(
+    # Configuration to set total time of items to save
+    currentTimeToSave = StringVar()
+    currentTimeToSave.set('Currently set to save [nothing]')
+    timeKeepLabel = Label(
+        redditFrame, text='Keep comments/submissions younger than: ')
+
+    hoursDropDown = Combobox(redditFrame, width=2)
+    hoursDropDown['values'] = buildNumberList(24)
+    hoursDropDown.current(0)
+
+    daysDropDown = Combobox(redditFrame, width=2)
+    daysDropDown['values'] = buildNumberList(7)
+    daysDropDown.current(0)
+
+    weeksDropDown = Combobox(redditFrame, width=2)
+    weeksDropDown['values'] = buildNumberList(52)
+    weeksDropDown.current(0)
+
+    yearsDropDown = Combobox(redditFrame, width=2)
+    yearsDropDown['values'] = buildNumberList(15)
+    yearsDropDown.current(0)
+
+    hoursLabel = Label(redditFrame, text='hours')
+    daysLabel = Label(redditFrame, text='days')
+    weeksLabel = Label(redditFrame, text='weeks')
+    yearsLabel = Label(redditFrame, text='years')
+
+    timeCurrentlySetLabel = Label(
+        redditFrame, textvariable=currentTimeToSave)
+    setTimeButton = Button(
         redditFrame,
-        text='Set Hours To Keep',
-        command=lambda: setHoursToSave(
-            hoursEntryField.get(), currentHoursToSave)
+        text='Set Total Time To Keep',
+        command=lambda: setTimeToSave(
+            hoursDropDown.get(), daysDropDown.get(), 
+            weeksDropDown.get(), yearsDropDown.get(), currentTimeToSave)
     )
 
+    # Configuration to set saving items with a certain amount of upvotes
     currentMaxScore = StringVar()
     currentMaxScore.set('Currently set to: 0 upvotes')
     maxScoreLabel = Label(
@@ -102,6 +132,7 @@ def buildRedditTab(redditFrame):
         command=lambda: setMaxScore('Unlimited', currentMaxScore)
     )
 
+    # Allows the user to actually delete comments or submissions
     currentlyDeletingText = StringVar()
     currentlyDeletingText.set('')
     deletionProgressLabel = Label(redditFrame, textvariable=currentlyDeletingText)
@@ -125,10 +156,17 @@ def buildRedditTab(redditFrame):
         command=lambda: deleteItems(False, currentlyDeletingText, deletionProgressBar, numDeletedItemsText, root)
     )
 
-    hoursTextLabel.grid(row=0, column=0)
-    hoursEntryField.grid(row=0, column=1)
-    setHoursButton.grid(row=0, column=2)
-    hoursCurrentlySetLabel.grid(row=0, column=3)
+    timeKeepLabel.grid(row=0, column=0)
+    hoursDropDown.grid(row=0, column=1)
+    hoursLabel.grid(row=0, column=2)
+    daysDropDown.grid(row=0, column=3)
+    daysLabel.grid(row=0, column=4)
+    weeksDropDown.grid(row=0, column=5)
+    weeksLabel.grid(row=0, column=6)
+    yearsDropDown.grid(row=0, column=7)
+    yearsLabel.grid(row=0, column=8)
+    setTimeButton.grid(row=0, column=9)
+    timeCurrentlySetLabel.grid(row=0, column=10)
     maxScoreLabel.grid(row=1, column=0)
     maxScoreEntryField.grid(row=1, column=1)
     setMaxScoreButton.grid(row=1, column=2)
