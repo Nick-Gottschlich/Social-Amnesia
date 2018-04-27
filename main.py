@@ -76,6 +76,13 @@ def buildLoginTab(loginFrame):
 def buildRedditTab(redditFrame):
     redditFrame.grid()
 
+    #Fonts
+    # TitleFont = Font(family="Times", size=10, weight=BOLD)
+
+    # Configuration section title
+    configurationLabel = Label(redditFrame, text='Configuration')
+    configurationLabel.config(font=('arial', 25))
+
     # Configuration to set total time of items to save
     currentTimeToSave = StringVar()
     currentTimeToSave.set('Currently set to save: [nothing]')
@@ -156,29 +163,33 @@ def buildRedditTab(redditFrame):
         command=lambda: deleteItems(False, currentlyDeletingText, deletionProgressBar, numDeletedItemsText, root)
     )
 
-    timeKeepLabel.grid(row=0, column=0)
-    hoursDropDown.grid(row=0, column=1, sticky=(W))
-    hoursLabel.grid(row=0, column=2, sticky=(W))
-    daysDropDown.grid(row=0, column=3, sticky=(W))
-    daysLabel.grid(row=0, column=4, sticky=(W))
-    weeksDropDown.grid(row=0, column=5, sticky=(W))
-    weeksLabel.grid(row=0, column=6, sticky=(W))
-    yearsDropDown.grid(row=0, column=7, sticky=(W))
-    yearsLabel.grid(row=0, column=8, sticky=(W))
-    setTimeButton.grid(row=0, column=9, columnspan=2)
-    timeCurrentlySetLabel.grid(row=0, column=11)
+    configurationLabel.grid(row=0, columnspan=11, sticky=(N, S), pady=5)
 
-    maxScoreLabel.grid(row=1, column=0)
-    maxScoreEntryField.grid(row=1, column=1, columnspan=8, sticky=(W))
-    setMaxScoreButton.grid(row=1, column=9)
-    setMaxScoreUnlimitedButton.grid(row=1, column=10)
-    maxScoreCurrentlySetLabel.grid(row=1, column=11)
+    timeKeepLabel.grid(row=1, column=0)
+    hoursDropDown.grid(row=1, column=1, sticky=(W))
+    hoursLabel.grid(row=1, column=2, sticky=(W))
+    daysDropDown.grid(row=1, column=3, sticky=(W))
+    daysLabel.grid(row=1, column=4, sticky=(W))
+    weeksDropDown.grid(row=1, column=5, sticky=(W))
+    weeksLabel.grid(row=1, column=6, sticky=(W))
+    yearsDropDown.grid(row=1, column=7, sticky=(W))
+    yearsLabel.grid(row=1, column=8, sticky=(W))
+    setTimeButton.grid(row=1, column=9, columnspan=2)
+    timeCurrentlySetLabel.grid(row=1, column=11)
 
-    deleteCommentsButton.grid(row=2, column=0, sticky=(W))
-    deleteSubmissionsButton.grid(row=2, column=0, sticky=(E))
-    deletionProgressLabel.grid(row=3, column=0)
-    deletionProgressBar.grid(row=4, column=0, sticky=(W))
-    numDeletedItemsLabel.grid(row=4, column=0, sticky=(E))
+    maxScoreLabel.grid(row=2, column=0)
+    maxScoreEntryField.grid(row=2, column=1, columnspan=8, sticky=(W))
+    setMaxScoreButton.grid(row=2, column=9)
+    setMaxScoreUnlimitedButton.grid(row=2, column=10)
+    maxScoreCurrentlySetLabel.grid(row=2, column=11)
+
+    Separator(redditFrame, orient=HORIZONTAL).grid(row=3, columnspan=13, sticky=(E,W), pady=5)
+
+    deleteCommentsButton.grid(row=4, column=0, sticky=(W))
+    deleteSubmissionsButton.grid(row=4, column=0, sticky=(E))
+    deletionProgressLabel.grid(row=5, column=0)
+    deletionProgressBar.grid(row=6, column=0, sticky=(W))
+    numDeletedItemsLabel.grid(row=6, column=0, sticky=(E))
 
 
 # Builds and runs the tkinter UI
