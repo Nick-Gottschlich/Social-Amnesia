@@ -4,7 +4,7 @@ from tkinter import messagebox
 from tkinter.ttk import *
 
 #local files
-from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems
+from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun
 
 # define tkinter UI
 root = Tk()
@@ -163,6 +163,10 @@ def buildRedditTab(redditFrame):
         command=lambda: deleteItems(False, currentlyDeletingText, deletionProgressBar, numDeletedItemsText, root)
     )
 
+    testRunBool = IntVar()
+    testRunText = 'TestRun - Checking this will show you what would be deleted, without deleting anything'
+    testRunCheckButton = Checkbutton(redditFrame, text=testRunText, variable=testRunBool, command=lambda: setTestRun(testRunBool))
+
     configurationLabel.grid(row=0, columnspan=11, sticky=(N, S), pady=5)
 
     timeKeepLabel.grid(row=1, column=0)
@@ -187,6 +191,8 @@ def buildRedditTab(redditFrame):
 
     deleteCommentsButton.grid(row=4, column=0, sticky=(W))
     deleteSubmissionsButton.grid(row=4, column=0, sticky=(E))
+    testRunCheckButton.grid(row=4, column=1, columnspan=11)
+
     deletionProgressLabel.grid(row=5, column=0)
     deletionProgressBar.grid(row=6, column=0, sticky=(W))
     numDeletedItemsLabel.grid(row=6, column=0, sticky=(E))

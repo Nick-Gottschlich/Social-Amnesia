@@ -129,11 +129,14 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
             currentlyDeletingText.set(
                 f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
         else:
-            # ==== comment back in once things get real ====
-            # item.delete()
-
-            currentlyDeletingText.set(
-                f'TEST RUN: Would delete {itemString} `{itemSnippet}`')
+            if (redditState['testRun'] == 0):
+                # ==== comment back in once things get real ====
+                # item.delete()
+                currentlyDeletingText.set(
+                    f'Deleting {itemString} `{itemSnippet}`')
+            else:
+                currentlyDeletingText.set(
+                    f'TEST RUN: Would delete {itemString} `{itemSnippet}`')
 
         numDeletedItemsText.set(
             f'{str(count)}/{str(totalItems)} items processed.')
@@ -146,3 +149,9 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
         
         # Sleep for one second so the user can follow along with the progress
         sleep(1)
+
+
+# Set whether to run a test run or not (stored in redditState)
+# testRunBool - 0 for real run, 1 for test run
+def setTestRun(testRunBool):
+    redditState['testRun'] = testRunBool.get()
