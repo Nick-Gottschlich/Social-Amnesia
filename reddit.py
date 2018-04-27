@@ -111,10 +111,14 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
     for item in itemArray:
         if commentBool:
             itemString = 'Comment'
-            itemSnippet = item.body[0:100]
+            itemSnippet = item.body[0:15]
+            if len(item.body) > 15:
+                itemSnippet = itemSnippet + '...'
         else:
             itemString = 'Submission'
-            itemSnippet = item.title[0:100]
+            itemSnippet = item.title[0:15]
+            if len(item.title) > 15:
+                itemSnippet = itemSnippet + '...'
 
         timeCreated = arrow.get(item.created_utc)
 
