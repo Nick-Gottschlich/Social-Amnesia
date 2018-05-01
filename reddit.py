@@ -10,6 +10,8 @@ from secrets import REDDIT_USERNAME, REDDIT_PASSWORD, CLIENT_ID, CLIENT_SECRET
 
 USER_AGENT = 'Social Scrubber: v0.0.1 (by /u/JavaOffScript)'
 
+EDIT_OVERWRITE = 'Scrubbed by Social Scrubber'
+
 # The reddit state object
 #   Handles the actual praw object that manipulate the reddit account
 #   as well as any configuration options about how to act.
@@ -42,9 +44,11 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText)
     if (reddit.user.me() == username):
         loginConfirmText.set(f'Logged in as {username}')
 
+        # initialize state
         redditState['user'] = reddit.redditor(username)
         redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
         redditState['maxScore'] = 0
+        redditState['testRun'] = 0
 
 # Sets the time of comments or submissions to save, stores it in redditState
 #  and updates the UI to show what its currently set to.
@@ -122,6 +126,8 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
 
         timeCreated = arrow.get(item.created_utc)
 
+        print(redditState)
+
         if (timeCreated > redditState['recentlyPostedCutoff']):
             currentlyDeletingText.set(
                 f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
@@ -131,6 +137,13 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
         else:
             if (redditState['testRun'] == 0):
                 # ==== comment back in once things get real ====
+                # item.clear_vote()
+                # Need the try/except here as it will crash on
+                #  link submissions otherwise
+                # try:
+                    # item.edit(EDIT_OVERWRITE)
+                # except:
+                    # ayy = 'lmao'
                 # item.delete()
                 currentlyDeletingText.set(
                     f'Deleting {itemString} `{itemSnippet}`')
