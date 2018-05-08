@@ -18,6 +18,7 @@ def callbackError(self, *args):
         messagebox.showerror('ERROR', 'Failed to login to reddit!')
 
 
+# Builds a list of numbers from 0 up to `max`.
 def buildNumberList(max):
     numList = []
     for i in range(0, max):
@@ -76,9 +77,6 @@ def buildLoginTab(loginFrame):
 def buildRedditTab(redditFrame):
     redditFrame.grid()
 
-    #Fonts
-    # TitleFont = Font(family="Times", size=10, weight=BOLD)
-
     # Configuration section title
     configurationLabel = Label(redditFrame, text='Configuration')
     configurationLabel.config(font=('arial', 25))
@@ -91,18 +89,22 @@ def buildRedditTab(redditFrame):
 
     hoursDropDown = Combobox(redditFrame, width=2)
     hoursDropDown['values'] = buildNumberList(24)
+    hoursDropDown['state'] = 'readonly'
     hoursDropDown.current(0)
 
     daysDropDown = Combobox(redditFrame, width=2)
     daysDropDown['values'] = buildNumberList(7)
+    daysDropDown['state'] = 'readonly'
     daysDropDown.current(0)
 
     weeksDropDown = Combobox(redditFrame, width=2)
     weeksDropDown['values'] = buildNumberList(52)
+    weeksDropDown['state'] = 'readonly'
     weeksDropDown.current(0)
 
     yearsDropDown = Combobox(redditFrame, width=2)
     yearsDropDown['values'] = buildNumberList(15)
+    yearsDropDown['state'] = 'readonly'
     yearsDropDown.current(0)
 
     hoursLabel = Label(redditFrame, text='hours')
