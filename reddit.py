@@ -6,7 +6,7 @@ import praw
 import arrow
 
 # auto import and set a login for development purposes
-from secrets import REDDIT_USERNAME, REDDIT_PASSWORD, CLIENT_ID, CLIENT_SECRET
+# from secrets import REDDIT_USERNAME, REDDIT_PASSWORD, CLIENT_ID, CLIENT_SECRET
 
 USER_AGENT = 'Social Scrubber: v0.0.1 (by /u/JavaOffScript)'
 
@@ -20,24 +20,24 @@ redditState = {}
 # Logs into reddit using PRAW, gives user an error on failure
 def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText):
     # ============= REAL =================
-    # reddit = praw.Reddit(
-    #     client_id=clientID,
-    #     client_secret=clientSecret,
-    #     user_agent=USER_AGENT,
-    #     username=username,
-    #     password=password
-    # )
+    reddit = praw.Reddit(
+        client_id=clientID,
+        client_secret=clientSecret,
+        user_agent=USER_AGENT,
+        username=username,
+        password=password
+    )
     # ============= REAL =================
 
     # ================= FOR TESTING ===================
-    username = REDDIT_USERNAME
-    reddit = praw.Reddit(
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        user_agent=USER_AGENT,
-        username=REDDIT_USERNAME,
-        password=REDDIT_PASSWORD
-    )
+    # username = REDDIT_USERNAME
+    # reddit = praw.Reddit(
+    #     client_id=CLIENT_ID,
+    #     client_secret=CLIENT_SECRET,
+    #     user_agent=USER_AGENT,
+    #     username=REDDIT_USERNAME,
+    #     password=REDDIT_PASSWORD
+    # )
     #================= FOR TESTING ===================
 
     # confirm successful login
@@ -137,14 +137,15 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
         else:
             if (redditState['testRun'] == 0):
                 # ==== comment back in once things get real ====
-                # item.clear_vote()
-                # Need the try/except here as it will crash on
-                #  link submissions otherwise
-                # try:
-                    # item.edit(EDIT_OVERWRITE)
-                # except:
-                    # ayy = 'lmao'
-                # item.delete()
+                item.clear_vote()
+                Need the try/except here as it will crash on
+                 link submissions otherwise
+                try:
+                    item.edit(EDIT_OVERWRITE)
+                except:
+                    ayy = 'lmao'
+                item.delete()
+                # ==== comment out for dev purposes ====
                 currentlyDeletingText.set(
                     f'Deleting {itemString} `{itemSnippet}`')
             else:
