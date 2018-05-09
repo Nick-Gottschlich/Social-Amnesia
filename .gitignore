@@ -8,5 +8,10 @@ secrets.pyc
 # Byte-compiled / optimized / DLL files
 __pycache__/
 
-# Mac stuff
+# OSX
 .DS_Store
+
+# pyinstaller
+dist/
+build/
+main.spec

@@ -138,8 +138,8 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
             if (redditState['testRun'] == 0):
                 # ==== comment back in once things get real ====
                 item.clear_vote()
-                Need the try/except here as it will crash on
-                 link submissions otherwise
+                # Need the try/except here as it will crash on
+                #  link submissions otherwise
                 try:
                     item.edit(EDIT_OVERWRITE)
                 except:
