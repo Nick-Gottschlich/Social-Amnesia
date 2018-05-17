@@ -126,8 +126,6 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
 
         timeCreated = arrow.get(item.created_utc)
 
-        print(redditState)
-
         if (timeCreated > redditState['recentlyPostedCutoff']):
             currentlyDeletingText.set(
                 f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
