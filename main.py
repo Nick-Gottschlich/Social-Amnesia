@@ -3,6 +3,11 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import *
 
+# because cx_freeze is dumb and needs these imports?
+import requests
+from multiprocessing import Queue
+import idna
+
 #local files
 from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun
 
@@ -12,6 +17,7 @@ root = Tk()
 # If the user needs to be informed of an error, this will let tkinter take
 #   care of that
 def callbackError(self, *args):
+    print(str(args[1]))
     # reddit error, happens if you try to run `reddit.user.me()` 
     #   and login fails
     if(str(args[1]) == 'received 401 HTTP response'):
