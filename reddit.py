@@ -20,7 +20,6 @@ redditState = {}
 # Logs into reddit using PRAW, gives user an error on failure
 def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText):
     # ============= REAL =================
-    print('attempting login')
     reddit = praw.Reddit(
         client_id=clientID,
         client_secret=clientSecret,
@@ -28,7 +27,6 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText)
         username=username,
         password=password
     )
-    print(reddit)
     # ============= REAL =================
 
     # ================= FOR TESTING ===================
@@ -44,7 +42,6 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText)
 
     # confirm successful login
     if (reddit.user.me() == username):
-        print(f'Logged in as {username}')
         loginConfirmText.set(f'Logged in as {username}')
 
         # initialize state
