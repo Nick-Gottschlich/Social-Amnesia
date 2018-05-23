@@ -2,6 +2,8 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import *
+import os
+from pathlib import Path
 
 #local files
 from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun
@@ -17,8 +19,10 @@ root = Tk()
 def callbackError(self, *args):
     # reddit error, happens if you try to run `reddit.user.me()` 
     #   and login fails
-    if(str(args[1]) == 'received 401 HTTP response'):
+    if (str(args[1]) == 'received 401 HTTP response'):
         messagebox.showerror('ERROR', 'Failed to login to reddit!')
+    else:
+        messagebox.showerror('ERROR', str(args[1]))
 
 
 # Builds a list of numbers from 0 up to `max`.
@@ -60,7 +64,8 @@ def buildLoginTab(loginFrame):
                                        redditPasswordEntry.get(),
                                        redditClientIDEntry.get(), 
                                        redditClientSecretEntry.get(),
-                                       redditLoginConfirmText)
+                                       redditLoginConfirmText,
+                                       False)
     )
 
     redditLabel.grid(row=0, column=0)
@@ -74,6 +79,12 @@ def buildLoginTab(loginFrame):
     redditClientSecretEntry.grid(row=4, column=1)
     redditLoginButton.grid(row=5, column=0)
     redditLoginConfirmedLabel.grid(row=5, column=1)
+
+    # If a praw.ini file exists, log in to reddit
+    prawConfigFile = Path(f'{os.getcwd()}/praw.ini')
+    if prawConfigFile.is_file():
+        # reddit = praw.Reddit('user', user_agent=USER_AGENT)
+        setRedditLogin('', '', '', '', redditLoginConfirmText, True)
 
 
 # Builds the tab that will handle reddit configuration and actions
@@ -201,7 +212,6 @@ def buildRedditTab(redditFrame):
     deletionProgressLabel.grid(row=5, column=0)
     deletionProgressBar.grid(row=6, column=0, sticky=(W))
     numDeletedItemsLabel.grid(row=6, column=0, sticky=(E))
-
 
 # Builds and runs the tkinter UI
 def createUI():

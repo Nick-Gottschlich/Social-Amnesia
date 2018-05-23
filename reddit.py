@@ -1,5 +1,7 @@
 # standard python imports
 from time import sleep
+import os
+from pathlib import Path
 
 # pip imports
 import praw
@@ -12,23 +14,15 @@ USER_AGENT = 'Social Scrubber: v0.0.1 (by /u/JavaOffScript)'
 
 EDIT_OVERWRITE = 'Scrubbed by Social Scrubber'
 
+prawConfigFile = Path(f'{os.getcwd()}/praw.ini')
+
 # The reddit state object
 #   Handles the actual praw object that manipulate the reddit account
 #   as well as any configuration options about how to act.
 redditState = {}
 
 # Logs into reddit using PRAW, gives user an error on failure
-def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText):
-    # ============= REAL =================
-    reddit = praw.Reddit(
-        client_id=clientID,
-        client_secret=clientSecret,
-        user_agent=USER_AGENT,
-        username=username,
-        password=password
-    )
-    # ============= REAL =================
-
+def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText, init):
     # ================= FOR TESTING ===================
     # username = REDDIT_USERNAME
     # reddit = praw.Reddit(
@@ -40,15 +34,39 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText)
     # )
     #================= FOR TESTING ===================
 
-    # confirm successful login
-    if (reddit.user.me() == username):
-        loginConfirmText.set(f'Logged in as {username}')
+    if init:
+        reddit = praw.Reddit('user', user_agent=USER_AGENT)
+    else:
+        reddit = praw.Reddit(
+            client_id=clientID,
+            client_secret=clientSecret,
+            user_agent=USER_AGENT,
+            username=username,
+            password=password
+        )
 
-        # initialize state
-        redditState['user'] = reddit.redditor(username)
-        redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
-        redditState['maxScore'] = 0
-        redditState['testRun'] = 0
+        if prawConfigFile.is_file():
+            os.remove(prawConfigFile)
+        
+        prawConfigString = f'''[user]
+client_id={clientID}
+client_secret={clientSecret}
+password={password}
+username={username}'''
+
+        with open('praw.ini', 'a') as out:
+            out.write(prawConfigString)
+
+
+    redditUsername = str(reddit.user.me())
+
+    loginConfirmText.set(f'Logged in as {redditUsername}')
+
+    # initialize state
+    redditState['user'] = reddit.redditor(redditUsername)
+    redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
+    redditState['maxScore'] = 0
+    redditState['testRun'] = 0
 
 # Sets the time of comments or submissions to save, stores it in redditState
 #  and updates the UI to show what its currently set to.

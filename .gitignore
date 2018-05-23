@@ -11,7 +11,11 @@ __pycache__/
 # OSX
 .DS_Store
 
-# pyinstaller
-dist/
+# cx_freeze
 build/
-main.spec
+
+# praw
+praw.ini
+
+# holder folder
+holder/
