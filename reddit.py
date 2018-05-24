@@ -35,7 +35,12 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText,
     #================= FOR TESTING ===================
 
     if init:
-        reddit = praw.Reddit('user', user_agent=USER_AGENT)
+        try:
+            reddit = praw.Reddit('user', user_agent=USER_AGENT)
+        except:
+            # praw.ini is broken, delete it
+            os.remove(prawConfigFile)
+            return
     else:
         reddit = praw.Reddit(
             client_id=clientID,
@@ -56,7 +61,6 @@ username={username}'''
 
         with open('praw.ini', 'a') as out:
             out.write(prawConfigString)
-
 
     redditUsername = str(reddit.user.me())
 

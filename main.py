@@ -217,7 +217,6 @@ def buildRedditTab(redditFrame):
 def createUI():
     Tk.report_callback_exception = callbackError
 
-    # root = Tk()
     root.title('Social Scrubber')
 
     tabs = Notebook(root)
