@@ -181,8 +181,9 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
         
         count += 1
         
-        # Sleep for one second so the user can follow along with the progress
-        sleep(1)
+        # on test runs, sleep for one second so the user can follow along with the progress
+        if (redditState['testRun'] == 1):
+            sleep(1)
 
 
 # Set whether to run a test run or not (stored in redditState)
