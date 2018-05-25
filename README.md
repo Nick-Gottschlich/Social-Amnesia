@@ -1,7 +1,13 @@
-# Socal-Scrubber
+# SocialScrubber
 Cleans out the old gunk from your social media profiles!
 
 This is in very early versions, but the eventual goal is to create a user-friendly app that will allow one click and scheduled cleaning of social media accounts. What does "cleaning" mean? On a site like twitter, this could be removing old tweets, retweets, and likes. On a site like reddit, this could be deleting submissions and comments. This readme will contain a list of what sites are usable and what features are available on each one.
+
+## Alpha executables
+
+0.0.1 release (Mac and Windows[x64]):
+
+Download here: https://www.dropbox.com/sh/opxtmbu56q2inlz/AABWiG2UrPBrFNRuYsjr8JRja?dl=0
 
 ### How to run SocialScrubber from the command line
 If you have python3 you can run SocialScrubber directly by cloning this repo and running `python3 SocialScrubber.py` on a command line. You will have to install several packages with a package manager like "pip" or "pip3".
