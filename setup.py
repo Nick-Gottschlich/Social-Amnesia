@@ -11,4 +11,4 @@ setup(name="Social Scrubber",
       version="0.1",
       description="Social Scrubber",
       options={"build_exe": build_exe_options},
-      executables=[Executable("main.py", base=base)])
+      executables=[Executable("SocialScrubber.py", base=base)])
