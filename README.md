@@ -9,6 +9,8 @@ If you have python3 you can run SocialScrubber directly by cloning this repo and
 `pip3 install praw`
 `pip3 install arrow`
 
+Note: On windows you may have to copy `tcl86t.dll` and `tk86t.dll` from your `Python3X/DLLs` into the folder with the executable to get this to run.
+
 ### How to build the executable for SocialScrubber
 
 Build the executable by first installing cx_freeze by running `pip3 install cx_Freeze`. Then you can build the executable running `python3 setup.py `. This will create a folder called `build`, inside you can a folder with some crazy name, and in that you should see a 'SocialScrubber' executable. Run that executable to start the program.
