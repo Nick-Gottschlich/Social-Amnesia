@@ -34,3 +34,7 @@ Build the executable by first installing cx_freeze by running `pip3 install cx_F
 #### How to set up your reddit account
 
 Reddit requires accounts to create a "script" in order for SocialScrubber to run. Don't worry, this is actually quite simple to do. You can see reddit's docs on how to do this [here](https://github.com/reddit-archive/reddit/wiki/OAuth2-Quick-Start-Example#first-steps). Doing this provides you with the reddit "Client ID" and "Client Secret" you will need to log in within the SocialScrubber app.
+
+## Related software
+
+[Shreddit](https://github.com/x89/Shreddit) - a python program to delete reddit posts/submissions.
