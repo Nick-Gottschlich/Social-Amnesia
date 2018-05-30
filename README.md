@@ -7,7 +7,7 @@ This is in very early versions, but the eventual goal is to create a user-friend
 
 ### Executables
 
-0.0.1 release (Mac and Windows[x64]): https://www.dropbox.com/sh/opxtmbu56q2inlz/AABWiG2UrPBrFNRuYsjr8JRja?dl=0
+Available in the zip files on the [releases](https://github.com/Nick-Gottschlich/Social-Amnesia/releases) page.
 
 ### How to run SocialScrubber from the command line
 If you have python3 you can run SocialScrubber directly by cloning this repo and running `python3 SocialScrubber.py` on a command line. You will have to install several packages with a package manager like "pip" or "pip3".
