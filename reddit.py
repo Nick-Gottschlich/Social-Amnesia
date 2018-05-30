@@ -10,9 +10,9 @@ import arrow
 # auto import and set a login for development purposes
 # from secrets import REDDIT_USERNAME, REDDIT_PASSWORD, CLIENT_ID, CLIENT_SECRET
 
-USER_AGENT = 'Social Scrubber: v0.0.1 (by /u/JavaOffScript)'
+USER_AGENT = 'Social Amensia: v0.0.1 (by /u/JavaOffScript)'
 
-EDIT_OVERWRITE = 'Scrubbed by Social Scrubber'
+EDIT_OVERWRITE = 'Wiped by Social Amnesia'
 
 prawConfigFile = Path(f'{os.getcwd()}/praw.ini')
 
