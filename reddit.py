@@ -71,6 +71,7 @@ username={username}'''
     redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
     redditState['maxScore'] = 0
     redditState['testRun'] = 0
+    redditState['gildedSkip'] = 0
 
 # Sets the time of comments or submissions to save, stores it in redditState
 #  and updates the UI to show what its currently set to.
@@ -115,6 +116,13 @@ def setMaxScore(maxScore, currentMaxScore):
     currentMaxScore.set(f'Currently set to: {str(maxScore)} upvotes')
 
 
+# Set whether to skip gilded comments or not (stored in redditState)
+# gildedSkipBool - 0 to delete gilded comments, 1 to skip gilded comments
+def setGildedSkip(gildedSkipBool):
+    if (gildedSkipBool.get()):
+        redditState['gildedSkip'] = gildedSkipBool.get()
+        
+
 # Deletes the items according to user configurations.
 # commentBool: true if deleting comments, false if deleting submissions
 # currentlyDeletingText: Describes the item that is currently being deleted.
@@ -154,18 +162,20 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
         elif (item.score > redditState['maxScore']):
             currentlyDeletingText.set(
                 f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
+        elif (item.gilded and redditState['gildedSkip']):
+            currentlyDeletingText.set(
+                f'{itemString} `{itemSnippet}` is gilded, skipping.')
         else:
             if (redditState['testRun'] == 0):
-                # ==== comment back in once things get real ====
-                item.clear_vote()
                 # Need the try/except here as it will crash on
                 #  link submissions otherwise
                 try:
                     item.edit(EDIT_OVERWRITE)
                 except:
                     ayy = 'lmao'
+                item.clear_vote()
                 item.delete()
-                # ==== comment out for dev purposes ====
+
                 currentlyDeletingText.set(
                     f'Deleting {itemString} `{itemSnippet}`')
             else:

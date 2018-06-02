@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 #local files
-from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun
+from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun, setGildedSkip
 
 # cx_freeze needs this import to run
 from multiprocessing import Queue
@@ -155,6 +155,12 @@ def buildRedditTab(redditFrame):
         command=lambda: setMaxScore('Unlimited', currentMaxScore)
     )
 
+    # Configuration to let user skip over gilded comments
+    gildedSkipBool = IntVar()
+    gildedSkipLabel = Label(redditFrame, text='Skip Gilded comments:')
+    gildedSkipCheckButton = Checkbutton(
+         redditFrame, variable=gildedSkipBool, command=lambda: setGildedSkip(gildedSkipBool))
+
     # Allows the user to actually delete comments or submissions
     currentlyDeletingText = StringVar()
     currentlyDeletingText.set('')
@@ -203,15 +209,18 @@ def buildRedditTab(redditFrame):
     setMaxScoreUnlimitedButton.grid(row=2, column=10)
     maxScoreCurrentlySetLabel.grid(row=2, column=11)
 
-    Separator(redditFrame, orient=HORIZONTAL).grid(row=3, columnspan=13, sticky=(E,W), pady=5)
+    gildedSkipLabel.grid(row=3, column=0)
+    gildedSkipCheckButton.grid(row=3, column=1)
 
-    deleteCommentsButton.grid(row=4, column=0, sticky=(W))
-    deleteSubmissionsButton.grid(row=4, column=0, sticky=(E))
-    testRunCheckButton.grid(row=4, column=1, columnspan=11)
+    Separator(redditFrame, orient=HORIZONTAL).grid(row=4, columnspan=13, sticky=(E,W), pady=5)
 
-    deletionProgressLabel.grid(row=5, column=0)
-    deletionProgressBar.grid(row=6, column=0, sticky=(W))
-    numDeletedItemsLabel.grid(row=6, column=0, sticky=(E))
+    deleteCommentsButton.grid(row=5, column=0, sticky=(W))
+    deleteSubmissionsButton.grid(row=5, column=0, sticky=(E))
+    testRunCheckButton.grid(row=5, column=1, columnspan=11)
+
+    deletionProgressLabel.grid(row=6, column=0)
+    deletionProgressBar.grid(row=7, column=0, sticky=(W))
+    numDeletedItemsLabel.grid(row=7, column=0, sticky=(E))
 
 # Builds and runs the tkinter UI
 def createUI():
