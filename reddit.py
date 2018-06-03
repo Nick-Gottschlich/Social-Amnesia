@@ -153,7 +153,6 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
                 #  so we strip them
                 if (ord(char) > 65535):
                     itemSnippet = itemSnippet.replace(char, '')
-
         else:
             itemString = 'Submission'
             itemSnippet = item.title[0:15]
