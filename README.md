@@ -29,6 +29,7 @@ Build the executable by first installing cx_freeze by running `pip3 install cx_F
 * Edits your posts before deleting them. According to [the reddit admins](https://www.reddit.com/r/blog/comments/1dhw2j/reddits_privacy_policy_has_been_rewritten_from/c9qgbbb/) this is an effective way to remove content from reddit.
 * Can keep a time range of comments and submissions (in hours)
 * Can keep comments or submissions that are above a certain amount of upvotes.
+* Can skip gilded comments/submissions.
 * Trial run - do a run showing what would be deleted, without actually doing it.
 
 #### How to set up your reddit account
