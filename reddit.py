@@ -148,11 +148,22 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
             itemSnippet = item.body[0:15]
             if len(item.body) > 15:
                 itemSnippet = itemSnippet + '...'
+            for char in itemSnippet:
+                # tkinter can't handle certain unicode characters,
+                #  so we strip them
+                if (ord(char) > 65535):
+                    itemSnippet = itemSnippet.replace(char, '')
+
         else:
             itemString = 'Submission'
             itemSnippet = item.title[0:15]
             if len(item.title) > 15:
                 itemSnippet = itemSnippet + '...'
+            for char in itemSnippet:
+                # tkinter can't handle certain unicode characters,
+                #  so we strip them
+                if (ord(char) > 65535):
+                    itemSnippet = itemSnippet.replace(char, '')
 
         timeCreated = arrow.get(item.created_utc)
 
@@ -192,8 +203,8 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
         count += 1
         
         # on test runs, sleep for one second so the user can follow along with the progress
-        if (redditState['testRun'] == 1):
-            sleep(1)
+        # if (redditState['testRun'] == 1):
+        #     sleep(1)
 
 
 # Set whether to run a test run or not (stored in redditState)
