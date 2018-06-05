@@ -21,6 +21,8 @@ Note: On windows you may have to copy `tcl86t.dll` and `tk86t.dll` from your `Py
 
 Build the executable by first installing cx_freeze by running `pip3 install cx_Freeze`. Then you can build the executable running `python3 setup.py `. This will create a folder called `build`, inside you can a folder with some crazy name, and in that you should see a 'Social Amnesia' executable. Run that executable to start the program.
 
+You can build a mac DMG using `python3 setup.py bdist_dmg` and you can build a windows installer using `python3 setup.py bdist_msi`. These will let you install and use Social Amnesia as an actual application.
+
 
 ## Sites and Features
 
