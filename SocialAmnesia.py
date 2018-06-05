@@ -14,6 +14,13 @@ from multiprocessing import Queue
 # define tkinter UI
 root = Tk()
 
+# create the storage folder
+storageFolder = Path(f'{os.path.expanduser("~")}/.SocialAmnesia')
+redditStorageFolder = Path(f'{os.path.expanduser("~")}/.SocialAmnesia/reddit')
+if not os.path.exists(storageFolder):
+    os.makedirs(storageFolder)
+    os.makedirs(redditStorageFolder)
+
 # If the user needs to be informed of an error, this will let tkinter take
 #   care of that
 def callbackError(self, *args):
@@ -81,9 +88,9 @@ def buildLoginTab(loginFrame):
     redditLoginConfirmedLabel.grid(row=5, column=1)
 
     # If a praw.ini file exists, log in to reddit
-    prawConfigFile = Path(f'{os.getcwd()}/praw.ini')
+    prawConfigFile = Path(
+        f'{os.path.expanduser("~")}/.SocialAmnesia/reddit/praw.ini')
     if prawConfigFile.is_file():
-        # reddit = praw.Reddit('user', user_agent=USER_AGENT)
         setRedditLogin('', '', '', '', redditLoginConfirmText, True)
 
 

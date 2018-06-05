@@ -14,7 +14,8 @@ USER_AGENT = 'Social Amensia: v0.0.1 (by /u/JavaOffScript)'
 
 EDIT_OVERWRITE = 'Wiped by Social Amnesia'
 
-prawConfigFile = Path(f'{os.getcwd()}/praw.ini')
+prawConfigFile = Path(f'{os.path.expanduser("~")}/.SocialAmnesia/reddit/praw.ini')
+print(prawConfigFile)
 
 # The reddit state object
 #   Handles the actual praw object that manipulate the reddit account
@@ -35,9 +36,13 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText,
     #================= FOR TESTING ===================
 
     if init:
+        print('init')
         try:
             reddit = praw.Reddit('user', user_agent=USER_AGENT)
-        except:
+            print('pass')
+        except Exception as e:
+            print('fail')
+            print(e)
             # praw.ini is broken, delete it
             os.remove(prawConfigFile)
             return
@@ -59,7 +64,7 @@ client_secret={clientSecret}
 password={password}
 username={username}'''
 
-        with open('praw.ini', 'a') as out:
+        with open(prawConfigFile, 'a') as out:
             out.write(prawConfigString)
 
     redditUsername = str(reddit.user.me())
