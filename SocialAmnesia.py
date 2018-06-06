@@ -14,6 +14,13 @@ from multiprocessing import Queue
 # define tkinter UI
 root = Tk()
 
+# create the storage folder
+storageFolder = Path(f'{os.path.expanduser("~")}/.SocialAmnesia')
+redditStorageFolder = Path(f'{os.path.expanduser("~")}/.SocialAmnesia/reddit')
+if not os.path.exists(storageFolder):
+    os.makedirs(storageFolder)
+    os.makedirs(redditStorageFolder)
+
 # If the user needs to be informed of an error, this will let tkinter take
 #   care of that
 def callbackError(self, *args):
@@ -21,6 +28,8 @@ def callbackError(self, *args):
     #   and login fails
     if (str(args[1]) == 'received 401 HTTP response'):
         messagebox.showerror('ERROR', 'Failed to login to reddit!')
+    elif (str(args[1]) == "'user'"):
+        messagebox.showerror('ERROR', 'You are not logged into reddit!')
     else:
         messagebox.showerror('ERROR', str(args[1]))
 
@@ -81,9 +90,9 @@ def buildLoginTab(loginFrame):
     redditLoginConfirmedLabel.grid(row=5, column=1)
 
     # If a praw.ini file exists, log in to reddit
-    prawConfigFile = Path(f'{os.getcwd()}/praw.ini')
+    prawConfigFile = Path(
+        f'{os.path.expanduser("~")}/.config/praw.ini')
     if prawConfigFile.is_file():
-        # reddit = praw.Reddit('user', user_agent=USER_AGENT)
         setRedditLogin('', '', '', '', redditLoginConfirmText, True)
 
 
@@ -227,6 +236,9 @@ def createUI():
     Tk.report_callback_exception = callbackError
 
     root.title('Social Amnesia')
+
+    root.protocol("WM_DELETE_WINDOW", root.withdraw)
+    root.createcommand('tk::mac::ReopenApplication', root.deiconify)
 
     tabs = Notebook(root)
 
