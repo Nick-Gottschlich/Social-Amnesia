@@ -237,6 +237,9 @@ def createUI():
 
     root.title('Social Amnesia')
 
+    root.protocol("WM_DELETE_WINDOW", root.withdraw)
+    root.createcommand('tk::mac::ReopenApplication', root.deiconify)
+
     tabs = Notebook(root)
 
     loginFrame = Frame(tabs)
