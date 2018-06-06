@@ -28,6 +28,8 @@ def callbackError(self, *args):
     #   and login fails
     if (str(args[1]) == 'received 401 HTTP response'):
         messagebox.showerror('ERROR', 'Failed to login to reddit!')
+    elif (str(args[1]) == "'user'"):
+        messagebox.showerror('ERROR', 'You are not logged into reddit!')
     else:
         messagebox.showerror('ERROR', str(args[1]))
 
@@ -89,7 +91,7 @@ def buildLoginTab(loginFrame):
 
     # If a praw.ini file exists, log in to reddit
     prawConfigFile = Path(
-        f'{os.path.expanduser("~")}/.SocialAmnesia/reddit/praw.ini')
+        f'{os.path.expanduser("~")}/.config/praw.ini')
     if prawConfigFile.is_file():
         setRedditLogin('', '', '', '', redditLoginConfirmText, True)
 
