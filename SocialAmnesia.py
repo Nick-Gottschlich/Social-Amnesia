@@ -7,6 +7,7 @@ from pathlib import Path
 
 #local files
 from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun, setGildedSkip
+from scheduler import setRedditScheduler
 
 # cx_freeze needs this import to run
 from multiprocessing import Queue
@@ -231,6 +232,18 @@ def buildRedditTab(redditFrame):
     deletionProgressBar.grid(row=7, column=0, sticky=(W))
     numDeletedItemsLabel.grid(row=7, column=0, sticky=(E))
 
+
+# Builds the tab that will handle reddit configuration and actions
+def buildSchedulerTab(schedulerFrame):
+    schedulerFrame.grid()
+
+    schedulerRedditBool = IntVar()
+    schedulerRedditText = 'Check this to run reddit delete comments and submissions once per day'
+    schedulerRedditCheckButton = Checkbutton(schedulerFrame, text=schedulerRedditText, variable=schedulerRedditBool, command=lambda: setRedditScheduler(schedulerRedditBool))
+
+    schedulerRedditCheckButton.grid(row=0, column=0)
+
+
 # Builds and runs the tkinter UI
 def createUI():
     Tk.report_callback_exception = callbackError
@@ -249,6 +262,10 @@ def createUI():
     redditFrame = Frame(tabs)
     buildRedditTab(redditFrame)
     tabs.add(redditFrame, text='reddit')
+
+    schedulerFrame = Frame(tabs)
+    buildSchedulerTab(schedulerFrame)
+    tabs.add(schedulerFrame, text='Scheduler')
 
     tabs.pack(expand=1, fill="both")
 
