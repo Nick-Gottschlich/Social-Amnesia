@@ -239,7 +239,7 @@ def buildSchedulerTab(schedulerFrame):
 
     schedulerRedditBool = IntVar()
     schedulerRedditText = 'Check this to run reddit delete comments and submissions once per day'
-    schedulerRedditCheckButton = Checkbutton(schedulerFrame, text=schedulerRedditText, variable=schedulerRedditBool, command=lambda: setRedditScheduler(schedulerRedditBool))
+    schedulerRedditCheckButton = Checkbutton(schedulerFrame, text=schedulerRedditText, variable=schedulerRedditBool, command=lambda: setRedditScheduler(root, schedulerRedditBool))
 
     schedulerRedditCheckButton.grid(row=0, column=0)
 
