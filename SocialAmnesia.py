@@ -186,13 +186,13 @@ def buildRedditTab(redditFrame):
     deleteCommentsButton = Button(
         redditFrame,
         text='Delete comments',
-        command=lambda: deleteItems(True, currentlyDeletingText, deletionProgressBar, numDeletedItemsText, root)
+        command=lambda: deleteItems(root, True, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
     )
 
     deleteSubmissionsButton = Button(
         redditFrame,
         text='Delete submissions',
-        command=lambda: deleteItems(False, currentlyDeletingText, deletionProgressBar, numDeletedItemsText, root)
+        command=lambda: deleteItems(root, False, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
     )
 
     testRunBool = IntVar()
@@ -239,7 +239,7 @@ def buildSchedulerTab(schedulerFrame):
 
     schedulerRedditBool = IntVar()
     schedulerRedditText = 'Check this to run reddit delete comments and submissions once per day'
-    schedulerRedditCheckButton = Checkbutton(schedulerFrame, text=schedulerRedditText, variable=schedulerRedditBool, command=lambda: setRedditScheduler(root, schedulerRedditBool))
+    schedulerRedditCheckButton = Checkbutton(schedulerFrame, text=schedulerRedditText, variable=schedulerRedditBool, command=lambda: setRedditScheduler(root, schedulerRedditBool, StringVar(), Progressbar()))
 
     schedulerRedditCheckButton.grid(row=0, column=0)
 

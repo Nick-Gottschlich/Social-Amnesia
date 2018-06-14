@@ -2,6 +2,7 @@
 from time import sleep
 import os
 from pathlib import Path
+from tkinter import *
 
 # pip imports
 import praw
@@ -119,7 +120,7 @@ def setGildedSkip(gildedSkipBool):
 # deletionProgressBar: updates as the items are looped through
 # numDeletedItemsText: updates as X out of Y comments are looped through
 # root: the reference to the actual tkinter GUI window
-def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDeletedItemsText, root):
+def deleteItems(root, commentBool, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
     if commentBool:
         totalItems = sum(
             1 for item in redditState['user'].comments.new(limit=None))
@@ -155,6 +156,7 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
                     itemSnippet = itemSnippet.replace(char, '')
 
         timeCreated = arrow.get(item.created_utc)
+        print(itemSnippet)
 
         if (timeCreated > redditState['recentlyPostedCutoff']):
             currentlyDeletingText.set(
@@ -186,7 +188,7 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
             f'{str(count)}/{str(totalItems)} items processed.')
         deletionProgressBar['value'] = round(
             (count / totalItems) * 100, 1)
-        
+
         root.update()
         
         count += 1

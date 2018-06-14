@@ -1,16 +1,24 @@
-import schedule
-import time
+from datetime import datetime
+
+from reddit import deleteItems
+
+alreadyRanBool = False
 
 # reddit scheduler
-def setRedditScheduler(root, schedulerBool):
-    print(schedulerBool.get())
+def setRedditScheduler(root, schedulerBool, stringVar, progressVar):
+    global alreadyRanBool
     if not schedulerBool.get():
         return
-    # schedule.every().second.do(lambda: print('ayy lmao'))
 
-    # while(schedulerBool.get()):
-    #     schedule.run_con
-    #     time.sleep(1)
+    print(datetime.now().time().hour)
 
-    print ('ayy lmao')
-    root.after(1000, lambda: setRedditScheduler(root, schedulerBool))
+    if (datetime.now().time().hour == 22 and not alreadyRanBool):
+        print('it is 10pm my dudes')
+        deleteItems(root, True, stringVar, progressVar, stringVar)
+        deleteItems(root, False, stringVar, progressVar, stringVar)
+        alreadyRanBool = True
+    if (datetime.now().time().hour == 23):
+        alreadyRanBool = False
+
+        
+    root.after(1000, lambda: setRedditScheduler(root, schedulerBool, stringVar, progressVar))
