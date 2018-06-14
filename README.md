@@ -41,3 +41,6 @@ Reddit requires accounts to create a "script" in order for Social Amnesia to run
 ## Related software
 
 [Shreddit](https://github.com/x89/Shreddit) - a python program to delete reddit posts/submissions.
+[Reddit Overwrite](https://greasyfork.org/en/scripts/10380-reddit-overwrite) - a greasey fork program to overwrite reddit comments.
+[Reddit Secure Delete](https://userscripts-mirror.org/scripts/show/166415) - a userscript program to delete reddit comments.
+[Nuke Reddit History](https://www.reddit.com/r/NukeRedditHistory/) - a web extension to erase reddit history.
