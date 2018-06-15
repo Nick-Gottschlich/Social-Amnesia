@@ -38,6 +38,10 @@ You can build a mac DMG using `python3 setup.py bdist_dmg` and you can build a w
 
 Reddit requires accounts to create a "script" in order for Social Amnesia to run. Don't worry, this is actually quite simple to do. You can see reddit's docs on how to do this [here](https://github.com/reddit-archive/reddit/wiki/OAuth2-Quick-Start-Example#first-steps). Doing this provides you with the reddit "Client ID" and "Client Secret" you will need to log in within the Social Amnesia app.
 
+### Scheduler
+
+Social Amnesia can be scheduled to run daily at a time of your choosing. Just use the scheduler tab to set it up.
+
 ## Related software
 
 - [Shreddit](https://github.com/x89/Shreddit) - a python program to delete reddit posts/submissions.
