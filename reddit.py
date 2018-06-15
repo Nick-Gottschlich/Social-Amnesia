@@ -2,7 +2,6 @@
 from time import sleep
 import os
 from pathlib import Path
-from tkinter import *
 
 # pip imports
 import praw
