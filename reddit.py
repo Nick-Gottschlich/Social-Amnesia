@@ -10,7 +10,7 @@ import arrow
 # auto import and set a login for development purposes
 # from secrets import REDDIT_USERNAME, REDDIT_PASSWORD, CLIENT_ID, CLIENT_SECRET
 
-USER_AGENT = 'Social Amensia: v0.0.1 (by /u/JavaOffScript)'
+USER_AGENT = 'Social Amensia: v0.1.0 (by /u/JavaOffScript)'
 
 EDIT_OVERWRITE = 'Wiped by Social Amnesia'
 
@@ -119,7 +119,7 @@ def setGildedSkip(gildedSkipBool):
 # deletionProgressBar: updates as the items are looped through
 # numDeletedItemsText: updates as X out of Y comments are looped through
 # root: the reference to the actual tkinter GUI window
-def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDeletedItemsText, root):
+def deleteItems(root, commentBool, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
     if commentBool:
         totalItems = sum(
             1 for item in redditState['user'].comments.new(limit=None))
@@ -186,7 +186,7 @@ def deleteItems(commentBool, currentlyDeletingText, deletionProgressBar, numDele
             f'{str(count)}/{str(totalItems)} items processed.')
         deletionProgressBar['value'] = round(
             (count / totalItems) * 100, 1)
-        
+
         root.update()
         
         count += 1
