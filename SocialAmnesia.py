@@ -238,10 +238,17 @@ def buildSchedulerTab(schedulerFrame):
     schedulerFrame.grid()
 
     schedulerRedditBool = IntVar()
-    schedulerRedditText = 'Check this to run reddit delete comments and submissions once per day'
-    schedulerRedditCheckButton = Checkbutton(schedulerFrame, text=schedulerRedditText, variable=schedulerRedditBool, command=lambda: setRedditScheduler(root, schedulerRedditBool, StringVar(), Progressbar()))
+    schedulerRedditText = 'Select to delete reddit comments + submissions daily at'
+
+    hoursSelectionDropDown = Combobox(schedulerFrame, width=2)
+    hoursSelectionDropDown['values'] = buildNumberList(24)
+    hoursSelectionDropDown['state'] = 'readonly'
+    hoursSelectionDropDown.current(0)
+
+    schedulerRedditCheckButton = Checkbutton(schedulerFrame, text=schedulerRedditText, variable=schedulerRedditBool, command=lambda: setRedditScheduler(root, schedulerRedditBool, int(hoursSelectionDropDown.get()), StringVar(), Progressbar()))
 
     schedulerRedditCheckButton.grid(row=0, column=0)
+    hoursSelectionDropDown.grid(row=0, column=1)
 
 
 # Builds and runs the tkinter UI

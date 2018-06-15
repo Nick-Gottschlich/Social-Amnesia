@@ -5,20 +5,22 @@ from reddit import deleteItems
 alreadyRanBool = False
 
 # reddit scheduler
-def setRedditScheduler(root, schedulerBool, stringVar, progressVar):
+def setRedditScheduler(root, schedulerBool, hourOfDay, stringVar, progressVar):
     global alreadyRanBool
     if not schedulerBool.get():
         return
 
-    print(datetime.now().time().hour)
+    currentTime = datetime.now().time().hour
 
-    if (datetime.now().time().hour == 22 and not alreadyRanBool):
-        print('it is 10pm my dudes')
+    if (currentTime == hourOfDay and not alreadyRanBool):
         deleteItems(root, True, stringVar, progressVar, stringVar)
         deleteItems(root, False, stringVar, progressVar, stringVar)
         alreadyRanBool = True
-    if (datetime.now().time().hour == 23):
-        alreadyRanBool = False
+    if (currentTime < 23):
+        if (currentTime == hourOfDay + 1):
+            alreadyRanBool = False
+    else:
+        if (currentTime == 0):
+            alreadyRanBool = False
 
-        
-    root.after(1000, lambda: setRedditScheduler(root, schedulerBool, stringVar, progressVar))
+    root.after(1000, lambda: setRedditScheduler(root, schedulerBool, hourOfDay, stringVar, progressVar))
