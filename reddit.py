@@ -41,7 +41,7 @@ def setRedditLogin(username, password, clientID, clientSecret, loginConfirmText,
 
         if prawConfigFile.is_file():
             os.remove(prawConfigFile)
-        
+
         prawConfigString = f'''[user]
 client_id={clientID}
 client_secret={clientSecret}
@@ -67,7 +67,8 @@ username={username}'''
 #   ____ToSave: the input received from the UI
 #   currentTimeToSave: what is stored for the user in the UI
 def setTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTimeToSave):
-    totalHours = int(hoursToSave) + (int(daysToSave) * 24) + (int(weeksToSave) * 168) + (int(yearsToSave) * 8736)
+    totalHours = int(hoursToSave) + (int(daysToSave) * 24) + \
+        (int(weeksToSave) * 168) + (int(yearsToSave) * 8736)
 
     redditState['recentlyPostedCutoff'] = arrow.now().replace(
         hours=-totalHours)
@@ -82,11 +83,12 @@ def setTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTime
     daysText = setText(daysToSave, 'days')
     weeksText = setText(weeksToSave, 'weeks')
     yearsText = setText(yearsToSave, 'years')
-    
+
     if (hoursToSave == '0' and daysToSave == '0' and weeksToSave == '0' and yearsToSave == '0'):
         currentTimeToSave.set(f'Currently set to save: [nothing]')
     else:
-        currentTimeToSave.set(f'Currently set to save: [{yearsText} {weeksText} {daysText} {hoursText}] of items')
+        currentTimeToSave.set(
+            f'Currently set to save: [{yearsText} {weeksText} {daysText} {hoursText}] of items')
 
 
 # Sets the maximum score level, any posts above this store will be skipped over
@@ -110,7 +112,7 @@ def setMaxScore(maxScore, currentMaxScore):
 def setGildedSkip(gildedSkipBool):
     if (gildedSkipBool.get()):
         redditState['gildedSkip'] = gildedSkipBool.get()
-        
+
 
 # Deletes the items according to user configurations.
 #   commentBool: true if deleting comments, false if deleting submissions
@@ -187,7 +189,7 @@ def deleteItems(root, commentBool, currentlyDeletingText, deletionProgressBar, n
             (count / totalItems) * 100, 1)
 
         root.update()
-        
+
         count += 1
 
 
@@ -201,7 +203,7 @@ def setTestRun(testRunBool):
 alreadyRanBool = False
 
 # reddit scheduler
-#   root: tkinkter window 
+#   root: tkinkter window
 #   schedulerBool: true if set to run, false otherwise
 #   hourOfDay: int 0-23, sets hour of day to run on
 #   stringVar, progressVar - empty Vars needed to run the deleteItems function

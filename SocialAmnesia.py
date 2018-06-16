@@ -5,7 +5,7 @@ from tkinter.ttk import *
 import os
 from pathlib import Path
 
-#local files
+# local files
 from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun, setGildedSkip, setRedditScheduler
 
 # cx_freeze needs this import to run
@@ -24,7 +24,7 @@ if not os.path.exists(storageFolder):
 # If the user needs to be informed of an error, this will let tkinter take
 #   care of that
 def callbackError(self, *args):
-    # reddit error, happens if you try to run `reddit.user.me()` 
+    # reddit error, happens if you try to run `reddit.user.me()`
     #   and login fails
     if (str(args[1]) == 'received 401 HTTP response'):
         messagebox.showerror('ERROR', 'Failed to login to reddit!')
@@ -69,9 +69,9 @@ def buildLoginTab(loginFrame):
     redditLoginButton = Button(
         loginFrame,
         text='Login to reddit',
-        command=lambda: setRedditLogin(redditUsernameEntry.get(), 
+        command=lambda: setRedditLogin(redditUsernameEntry.get(),
                                        redditPasswordEntry.get(),
-                                       redditClientIDEntry.get(), 
+                                       redditClientIDEntry.get(),
                                        redditClientSecretEntry.get(),
                                        redditLoginConfirmText,
                                        False)
@@ -141,7 +141,7 @@ def buildRedditTab(redditFrame):
         redditFrame,
         text='Set Total Time To Keep',
         command=lambda: setTimeToSave(
-            hoursDropDown.get(), daysDropDown.get(), 
+            hoursDropDown.get(), daysDropDown.get(),
             weeksDropDown.get(), yearsDropDown.get(), currentTimeToSave)
     )
 
@@ -168,7 +168,7 @@ def buildRedditTab(redditFrame):
     gildedSkipBool = IntVar()
     gildedSkipLabel = Label(redditFrame, text='Skip Gilded comments:')
     gildedSkipCheckButton = Checkbutton(
-         redditFrame, variable=gildedSkipBool, command=lambda: setGildedSkip(gildedSkipBool))
+        redditFrame, variable=gildedSkipBool, command=lambda: setGildedSkip(gildedSkipBool))
 
     # Allows the user to actually delete comments or submissions
     deletionSectionLabel = Label(redditFrame, text='Deletion')
@@ -176,7 +176,8 @@ def buildRedditTab(redditFrame):
 
     currentlyDeletingText = StringVar()
     currentlyDeletingText.set('')
-    deletionProgressLabel = Label(redditFrame, textvariable=currentlyDeletingText)
+    deletionProgressLabel = Label(
+        redditFrame, textvariable=currentlyDeletingText)
 
     deletionProgressBar = Progressbar(
         redditFrame, orient='horizontal', length=100, mode='determinate')
@@ -188,18 +189,21 @@ def buildRedditTab(redditFrame):
     deleteCommentsButton = Button(
         redditFrame,
         text='Delete comments',
-        command=lambda: deleteItems(root, True, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
+        command=lambda: deleteItems(
+            root, True, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
     )
 
     deleteSubmissionsButton = Button(
         redditFrame,
         text='Delete submissions',
-        command=lambda: deleteItems(root, False, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
+        command=lambda: deleteItems(
+            root, False, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
     )
 
     testRunBool = IntVar()
     testRunText = 'TestRun - Checking this will show you what would be deleted, without deleting anything'
-    testRunCheckButton = Checkbutton(redditFrame, text=testRunText, variable=testRunBool, command=lambda: setTestRun(testRunBool))
+    testRunCheckButton = Checkbutton(
+        redditFrame, text=testRunText, variable=testRunBool, command=lambda: setTestRun(testRunBool))
 
     # Allows the user to schedule runs
     schedulerSectionLabel = Label(redditFrame, text='Scheduler')
@@ -240,9 +244,10 @@ def buildRedditTab(redditFrame):
     gildedSkipLabel.grid(row=3, column=0)
     gildedSkipCheckButton.grid(row=3, column=1)
 
-    Separator(redditFrame, orient=HORIZONTAL).grid(row=4, columnspan=13, sticky=(E,W), pady=5)
+    Separator(redditFrame, orient=HORIZONTAL).grid(
+        row=4, columnspan=13, sticky=(E, W), pady=5)
 
-    deletionSectionLabel.grid(row=5, columnspan=11, sticky=(N,S), pady=5)
+    deletionSectionLabel.grid(row=5, columnspan=11, sticky=(N, S), pady=5)
 
     deleteCommentsButton.grid(row=6, column=0, sticky=(W))
     deleteSubmissionsButton.grid(row=6, column=0, sticky=(E))
@@ -252,9 +257,10 @@ def buildRedditTab(redditFrame):
     deletionProgressBar.grid(row=8, column=0, sticky=(W))
     numDeletedItemsLabel.grid(row=8, column=0, sticky=(E))
 
-    Separator(redditFrame, orient=HORIZONTAL).grid(row=9, columnspan=13, sticky=(E,W), pady=5)
+    Separator(redditFrame, orient=HORIZONTAL).grid(
+        row=9, columnspan=13, sticky=(E, W), pady=5)
 
-    schedulerSectionLabel.grid(row=10, columnspan=11, sticky=(N,S), pady=5)
+    schedulerSectionLabel.grid(row=10, columnspan=11, sticky=(N, S), pady=5)
 
     schedulerRedditCheckButton.grid(row=11, column=0)
     hoursSelectionDropDown.grid(row=11, column=1)
