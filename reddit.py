@@ -2,6 +2,8 @@
 from time import sleep
 import os
 from pathlib import Path
+from datetime import datetime
+from tkinter import messagebox
 
 # pip imports
 import praw
@@ -200,3 +202,38 @@ def deleteItems(root, commentBool, currentlyDeletingText, deletionProgressBar, n
 # testRunBool - 0 for real run, 1 for test run
 def setTestRun(testRunBool):
     redditState['testRun'] = testRunBool.get()
+
+
+# neccesary global bool for the scheduler
+alreadyRanBool = False
+
+# reddit scheduler
+#   root: tkinkter window 
+#   schedulerBool: true if set to run, false otherwise
+#   hourOfDay: int 0-23, sets hour of day to run on
+#   stringVar, progressVar - empty Vars needed to run the deleteItems function
+def setRedditScheduler(root, schedulerBool, hourOfDay, stringVar, progressVar):
+    global alreadyRanBool
+    if not schedulerBool.get():
+        alreadyRanBool = False
+        return
+
+    currentTime = datetime.now().time().hour
+
+    if (currentTime == hourOfDay and not alreadyRanBool):
+        messagebox.showinfo(
+            'Scheduler', 'Social Amnesia is now erasing your past on reddit.')
+
+        deleteItems(root, True, stringVar, progressVar, stringVar)
+        deleteItems(root, False, stringVar, progressVar, stringVar)
+
+        alreadyRanBool = True
+    if (currentTime < 23):
+        if (currentTime == hourOfDay + 1):
+            alreadyRanBool = False
+    else:
+        if (currentTime == 0):
+            alreadyRanBool = False
+
+    root.after(1000, lambda: setRedditScheduler(
+        root, schedulerBool, hourOfDay, stringVar, progressVar))

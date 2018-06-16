@@ -6,8 +6,8 @@ import os
 from pathlib import Path
 
 #local files
-from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun, setGildedSkip
-from scheduler import setRedditScheduler
+from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun, setGildedSkip, setRedditScheduler
+# from scheduler import setRedditScheduler
 
 # cx_freeze needs this import to run
 from multiprocessing import Queue
@@ -172,6 +172,10 @@ def buildRedditTab(redditFrame):
          redditFrame, variable=gildedSkipBool, command=lambda: setGildedSkip(gildedSkipBool))
 
     # Allows the user to actually delete comments or submissions
+
+    deletionSectionLabel = Label(redditFrame, text='Deletion')
+    deletionSectionLabel.config(font=('arial', 25))
+
     currentlyDeletingText = StringVar()
     currentlyDeletingText.set('')
     deletionProgressLabel = Label(redditFrame, textvariable=currentlyDeletingText)
@@ -199,6 +203,22 @@ def buildRedditTab(redditFrame):
     testRunText = 'TestRun - Checking this will show you what would be deleted, without deleting anything'
     testRunCheckButton = Checkbutton(redditFrame, text=testRunText, variable=testRunBool, command=lambda: setTestRun(testRunBool))
 
+    # Allows the user to schedule runs
+    schedulerSectionLabel = Label(redditFrame, text='Scheduler')
+    schedulerSectionLabel.config(font=('arial', 25))
+
+    schedulerRedditBool = IntVar()
+    schedulerRedditText = 'Select to delete reddit comments + submissions daily at'
+
+    hoursSelectionDropDown = Combobox(redditFrame, width=2)
+    hoursSelectionDropDown['values'] = buildNumberList(24)
+    hoursSelectionDropDown['state'] = 'readonly'
+    hoursSelectionDropDown.current(0)
+
+    schedulerRedditCheckButton = Checkbutton(redditFrame, text=schedulerRedditText, variable=schedulerRedditBool, command=lambda: setRedditScheduler(
+        root, schedulerRedditBool, int(hoursSelectionDropDown.get()), StringVar(), Progressbar()))
+
+    # This part actually builds the reddit tab
     configurationLabel.grid(row=0, columnspan=11, sticky=(N, S), pady=5)
 
     timeKeepLabel.grid(row=1, column=0)
@@ -224,31 +244,40 @@ def buildRedditTab(redditFrame):
 
     Separator(redditFrame, orient=HORIZONTAL).grid(row=4, columnspan=13, sticky=(E,W), pady=5)
 
-    deleteCommentsButton.grid(row=5, column=0, sticky=(W))
-    deleteSubmissionsButton.grid(row=5, column=0, sticky=(E))
-    testRunCheckButton.grid(row=5, column=1, columnspan=11)
+    deletionSectionLabel.grid(row=5, columnspan=11, sticky=(N,S), pady=5)
 
-    deletionProgressLabel.grid(row=6, column=0)
-    deletionProgressBar.grid(row=7, column=0, sticky=(W))
-    numDeletedItemsLabel.grid(row=7, column=0, sticky=(E))
+    deleteCommentsButton.grid(row=6, column=0, sticky=(W))
+    deleteSubmissionsButton.grid(row=6, column=0, sticky=(E))
+    testRunCheckButton.grid(row=6, column=1, columnspan=11)
+
+    deletionProgressLabel.grid(row=7, column=0)
+    deletionProgressBar.grid(row=8, column=0, sticky=(W))
+    numDeletedItemsLabel.grid(row=8, column=0, sticky=(E))
+
+    Separator(redditFrame, orient=HORIZONTAL).grid(row=9, columnspan=13, sticky=(E,W), pady=5)
+
+    schedulerSectionLabel.grid(row=10, columnspan=11, sticky=(N,S), pady=5)
+
+    schedulerRedditCheckButton.grid(row=11, column=0)
+    hoursSelectionDropDown.grid(row=11, column=1)
 
 
 # Builds the tab that will handle reddit configuration and actions
-def buildSchedulerTab(schedulerFrame):
-    schedulerFrame.grid()
+# def buildSchedulerTab(schedulerFrame):
+#     schedulerFrame.grid()
 
-    schedulerRedditBool = IntVar()
-    schedulerRedditText = 'Select to delete reddit comments + submissions daily at'
+#     schedulerRedditBool = IntVar()
+#     schedulerRedditText = 'Select to delete reddit comments + submissions daily at'
 
-    hoursSelectionDropDown = Combobox(schedulerFrame, width=2)
-    hoursSelectionDropDown['values'] = buildNumberList(24)
-    hoursSelectionDropDown['state'] = 'readonly'
-    hoursSelectionDropDown.current(0)
+#     hoursSelectionDropDown = Combobox(schedulerFrame, width=2)
+#     hoursSelectionDropDown['values'] = buildNumberList(24)
+#     hoursSelectionDropDown['state'] = 'readonly'
+#     hoursSelectionDropDown.current(0)
 
-    schedulerRedditCheckButton = Checkbutton(schedulerFrame, text=schedulerRedditText, variable=schedulerRedditBool, command=lambda: setRedditScheduler(root, schedulerRedditBool, int(hoursSelectionDropDown.get()), StringVar(), Progressbar()))
+#     schedulerRedditCheckButton = Checkbutton(schedulerFrame, text=schedulerRedditText, variable=schedulerRedditBool, command=lambda: setRedditScheduler(root, schedulerRedditBool, int(hoursSelectionDropDown.get()), StringVar(), Progressbar()))
 
-    schedulerRedditCheckButton.grid(row=0, column=0)
-    hoursSelectionDropDown.grid(row=0, column=1)
+#     schedulerRedditCheckButton.grid(row=0, column=0)
+#     hoursSelectionDropDown.grid(row=0, column=1)
 
 
 # Builds and runs the tkinter UI
@@ -270,9 +299,9 @@ def createUI():
     buildRedditTab(redditFrame)
     tabs.add(redditFrame, text='reddit')
 
-    schedulerFrame = Frame(tabs)
-    buildSchedulerTab(schedulerFrame)
-    tabs.add(schedulerFrame, text='Scheduler')
+    # schedulerFrame = Frame(tabs)
+    # buildSchedulerTab(schedulerFrame)
+    # tabs.add(schedulerFrame, text='Scheduler')
 
     tabs.pack(expand=1, fill="both")
 
