@@ -8,7 +8,7 @@ if sys.platform == "win32":
   base = "Win32GUI"
 build_exe_options = {"packages": ["os", "idna"]}
 setup(name="Social Amnesia",
-      version="0.0.1",
+      version="0.1.0",
       description="Social Amnesia",
       options={"build_exe": build_exe_options},
       executables=[Executable("SocialAmnesia.py", base=base)])
