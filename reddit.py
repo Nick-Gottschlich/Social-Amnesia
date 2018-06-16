@@ -9,9 +9,6 @@ from tkinter import messagebox
 import praw
 import arrow
 
-# auto import and set a login for development purposes
-# from secrets import REDDIT_USERNAME, REDDIT_PASSWORD, CLIENT_ID, CLIENT_SECRET
-
 USER_AGENT = 'Social Amensia: v0.1.0 (by /u/JavaOffScript)'
 
 EDIT_OVERWRITE = 'Wiped by Social Amnesia'
@@ -67,8 +64,8 @@ username={username}'''
 
 # Sets the time of comments or submissions to save, stores it in redditState
 #  and updates the UI to show what its currently set to.
-# ____ToSave: the input received from the UI
-# currentTimeToSave: what is stored for the user in the UI
+#   ____ToSave: the input received from the UI
+#   currentTimeToSave: what is stored for the user in the UI
 def setTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTimeToSave):
     totalHours = int(hoursToSave) + (int(daysToSave) * 24) + (int(weeksToSave) * 168) + (int(yearsToSave) * 8736)
 
@@ -94,8 +91,8 @@ def setTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTime
 
 # Sets the maximum score level, any posts above this store will be skipped over
 #  updates the UI to show what its currently set to.
-# maxScore: the input received from the UI
-# currentMaxScore: what is stored for the user in the UI
+#   maxScore: the input received from the UI
+#   currentMaxScore: what is stored for the user in the UI
 def setMaxScore(maxScore, currentMaxScore):
     if (maxScore == ''):
         maxScore = 0
@@ -109,18 +106,18 @@ def setMaxScore(maxScore, currentMaxScore):
 
 
 # Set whether to skip gilded comments or not (stored in redditState)
-# gildedSkipBool - 0 to delete gilded comments, 1 to skip gilded comments
+#   gildedSkipBool - 0 to delete gilded comments, 1 to skip gilded comments
 def setGildedSkip(gildedSkipBool):
     if (gildedSkipBool.get()):
         redditState['gildedSkip'] = gildedSkipBool.get()
         
 
 # Deletes the items according to user configurations.
-# commentBool: true if deleting comments, false if deleting submissions
-# currentlyDeletingText: Describes the item that is currently being deleted.
-# deletionProgressBar: updates as the items are looped through
-# numDeletedItemsText: updates as X out of Y comments are looped through
-# root: the reference to the actual tkinter GUI window
+#   commentBool: true if deleting comments, false if deleting submissions
+#   currentlyDeletingText: Describes the item that is currently being deleted.
+#   deletionProgressBar: updates as the items are looped through
+#   numDeletedItemsText: updates as X out of Y comments are looped through
+#   root: the reference to the actual tkinter GUI window
 def deleteItems(root, commentBool, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
     if commentBool:
         totalItems = sum(
@@ -192,10 +189,6 @@ def deleteItems(root, commentBool, currentlyDeletingText, deletionProgressBar, n
         root.update()
         
         count += 1
-        
-        # on test runs, sleep for one second so the user can follow along with the progress
-        # if (redditState['testRun'] == 1):
-        #     sleep(1)
 
 
 # Set whether to run a test run or not (stored in redditState)

@@ -7,7 +7,6 @@ from pathlib import Path
 
 #local files
 from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun, setGildedSkip, setRedditScheduler
-# from scheduler import setRedditScheduler
 
 # cx_freeze needs this import to run
 from multiprocessing import Queue
@@ -172,7 +171,6 @@ def buildRedditTab(redditFrame):
          redditFrame, variable=gildedSkipBool, command=lambda: setGildedSkip(gildedSkipBool))
 
     # Allows the user to actually delete comments or submissions
-
     deletionSectionLabel = Label(redditFrame, text='Deletion')
     deletionSectionLabel.config(font=('arial', 25))
 
@@ -262,24 +260,6 @@ def buildRedditTab(redditFrame):
     hoursSelectionDropDown.grid(row=11, column=1)
 
 
-# Builds the tab that will handle reddit configuration and actions
-# def buildSchedulerTab(schedulerFrame):
-#     schedulerFrame.grid()
-
-#     schedulerRedditBool = IntVar()
-#     schedulerRedditText = 'Select to delete reddit comments + submissions daily at'
-
-#     hoursSelectionDropDown = Combobox(schedulerFrame, width=2)
-#     hoursSelectionDropDown['values'] = buildNumberList(24)
-#     hoursSelectionDropDown['state'] = 'readonly'
-#     hoursSelectionDropDown.current(0)
-
-#     schedulerRedditCheckButton = Checkbutton(schedulerFrame, text=schedulerRedditText, variable=schedulerRedditBool, command=lambda: setRedditScheduler(root, schedulerRedditBool, int(hoursSelectionDropDown.get()), StringVar(), Progressbar()))
-
-#     schedulerRedditCheckButton.grid(row=0, column=0)
-#     hoursSelectionDropDown.grid(row=0, column=1)
-
-
 # Builds and runs the tkinter UI
 def createUI():
     Tk.report_callback_exception = callbackError
@@ -298,10 +278,6 @@ def createUI():
     redditFrame = Frame(tabs)
     buildRedditTab(redditFrame)
     tabs.add(redditFrame, text='reddit')
-
-    # schedulerFrame = Frame(tabs)
-    # buildSchedulerTab(schedulerFrame)
-    # tabs.add(schedulerFrame, text='Scheduler')
 
     tabs.pack(expand=1, fill="both")
 
