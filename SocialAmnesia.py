@@ -7,6 +7,7 @@ from pathlib import Path
 
 # local files
 from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun, setGildedSkip, setRedditScheduler
+from twitter import setTwitterLogin
 
 # cx_freeze needs this import to run
 from multiprocessing import Queue
@@ -46,7 +47,9 @@ def buildNumberList(max):
 def buildLoginTab(loginFrame):
     loginFrame.grid()
 
+    # reddit login
     redditLabel = Label(loginFrame, text='reddit')
+    redditLabel.config(font=('arial', 25))
 
     redditUsernameLabel = Label(loginFrame, text='Enter reddit username:')
     redditUsernameEntry = Entry(loginFrame)
@@ -77,7 +80,42 @@ def buildLoginTab(loginFrame):
                                        False)
     )
 
-    redditLabel.grid(row=0, column=0)
+    # twitter login
+    twitterLabel = Label(loginFrame, text='twitter')
+    twitterLabel.config(font=('arial', 25))
+
+    twitterConsumerKeyLabel = Label(loginFrame, text='Enter twitter Consumer Key:')
+    twitterConsumerKeyEntry = Entry(loginFrame)
+
+    twitterConsumerSecretLabel = Label(
+        loginFrame, text='Enter twitter Consumer Secret:')
+    twitterConsumerSecretEntry = Entry(loginFrame)
+
+    twitterAccessTokenLabel = Label(
+        loginFrame, text='Enter twitter Access Token:')
+    twitterAccessTokenEntry = Entry(loginFrame)
+
+    twitterAccessTokenSecretLabel = Label(
+        loginFrame, text='Enter twitter Access Token Secret:')
+    twitterAccessTokenSecretEntry = Entry(loginFrame)
+
+    twitterLoginConfirmText = StringVar()
+    twitterLoginConfirmText.set('Waiting for Login')
+    twitterLoginConfirmedLabel = Label(
+        loginFrame, textvariable=twitterLoginConfirmText)
+
+    twitterLoginButton = Button(
+        loginFrame,
+        text='Login to twitter',
+        command=lambda: setTwitterLogin(twitterConsumerKeyEntry.get(),
+                                       twitterConsumerSecretEntry.get(),
+                                       twitterAccessTokenEntry.get(),
+                                       twitterAccessTokenSecretEntry.get(),
+                                       twitterLoginConfirmText)
+    )
+
+    # build the login frame
+    redditLabel.grid(row=0, column=0, columnspan=2)
     redditUsernameLabel.grid(row=1, column=0)
     redditUsernameEntry.grid(row=1, column=1)
     redditPasswordLabel.grid(row=2, column=0)
@@ -88,6 +126,18 @@ def buildLoginTab(loginFrame):
     redditClientSecretEntry.grid(row=4, column=1)
     redditLoginButton.grid(row=5, column=0)
     redditLoginConfirmedLabel.grid(row=5, column=1)
+
+    twitterLabel.grid(row=0, column=2, columnspan=2)
+    twitterConsumerKeyLabel.grid(row=1, column=2)
+    twitterConsumerKeyEntry.grid(row=1, column=3)
+    twitterConsumerSecretLabel.grid(row=2, column=2)
+    twitterConsumerSecretEntry.grid(row=2, column=3)
+    twitterAccessTokenLabel.grid(row=3, column=2)
+    twitterAccessTokenEntry.grid(row=3, column=3)
+    twitterAccessTokenSecretLabel.grid(row=4, column=2)
+    twitterAccessTokenSecretEntry.grid(row=4, column=3)
+    twitterLoginButton.grid(row=5, column=2)
+    twitterLoginConfirmedLabel.grid(row=5, column=3)
 
     # If a praw.ini file exists, log in to reddit
     prawConfigFile = Path(
