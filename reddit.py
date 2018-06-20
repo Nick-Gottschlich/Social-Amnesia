@@ -53,7 +53,7 @@ username={username}'''
 
     redditUsername = str(reddit.user.me())
 
-    loginConfirmText.set(f'Logged in as {redditUsername}')
+    loginConfirmText.set(f'Logged in to reddit as {redditUsername}')
 
     # initialize state
     redditState['user'] = reddit.redditor(redditUsername)

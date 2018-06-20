@@ -28,9 +28,11 @@ def callbackError(self, *args):
     # reddit error, happens if you try to run `reddit.user.me()`
     #   and login fails
     if (str(args[1]) == 'received 401 HTTP response'):
-        messagebox.showerror('ERROR', 'Failed to login to reddit!')
+        messagebox.showerror('Error', 'Failed to login to reddit!')
     elif (str(args[1]) == "'user'"):
-        messagebox.showerror('ERROR', 'You are not logged into reddit!')
+        messagebox.showerror('Error', 'You are not logged into reddit!')
+    elif (str(args[1]) == "[{'code': 215, 'message': 'Bad Authentication data.'}]"):
+        messagebox.showerror('Error', 'Failed to login to twitter!')
     else:
         messagebox.showerror('ERROR', str(args[1]))
 
