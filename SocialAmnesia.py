@@ -7,7 +7,7 @@ from pathlib import Path
 
 # local files
 from reddit import setRedditLogin, setRedditTimeToSave, setRedditMaxScore, deleteRedditItems, setRedditTestRun, setRedditGildedSkip, setRedditScheduler
-from twitter import setTwitterLogin, setTwitterTimeToSave
+from twitter import setTwitterLogin, setTwitterTimeToSave, setTwitterMaxFavorites
 
 # cx_freeze needs this import to run
 from multiprocessing import Queue
@@ -220,7 +220,7 @@ def buildRedditTab(redditFrame):
     gildedSkipBool = IntVar()
     gildedSkipLabel = Label(redditFrame, text='Skip Gilded comments:')
     gildedSkipCheckButton = Checkbutton(
-        redditFrame, variable=gildedSkipBool, command=lambda: seReddittGildedSkip(gildedSkipBool))
+        redditFrame, variable=gildedSkipBool, command=lambda: setRedditGildedSkip(gildedSkipBool))
 
     # Allows the user to actually delete comments or submissions
     deletionSectionLabel = Label(redditFrame, text='Deletion')
@@ -367,6 +367,26 @@ def buildTwitterTab(twitterFrame):
             weeksDropDown.get(), yearsDropDown.get(), currentTimeToSave)
     )
 
+    # Configuration to set saving items with a certain amount of favorites
+    currentMaxFavorites = StringVar()
+    currentMaxFavorites.set('Currently set to: 0 upvotes')
+    maxFavoritesLabel = Label(
+        twitterFrame, text='Delete comments/submissions less than score:')
+    maxFavoritesEntryField = Entry(twitterFrame, width=5)
+    maxFavoritesCurrentlySetLabel = Label(
+        twitterFrame, textvariable=currentMaxFavorites)
+    setMaxFavoritesButton = Button(
+        twitterFrame,
+        text='Set Max Favorites',
+        command=lambda: setTwitterMaxFavorites(
+            maxFavoritesEntryField.get(), currentMaxFavorites)
+    )
+    setMaxFavoritesUnlimitedButton = Button(
+        twitterFrame,
+        text='Set Unlimited',
+        command=lambda: setTwitterMaxFavorites('Unlimited', currentMaxFavorites)
+    )
+
 
     # Actually build the twitter tab
 
@@ -382,6 +402,12 @@ def buildTwitterTab(twitterFrame):
     yearsLabel.grid(row=1, column=8, sticky=(W))
     setTimeButton.grid(row=1, column=9, columnspan=2)
     timeCurrentlySetLabel.grid(row=1, column=11)
+
+    maxFavoritesLabel.grid(row=2, column=0)
+    maxFavoritesEntryField.grid(row=2, column=1, columnspan=8, sticky=(W))
+    setMaxFavoritesButton.grid(row=2, column=9)
+    setMaxFavoritesUnlimitedButton.grid(row=2, column=10)
+    maxFavoritesCurrentlySetLabel.grid(row=2, column=11)
 
 
 # Builds and runs the tkinter UI

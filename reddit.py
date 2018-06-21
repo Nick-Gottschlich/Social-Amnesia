@@ -62,6 +62,7 @@ username={username}'''
     redditState['testRun'] = 0
     redditState['gildedSkip'] = 0
 
+
 # Sets the time of comments or submissions to save, stores it in redditState
 #  and updates the UI to show what its currently set to.
 #   ____ToSave: the input received from the UI

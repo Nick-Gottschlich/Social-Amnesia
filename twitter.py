@@ -59,6 +59,17 @@ def setTwitterTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, curr
         currentTimeToSave.set(
             f'Currently set to save: [{yearsText} {weeksText} {daysText} {hoursText}] of items')
 
+def setTwitterMaxFavorites(maxFavorites, currentMaxFavorites):
+    if (maxFavorites == ''):
+        maxFavorites = 0
+    elif (maxFavorites == 'Unlimited'):
+        twitterState['maxFavorites'] = 9999999999
+    else:
+        maxFavorites = int(maxFavorites)
+        twitterState['maxFavorites'] = maxFavorites
+
+    currentMaxFavorites.set(f'Currently set to: {str(maxFavorites)} Favorites')
+
 
 # ========== this block gets all of the users tweets ============
 
