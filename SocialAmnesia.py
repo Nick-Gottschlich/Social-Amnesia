@@ -6,8 +6,8 @@ import os
 from pathlib import Path
 
 # local files
-from reddit import setRedditLogin, setTimeToSave, setMaxScore, deleteItems, setTestRun, setGildedSkip, setRedditScheduler
-from twitter import setTwitterLogin
+from reddit import setRedditLogin, setRedditTimeToSave, setRedditMaxScore, deleteRedditItems, setRedditTestRun, setRedditGildedSkip, setRedditScheduler
+from twitter import setTwitterLogin, setTwitterTimeToSave
 
 # cx_freeze needs this import to run
 from multiprocessing import Queue
@@ -192,7 +192,7 @@ def buildRedditTab(redditFrame):
     setTimeButton = Button(
         redditFrame,
         text='Set Total Time To Keep',
-        command=lambda: setTimeToSave(
+        command=lambda: setRedditTimeToSave(
             hoursDropDown.get(), daysDropDown.get(),
             weeksDropDown.get(), yearsDropDown.get(), currentTimeToSave)
     )
@@ -208,19 +208,19 @@ def buildRedditTab(redditFrame):
     setMaxScoreButton = Button(
         redditFrame,
         text='Set Max Score',
-        command=lambda: setMaxScore(maxScoreEntryField.get(), currentMaxScore)
+        command=lambda: setRedditMaxScore(maxScoreEntryField.get(), currentMaxScore)
     )
     setMaxScoreUnlimitedButton = Button(
         redditFrame,
         text='Set Unlimited',
-        command=lambda: setMaxScore('Unlimited', currentMaxScore)
+        command=lambda: setRedditMaxScore('Unlimited', currentMaxScore)
     )
 
     # Configuration to let user skip over gilded comments
     gildedSkipBool = IntVar()
     gildedSkipLabel = Label(redditFrame, text='Skip Gilded comments:')
     gildedSkipCheckButton = Checkbutton(
-        redditFrame, variable=gildedSkipBool, command=lambda: setGildedSkip(gildedSkipBool))
+        redditFrame, variable=gildedSkipBool, command=lambda: seReddittGildedSkip(gildedSkipBool))
 
     # Allows the user to actually delete comments or submissions
     deletionSectionLabel = Label(redditFrame, text='Deletion')
@@ -241,21 +241,21 @@ def buildRedditTab(redditFrame):
     deleteCommentsButton = Button(
         redditFrame,
         text='Delete comments',
-        command=lambda: deleteItems(
+        command=lambda: deleteRedditItems(
             root, True, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
     )
 
     deleteSubmissionsButton = Button(
         redditFrame,
         text='Delete submissions',
-        command=lambda: deleteItems(
+        command=lambda: deleteRedditItems(
             root, False, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
     )
 
     testRunBool = IntVar()
     testRunText = 'TestRun - Checking this will show you what would be deleted, without deleting anything'
     testRunCheckButton = Checkbutton(
-        redditFrame, text=testRunText, variable=testRunBool, command=lambda: setTestRun(testRunBool))
+        redditFrame, text=testRunText, variable=testRunBool, command=lambda: setRedditTestRun(testRunBool))
 
     # Allows the user to schedule runs
     schedulerSectionLabel = Label(redditFrame, text='Scheduler')
@@ -318,6 +318,72 @@ def buildRedditTab(redditFrame):
     hoursSelectionDropDown.grid(row=11, column=1)
 
 
+# Builds tab that handles twitter config and actions
+def buildTwitterTab(twitterFrame):
+    twitterFrame.grid()
+
+    # Configuration section title
+    configurationLabel = Label(twitterFrame, text='Configuration')
+    configurationLabel.config(font=('arial', 25))
+
+    # Configuration to set total time of items to save
+    currentTimeToSave = StringVar()
+    currentTimeToSave.set('Currently set to save: [nothing]')
+    timeKeepLabel = Label(
+        twitterFrame, text='Keep items younger than: ')
+
+    hoursDropDown = Combobox(twitterFrame, width=2)
+    hoursDropDown['values'] = buildNumberList(24)
+    hoursDropDown['state'] = 'readonly'
+    hoursDropDown.current(0)
+
+    daysDropDown = Combobox(twitterFrame, width=2)
+    daysDropDown['values'] = buildNumberList(7)
+    daysDropDown['state'] = 'readonly'
+    daysDropDown.current(0)
+
+    weeksDropDown = Combobox(twitterFrame, width=2)
+    weeksDropDown['values'] = buildNumberList(52)
+    weeksDropDown['state'] = 'readonly'
+    weeksDropDown.current(0)
+
+    yearsDropDown = Combobox(twitterFrame, width=2)
+    yearsDropDown['values'] = buildNumberList(15)
+    yearsDropDown['state'] = 'readonly'
+    yearsDropDown.current(0)
+
+    hoursLabel = Label(twitterFrame, text='hours')
+    daysLabel = Label(twitterFrame, text='days')
+    weeksLabel = Label(twitterFrame, text='weeks')
+    yearsLabel = Label(twitterFrame, text='years')
+
+    timeCurrentlySetLabel = Label(
+        twitterFrame, textvariable=currentTimeToSave)
+    setTimeButton = Button(
+        twitterFrame,
+        text='Set Total Time To Keep',
+        command=lambda: setTwitterTimeToSave(
+            hoursDropDown.get(), daysDropDown.get(),
+            weeksDropDown.get(), yearsDropDown.get(), currentTimeToSave)
+    )
+
+
+    # Actually build the twitter tab
+
+    configurationLabel.grid(row=0, columnspan=11, sticky=(N, S), pady=5)
+    timeKeepLabel.grid(row=1, column=0)
+    hoursDropDown.grid(row=1, column=1, sticky=(W))
+    hoursLabel.grid(row=1, column=2, sticky=(W))
+    daysDropDown.grid(row=1, column=3, sticky=(W))
+    daysLabel.grid(row=1, column=4, sticky=(W))
+    weeksDropDown.grid(row=1, column=5, sticky=(W))
+    weeksLabel.grid(row=1, column=6, sticky=(W))
+    yearsDropDown.grid(row=1, column=7, sticky=(W))
+    yearsLabel.grid(row=1, column=8, sticky=(W))
+    setTimeButton.grid(row=1, column=9, columnspan=2)
+    timeCurrentlySetLabel.grid(row=1, column=11)
+
+
 # Builds and runs the tkinter UI
 def createUI():
     Tk.report_callback_exception = callbackError
@@ -336,6 +402,10 @@ def createUI():
     redditFrame = Frame(tabs)
     buildRedditTab(redditFrame)
     tabs.add(redditFrame, text='reddit')
+
+    twitterFrame = Frame(tabs)
+    buildTwitterTab(twitterFrame)
+    tabs.add(twitterFrame, text='twitter')
 
     tabs.pack(expand=1, fill="both")
 

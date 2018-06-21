@@ -1,11 +1,14 @@
 import tweepy
 
+import arrow
+
 # for dev purposes
 from secrets import twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret
 
 # twitter state object
 #  Handles configuration options set by the user
 twitterState = {}
+
 
 def setTwitterLogin(consumerKey, consumerSecret, accessToken, accessTokenSecret, loginConfirmText):
     # ============ REAL =============
@@ -24,35 +27,68 @@ def setTwitterLogin(consumerKey, consumerSecret, accessToken, accessTokenSecret,
 
     loginConfirmText.set(f'Logged in to twitter as {twitterUsername}')
 
-    # ========== this block gets all of the users tweets ============
+    # initialize state
+    twitterState['user'] = api
+    twitterState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
+    twitterState['maxFavorites'] = 0
+    twitterState['maxRetweets'] = 0
+    twitterState['testRun'] = 0
 
-    # userTweets = []
 
-    # make initial request for most recent tweets (200 is the maximum allowed count)
-    # newTweets = api.user_timeline(count=200)
+def setTwitterTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTimeToSave):
+    totalHours = int(hoursToSave) + (int(daysToSave) * 24) + \
+        (int(weeksToSave) * 168) + (int(yearsToSave) * 8736)
 
-    # save most recent tweets
-    # userTweets.extend(newTweets)
+    twitterState['recentlyPostedCutoff'] = arrow.now().replace(
+        hours=-totalHours)
+    
+    def setText(time, text):
+        if (time == '0'):
+            return ''
+        else:
+            return time + text
+    
+    hoursText = setText(hoursToSave, 'hours')
+    daysText = setText(daysToSave, 'days')
+    weeksText = setText(weeksToSave, 'weeks')
+    yearsText = setText(yearsToSave, 'years')
 
-    # save the id of the oldest tweet less one
-    # oldest = userTweets[-1].id - 1
+    if (hoursToSave == '0' and daysToSave == '0' and weeksToSave == '0' and yearsToSave == '0'):
+        currentTimeToSave.set(f'Currently set to save: [nothing]')
+    else:
+        currentTimeToSave.set(
+            f'Currently set to save: [{yearsText} {weeksText} {daysText} {hoursText}] of items')
 
-    # keep grabbing tweets until there are no tweets left to grab
-    # while len(newTweets) > 0:
-    #     print(f'getting tweets before ${oldest}')
 
-    #     # all requests use the max_id param to prevent duplicates
-    #     newTweets = api.user_timeline(count=200, max_id=oldest)
+# ========== this block gets all of the users tweets ============
 
-    #     # save most recent tweets
-    #     userTweets.extend(newTweets)
+# userTweets = []
 
-    #     # update the id of the oldest tweet less one
-    #     oldest = userTweets[-1].id - 1
+# make initial request for most recent tweets (200 is the maximum allowed count)
+# newTweets = api.user_timeline(count=200)
 
-    #     print(f'...${len(userTweets)} tweets downloaded so far')
+# save most recent tweets
+# userTweets.extend(newTweets)
 
-    # for tweet in userTweets:
-    #     print(tweet.text)
+# save the id of the oldest tweet less one
+# oldest = userTweets[-1].id - 1
 
-    # ========== this block gets all of the users tweets ============
+# keep grabbing tweets until there are no tweets left to grab
+# while len(newTweets) > 0:
+#     print(f'getting tweets before ${oldest}')
+
+#     # all requests use the max_id param to prevent duplicates
+#     newTweets = api.user_timeline(count=200, max_id=oldest)
+
+#     # save most recent tweets
+#     userTweets.extend(newTweets)
+
+#     # update the id of the oldest tweet less one
+#     oldest = userTweets[-1].id - 1
+
+#     print(f'...${len(userTweets)} tweets downloaded so far')
+
+# for tweet in userTweets:
+#     print(tweet.text)
+
+# ========== this block gets all of the users tweets ============
