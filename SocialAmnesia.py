@@ -7,7 +7,7 @@ from pathlib import Path
 
 # local files
 from reddit import setRedditLogin, setRedditTimeToSave, setRedditMaxScore, deleteRedditItems, setRedditTestRun, setRedditGildedSkip, setRedditScheduler
-from twitter import setTwitterLogin, setTwitterTimeToSave, setTwitterMaxFavorites, setTwitterMaxRetweets
+from twitter import setTwitterLogin, setTwitterTimeToSave, setTwitterMaxFavorites, setTwitterMaxRetweets, deleteTwitterTweets, deleteTwitterFavorites
 
 # cx_freeze needs this import to run
 from multiprocessing import Queue
@@ -408,6 +408,41 @@ def buildTwitterTab(twitterFrame):
             'Unlimited', currentMaxRetweets)
     )
 
+    # Allows the user to delete tweets or remove favorites
+    deletionSectionLabel = Label(twitterFrame, text='Deletion')
+    deletionSectionLabel.config(font=('arial', 25))
+
+    currentlyDeletingText = StringVar()
+    currentlyDeletingText.set('')
+    deletionProgressLabel = Label(
+        twitterFrame, textvariable=currentlyDeletingText)
+
+    deletionProgressBar = Progressbar(
+        twitterFrame, orient='horizontal', length=100, mode='determinate')
+
+    numDeletedItemsText = StringVar()
+    numDeletedItemsText.set('')
+    numDeletedItemsLabel = Label(twitterFrame, textvariable=numDeletedItemsText)
+
+    deleteCommentsButton = Button(
+        twitterFrame,
+        text='Delete tweets',
+        command=lambda: deleteTwitterTweets(
+            root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
+    )
+
+    deleteSubmissionsButton = Button(
+        twitterFrame,
+        text='Remove Favorites',
+        command=lambda: deleteTwitterFavorites(
+            root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
+    )
+
+    # testRunBool = IntVar()
+    # testRunText = 'TestRun - Checking this will show you what would be deleted, without actually deleting anything'
+    # testRunCheckButton = Checkbutton(
+    #     twitterFrame, text=testRunText, variable=testRunBool, command=lambda: setRedditTestRun(testRunBool))
+
 
     # Actually build the twitter tab
 
@@ -435,6 +470,19 @@ def buildTwitterTab(twitterFrame):
     setMaxRetweetsButton.grid(row=3, column=9)
     setMaxRetweetsUnlimitedButton.grid(row=3, column=10)
     maxRetweetsCurrentlySetLabel.grid(row=3, column=11)
+
+    Separator(twitterFrame, orient=HORIZONTAL).grid(
+        row=4, columnspan=13, sticky=(E, W), pady=5)
+
+    deletionSectionLabel.grid(row=5, columnspan=11, sticky=(N, S), pady=5)
+
+    deleteCommentsButton.grid(row=6, column=0, sticky=(W))
+    deleteSubmissionsButton.grid(row=6, column=0, sticky=(E))
+    # testRunCheckButton.grid(row=6, column=1, columnspan=11)
+
+    deletionProgressLabel.grid(row=7, column=0)
+    deletionProgressBar.grid(row=8, column=0, sticky=(W))
+    numDeletedItemsLabel.grid(row=8, column=0, sticky=(E))
 
 
 # Builds and runs the tkinter UI

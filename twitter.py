@@ -83,6 +83,14 @@ def setTwitterMaxRetweets(maxRetweets, currentMaxRetweets):
     currentMaxRetweets.set(f'Currently set to: {str(maxRetweets)} Retweets')
 
 
+def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
+    print('delete tweets')
+
+
+def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
+    print('delete favorites')
+
+
 # ========== this block gets all of the users tweets ============
 
 # userTweets = []
