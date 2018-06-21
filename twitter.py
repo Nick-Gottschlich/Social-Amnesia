@@ -71,6 +71,18 @@ def setTwitterMaxFavorites(maxFavorites, currentMaxFavorites):
     currentMaxFavorites.set(f'Currently set to: {str(maxFavorites)} Favorites')
 
 
+def setTwitterMaxRetweets(maxRetweets, currentMaxRetweets):
+    if (maxRetweets == ''):
+        maxRetweets = 0
+    elif (maxRetweets == 'Unlimited'):
+        twitterState['maxRetweets'] = 9999999999
+    else:
+        maxRetweets = int(maxRetweets)
+        twitterState['maxRetweets'] = maxRetweets
+
+    currentMaxRetweets.set(f'Currently set to: {str(maxRetweets)} Retweets')
+
+
 # ========== this block gets all of the users tweets ============
 
 # userTweets = []

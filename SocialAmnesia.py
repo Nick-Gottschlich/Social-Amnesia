@@ -7,7 +7,7 @@ from pathlib import Path
 
 # local files
 from reddit import setRedditLogin, setRedditTimeToSave, setRedditMaxScore, deleteRedditItems, setRedditTestRun, setRedditGildedSkip, setRedditScheduler
-from twitter import setTwitterLogin, setTwitterTimeToSave, setTwitterMaxFavorites
+from twitter import setTwitterLogin, setTwitterTimeToSave, setTwitterMaxFavorites, setTwitterMaxRetweets
 
 # cx_freeze needs this import to run
 from multiprocessing import Queue
@@ -369,9 +369,9 @@ def buildTwitterTab(twitterFrame):
 
     # Configuration to set saving items with a certain amount of favorites
     currentMaxFavorites = StringVar()
-    currentMaxFavorites.set('Currently set to: 0 upvotes')
+    currentMaxFavorites.set('Currently set to: 0 Favorites')
     maxFavoritesLabel = Label(
-        twitterFrame, text='Delete comments/submissions less than score:')
+        twitterFrame, text='Delete tweets that have fewer favorites than:')
     maxFavoritesEntryField = Entry(twitterFrame, width=5)
     maxFavoritesCurrentlySetLabel = Label(
         twitterFrame, textvariable=currentMaxFavorites)
@@ -385,6 +385,27 @@ def buildTwitterTab(twitterFrame):
         twitterFrame,
         text='Set Unlimited',
         command=lambda: setTwitterMaxFavorites('Unlimited', currentMaxFavorites)
+    )
+
+    # Configuration to set saving items with a certain amount of retweets
+    currentMaxRetweets = StringVar()
+    currentMaxRetweets.set('Currently set to: 0 Retweets')
+    maxRetweetsLabel = Label(
+        twitterFrame, text='Delete tweets that have fewer retweets than: ')
+    maxRetweetsEntryField = Entry(twitterFrame, width=5)
+    maxRetweetsCurrentlySetLabel = Label(
+        twitterFrame, textvariable=currentMaxRetweets)
+    setMaxRetweetsButton = Button(
+        twitterFrame,
+        text='Set Max Retweets',
+        command=lambda: setTwitterMaxRetweets(
+            maxRetweetsEntryField.get(), currentMaxRetweets)
+    )
+    setMaxRetweetsUnlimitedButton = Button(
+        twitterFrame,
+        text='Set Unlimited',
+        command=lambda: setTwitterMaxRetweets(
+            'Unlimited', currentMaxRetweets)
     )
 
 
@@ -408,6 +429,12 @@ def buildTwitterTab(twitterFrame):
     setMaxFavoritesButton.grid(row=2, column=9)
     setMaxFavoritesUnlimitedButton.grid(row=2, column=10)
     maxFavoritesCurrentlySetLabel.grid(row=2, column=11)
+
+    maxRetweetsLabel.grid(row=3, column=0)
+    maxRetweetsEntryField.grid(row=3, column=1, columnspan=8, sticky=(W))
+    setMaxRetweetsButton.grid(row=3, column=9)
+    setMaxRetweetsUnlimitedButton.grid(row=3, column=10)
+    maxRetweetsCurrentlySetLabel.grid(row=3, column=11)
 
 
 # Builds and runs the tkinter UI
