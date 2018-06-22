@@ -1,5 +1,6 @@
 import tweepy
 
+import time
 import arrow
 
 # for dev purposes
@@ -28,7 +29,7 @@ def setTwitterLogin(consumerKey, consumerSecret, accessToken, accessTokenSecret,
     loginConfirmText.set(f'Logged in to twitter as {twitterUsername}')
 
     # initialize state
-    twitterState['user'] = api
+    twitterState['api'] = api
     twitterState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
     twitterState['maxFavorites'] = 0
     twitterState['maxRetweets'] = 0
@@ -84,11 +85,110 @@ def setTwitterMaxRetweets(maxRetweets, currentMaxRetweets):
 
 
 def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
-    print('delete tweets')
+    userTweets = []
+
+    # make initial request for most recent tweets 
+    #  (200 is the maximum allowed count)
+    newTweets = twitterState['api'].user_timeline(count=200)
+
+    # save most recent tweets
+    userTweets.extend(newTweets)
+
+    # save the id of the oldest tweet less one
+    oldest = userTweets[-1].id - 1
+
+    # keep grabbing tweets until there are no tweets left to grab
+    while len(newTweets) > 0:
+        # all requests use the max_id param to prevent duplicates
+        newTweets = twitterState['api'].user_timeline(count=200, max_id=oldest)
+
+        # save most recent tweets
+        userTweets.extend(newTweets)
+
+        # update the id of the oldest tweet less one
+        oldest = userTweets[-1].id - 1
+
+    totalTweets = len(userTweets)
+
+    numDeletedItemsText.set(f'0/{str(totalTweets)} items processed so far')
+
+    count = 1
+    for tweet in userTweets:
+        tweetSnippet = tweet.text[0:50]
+        if len(tweet.text) > 50:
+            tweetSnippet = tweetSnippet + '...'
+        for char in tweetSnippet:
+            # tkinter can't handle certain unicode characters,
+            #  so we strip them
+            if (ord(char) > 65535):
+                tweetSnippet = tweetSnippet.replace(char, '')
+        
+        currentlyDeletingText.set(f'Deleting tweet: `{tweetSnippet}`')
+
+        numDeletedItemsText.set(f'{str(count)}/{str(totalTweets)} items processed.')
+        deletionProgressBar['value'] = round((count / totalTweets) * 100, 1)
+
+        root.update()
+
+        count += 1
+
+        time.sleep(1)
+
 
 
 def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
-    print('delete favorites')
+    userFavorites = []
+
+    # make initial request for most recent favorites
+    #  (200 is the maximum allowed count)
+    newFavorites = twitterState['api'].favorites(count=200)
+
+    # save most recent favorite
+    userFavorites.extend(newFavorites)
+
+    # save the id of the oldest favorite less one
+    oldest = userFavorites[-1].id - 1
+
+    # # keep grabbing favorites until there are no favorites left to grab
+    while len(newFavorites) > 0:
+        # all requests use the max_id param to prevent duplicates
+        newFavorites = twitterState['api'].favorites(count=200, max_id=oldest)
+
+        # save most recent tweets
+        userFavorites.extend(newFavorites)
+
+        # update the id of the oldest tweet less one
+        oldest = userFavorites[-1].id - 1
+    
+    for favorite in userFavorites:
+        print(favorite.text)
+    
+    totalFavorites = len(userFavorites)
+
+    numDeletedItemsText.set(f'0/{str(totalFavorites)} items processed so far')
+
+    count = 1
+    for favorite in userFavorites:
+        favoriteSnippet = favorite.text[0:50]
+        if len(favorite.text) > 50:
+            favoriteSnippet = favoriteSnippet + '...'
+        for char in favoriteSnippet:
+            # tkinter can't handle certain unicode characters,
+            #  so we strip them
+            if (ord(char) > 65535):
+                favoriteSnippet = favoriteSnippet.replace(char, '')
+
+        currentlyDeletingText.set(f'Deleting favorite: `{favoriteSnippet}`')
+
+        numDeletedItemsText.set(
+            f'{str(count)}/{str(totalFavorites)} items processed.')
+        deletionProgressBar['value'] = round((count / totalFavorites) * 100, 1)
+
+        root.update()
+
+        count += 1
+
+        time.sleep(1)
 
 
 # ========== this block gets all of the users tweets ============
