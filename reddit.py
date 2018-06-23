@@ -157,31 +157,39 @@ def deleteItems(root, commentBool, currentlyDeletingText, deletionProgressBar, n
 
         timeCreated = arrow.get(item.created_utc)
 
-        if (timeCreated > redditState['recentlyPostedCutoff']):
-            currentlyDeletingText.set(
-                f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
-        elif (item.score > redditState['maxScore']):
-            currentlyDeletingText.set(
-                f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
-        elif (item.gilded and redditState['gildedSkip']):
-            currentlyDeletingText.set(
-                f'{itemString} `{itemSnippet}` is gilded, skipping.')
-        else:
-            if (redditState['testRun'] == 0):
-                # Need the try/except here as it will crash on
-                #  link submissions otherwise
-                try:
-                    item.edit(EDIT_OVERWRITE)
-                except:
-                    ayy = 'lmao'
-                item.clear_vote()
-                item.delete()
-
+        # sometimes, PRAW retrieves comments that are already deleted, and then this block crashes
+        #  I don't know why this happens, but I do know if I surround this in a try/except, it rams through
+        #  Look, this isn't a perfect or even a good solution, but dammit, it works, and i dont have any better ideas
+        try:
+            if (timeCreated > redditState['recentlyPostedCutoff']):
                 currentlyDeletingText.set(
-                    f'Deleting {itemString} `{itemSnippet}`')
+                    f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
+            elif (item.score > redditState['maxScore']):
+                print('In ITEM.SCORE' + itemSnippet)
+                currentlyDeletingText.set(
+                    f'{itemString} `{itemSnippet}` is higher than max score, skipping.')
+            elif (item.gilded and redditState['gildedSkip']):
+                print('IN ITEM.GILDED' + itemSnippet)
+                currentlyDeletingText.set(
+                    f'{itemString} `{itemSnippet}` is gilded, skipping.')
             else:
-                currentlyDeletingText.set(
-                    f'TEST RUN: Would delete {itemString} `{itemSnippet}`')
+                if (redditState['testRun'] == 0):
+                    # Need the try/except here as it will crash on
+                    #  link submissions otherwise
+                    try:
+                        item.edit(EDIT_OVERWRITE)
+                    except:
+                        ayy = 'lmao'
+                    item.clear_vote()
+                    item.delete()
+
+                    currentlyDeletingText.set(
+                        f'Deleting {itemString} `{itemSnippet}`')
+                else:
+                    currentlyDeletingText.set(
+                        f'TEST RUN: Would delete {itemString} `{itemSnippet}`')
+        except:
+            rip = 'tupac'
 
         numDeletedItemsText.set(
             f'{str(count)}/{str(totalItems)} items processed.')
