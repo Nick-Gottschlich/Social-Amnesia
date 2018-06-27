@@ -57,7 +57,7 @@ username={username}'''
 
     # initialize state
     redditState['user'] = reddit.redditor(redditUsername)
-    redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
+    redditState['timeToSave'] = arrow.now().replace(hours=0)
     redditState['maxScore'] = 0
     redditState['testRun'] = 0
     redditState['gildedSkip'] = 0
@@ -71,7 +71,7 @@ def setRedditTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, curre
     totalHours = int(hoursToSave) + (int(daysToSave) * 24) + \
         (int(weeksToSave) * 168) + (int(yearsToSave) * 8736)
 
-    redditState['recentlyPostedCutoff'] = arrow.now().replace(
+    redditState['timeToSave'] = arrow.now().replace(
         hours=-totalHours)
 
     def setText(time, text):
@@ -158,7 +158,7 @@ def deleteRedditItems(root, commentBool, currentlyDeletingText, deletionProgress
 
         timeCreated = arrow.get(item.created_utc)
 
-        if (timeCreated > redditState['recentlyPostedCutoff']):
+        if (timeCreated > redditState['timeToSave']):
             currentlyDeletingText.set(
                 f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
         elif (item.score > redditState['maxScore']):

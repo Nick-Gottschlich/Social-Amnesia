@@ -1,7 +1,7 @@
 import tweepy
 
-import time
 import arrow
+import time
 
 # for dev purposes
 from secrets import twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret
@@ -30,7 +30,7 @@ def setTwitterLogin(consumerKey, consumerSecret, accessToken, accessTokenSecret,
 
     # initialize state
     twitterState['api'] = api
-    twitterState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
+    twitterState['timeToSave'] = arrow.now().replace(hours=0)
     twitterState['maxFavorites'] = 0
     twitterState['maxRetweets'] = 0
     twitterState['testRun'] = 0
@@ -40,7 +40,7 @@ def setTwitterTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, curr
     totalHours = int(hoursToSave) + (int(daysToSave) * 24) + \
         (int(weeksToSave) * 168) + (int(yearsToSave) * 8736)
 
-    twitterState['recentlyPostedCutoff'] = arrow.now().replace(
+    twitterState['timeToSave'] = arrow.now().replace(
         hours=-totalHours)
     
     def setText(time, text):
@@ -59,6 +59,7 @@ def setTwitterTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, curr
     else:
         currentTimeToSave.set(
             f'Currently set to save: [{yearsText} {weeksText} {daysText} {hoursText}] of items')
+
 
 def setTwitterMaxFavorites(maxFavorites, currentMaxFavorites):
     if (maxFavorites == ''):
@@ -114,6 +115,8 @@ def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDel
 
     count = 1
     for tweet in userTweets:
+        # print(tweet.text)
+        # print(tweet.created_at)
         tweetSnippet = tweet.text[0:50]
         if len(tweet.text) > 50:
             tweetSnippet = tweetSnippet + '...'
@@ -122,8 +125,12 @@ def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDel
             #  so we strip them
             if (ord(char) > 65535):
                 tweetSnippet = tweetSnippet.replace(char, '')
-        
-        currentlyDeletingText.set(f'Deleting tweet: `{tweetSnippet}`')
+
+        timeCreated = arrow.get(tweet.created_at)
+        if (timeCreated > twitterState['timeToSave']):
+            currentlyDeletingText.set(f'Tweet: `{tweetSnippet}` is more recent than cutoff, skipping.')
+        else:
+            currentlyDeletingText.set(f'Deleting tweet: `{tweetSnippet}`')
 
         numDeletedItemsText.set(f'{str(count)}/{str(totalTweets)} items processed.')
         deletionProgressBar['value'] = round((count / totalTweets) * 100, 1)
@@ -132,8 +139,7 @@ def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDel
 
         count += 1
 
-        time.sleep(1)
-
+        time.sleep(0.5)
 
 
 def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
