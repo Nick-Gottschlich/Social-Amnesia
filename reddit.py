@@ -147,8 +147,8 @@ def deleteRedditItems(root, commentBool, currentlyDeletingText, deletionProgress
                     itemSnippet = itemSnippet.replace(char, '')
         else:
             itemString = 'Submission'
-            itemSnippet = item.title[0:15]
-            if len(item.title) > 15:
+            itemSnippet = item.title[0:50]
+            if len(item.title) > 50:
                 itemSnippet = itemSnippet + '...'
             for char in itemSnippet:
                 # tkinter can't handle certain unicode characters,
