@@ -31,12 +31,10 @@ def setTwitterLogin(consumerKey, consumerSecret, accessToken, accessTokenSecret,
 
     # initialize state
     twitterState['api'] = api
-    twitterState['timeToSave'] = arrow.now().replace(hours=0)
+    twitterState['timeToSave'] = arrow.utcnow().replace(hours=0)
     twitterState['maxFavorites'] = 0
     twitterState['maxRetweets'] = 0
     twitterState['testRun'] = 0
-
-    print(twitterState['timeToSave'])
 
 
 def setTwitterTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTimeToSave):
@@ -127,10 +125,8 @@ def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDel
             if (ord(char) > 65535):
                 tweetSnippet = tweetSnippet.replace(char, '')
 
-        timeCreated = arrow.get(tweet.created_at).astimezone(tzutc())
+        timeCreated = arrow.Arrow.fromdatetime(tweet.created_at)
 
-        print(timeCreated)
-        print(twitterState['timeToSave'])
         if (timeCreated > twitterState['timeToSave']):
             currentlyDeletingText.set(f'Tweet: `{tweetSnippet}` is more recent than cutoff, skipping.')
         # just delete retweets, people only care about their own high scores
@@ -154,7 +150,7 @@ def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDel
 
         count += 1
 
-        time.sleep(0.5)
+        time.sleep(1)
 
 
 def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
