@@ -127,21 +127,20 @@ def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDel
 
         timeCreated = arrow.Arrow.fromdatetime(tweet.created_at)
 
+        def deleteTweet(tweet):
+            twitterState['api'].destroy_status(tweet.id)
+
         if (timeCreated > twitterState['timeToSave']):
             currentlyDeletingText.set(f'Tweet: `{tweetSnippet}` is more recent than cutoff, skipping.')
-        # just delete retweets, people only care about their own high scores
-        elif(tweet.retweeted):
-            currentlyDeletingText.set(f'Deleting tweet: `{tweetSnippet}`')
-            # call function to delete tweet
-        elif(tweet.favorite_count > twitterState['maxFavorites']):
+        elif(tweet.favorite_count >= twitterState['maxFavorites']):
             currentlyDeletingText.set(
                 f'Tweet: `{tweetSnippet}` has more favorites than max favorites, skipping.')
-        elif(tweet.retweet_count > twitterState['maxRetweets']):
+        elif(tweet.retweet_count >= twitterState['maxRetweets'] and not tweet.retweeted):
             currentlyDeletingText.set(
                 f'Tweet: `{tweetSnippet}` has more retweets than max retweets, skipping.')
         else:
             currentlyDeletingText.set(f'Deleting tweet: `{tweetSnippet}`')
-            # call function to delete tweet
+            deleteTweet(tweet)
 
         numDeletedItemsText.set(f'{str(count)}/{str(totalTweets)} items processed.')
         deletionProgressBar['value'] = round((count / totalTweets) * 100, 1)
