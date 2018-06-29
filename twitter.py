@@ -1,6 +1,8 @@
+from tkinter import messagebox
 import tweepy
 
 import arrow
+from datetime import datetime
 import time
 import json
 
@@ -216,7 +218,37 @@ def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, num
 
         time.sleep(1)
 
-# Set whether to run a test run or not (stored in redditState)
+
+# Set whether to run a test run or not (stored in twitterState)
 # testRunBool - 0 for real run, 1 for test run
 def setTwitterTestRun(testRunBool):
     twitterState['testRun'] = testRunBool.get()
+
+# neccesary global bool for the scheduler
+alreadyRanBool = False
+
+def setTwitterScheduler(root, schedulerBool, hourOfDay, stringVar, progressVar):
+    global alreadyRanBool
+    if not schedulerBool.get():
+        alreadyRanBool = False
+        return
+
+    currentTime = datetime.now().time().hour
+
+    if (currentTime == hourOfDay and not alreadyRanBool):
+        messagebox.showinfo(
+            'Scheduler', 'Social Amnesia is now erasing your past on twitter.')
+
+        deleteTwitterTweets(root, stringVar, progressVar, stringVar)
+        deleteTwitterFavorites(root, stringVar, progressVar, stringVar)
+
+        alreadyRanBool = True
+    if (currentTime < 23):
+        if (currentTime == hourOfDay + 1):
+            alreadyRanBool = False
+    else:
+        if (currentTime == 0):
+            alreadyRanBool = False
+
+    root.after(1000, lambda: setTwitterScheduler(
+        root, schedulerBool, hourOfDay, stringVar, progressVar))

@@ -446,8 +446,22 @@ def buildTwitterTab(twitterFrame):
     testRunCheckButton = Checkbutton(
         twitterFrame, text=testRunText, variable=testRunBool, command=lambda: setTwitterTestRun(testRunBool))
 
-    # Actually build the twitter tab
+    # Allows the user to schedule runs
+    schedulerSectionLabel = Label(twitterFrame, text='Scheduler')
+    schedulerSectionLabel.config(font=('arial', 25))
 
+    schedulerTwitterBool = IntVar()
+    schedulerTwitterText = 'Select to delete twitter comments + submissions daily at'
+
+    hoursSelectionDropDown = Combobox(twitterFrame, width=2)
+    hoursSelectionDropDown['values'] = buildNumberList(24)
+    hoursSelectionDropDown['state'] = 'readonly'
+    hoursSelectionDropDown.current(0)
+
+    schedulerTwitterCheckButton = Checkbutton(twitterFrame, text=schedulerTwitterText, variable=schedulerTwitterBool, command=lambda: setTwitterScheduler(
+        root, schedulerTwitterBool, int(hoursSelectionDropDown.get()), StringVar(), Progressbar()))
+
+    # Actually build the twitter tab
     configurationLabel.grid(row=0, columnspan=11, sticky=(N, S), pady=5)
     timeKeepLabel.grid(row=1, column=0)
     hoursDropDown.grid(row=1, column=1, sticky=(W))
@@ -485,6 +499,15 @@ def buildTwitterTab(twitterFrame):
     deletionProgressLabel.grid(row=7, column=0)
     deletionProgressBar.grid(row=8, column=0, sticky=(W))
     numDeletedItemsLabel.grid(row=8, column=0, sticky=(E))
+
+    Separator(twitterFrame, orient=HORIZONTAL).grid(
+        row=9, columnspan=13, sticky=(E, W), pady=5)
+
+    schedulerSectionLabel.grid(
+            row=10, columnspan=11, sticky=(N, S), pady=5)
+
+    schedulerTwitterCheckButton.grid(row=11, column=0)
+    hoursSelectionDropDown.grid(row=11, column=1)
 
 
 # Builds and runs the tkinter UI
