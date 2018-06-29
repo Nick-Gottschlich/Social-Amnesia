@@ -1,13 +1,12 @@
 # standard python imports
 from tkinter import *
-from tkinter import messagebox
 from tkinter.ttk import *
 import os
 from pathlib import Path
 
 # local files
-from reddit import setRedditLogin, setRedditTimeToSave, setRedditMaxScore, deleteRedditItems, setRedditTestRun, setRedditGildedSkip, setRedditScheduler
-from twitter import setTwitterLogin, setTwitterTimeToSave, setTwitterMaxFavorites, setTwitterMaxRetweets, deleteTwitterTweets, deleteTwitterFavorites
+from reddit import *
+from twitter import *
 
 # cx_freeze needs this import to run
 from multiprocessing import Queue
@@ -33,6 +32,10 @@ def callbackError(self, *args):
         messagebox.showerror('Error', 'You are not logged into reddit!')
     elif (str(args[1]) == "[{'code': 215, 'message': 'Bad Authentication data.'}]"):
         messagebox.showerror('Error', 'Failed to login to twitter!')
+    elif (str(args[1]) == 'list index out of range'):
+        messagebox.showerror('Error', 'No tweets or favorites found!')
+    elif(str(args[1]) == "'api'"):
+        messagebox.showerror('Error', 'You are not logged in to twitter!')
     else:
         messagebox.showerror('ERROR', str(args[1]))
 
@@ -438,11 +441,10 @@ def buildTwitterTab(twitterFrame):
             root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText)
     )
 
-    # testRunBool = IntVar()
-    # testRunText = 'TestRun - Checking this will show you what would be deleted, without actually deleting anything'
-    # testRunCheckButton = Checkbutton(
-    #     twitterFrame, text=testRunText, variable=testRunBool, command=lambda: setRedditTestRun(testRunBool))
-
+    testRunBool = IntVar()
+    testRunText = 'TestRun - Checking this will show you what would be deleted, without actually deleting anything'
+    testRunCheckButton = Checkbutton(
+        twitterFrame, text=testRunText, variable=testRunBool, command=lambda: setTwitterTestRun(testRunBool))
 
     # Actually build the twitter tab
 
@@ -478,7 +480,7 @@ def buildTwitterTab(twitterFrame):
 
     deleteCommentsButton.grid(row=6, column=0, sticky=(W))
     deleteSubmissionsButton.grid(row=6, column=0, sticky=(E))
-    # testRunCheckButton.grid(row=6, column=1, columnspan=11)
+    testRunCheckButton.grid(row=6, column=1, columnspan=11)
 
     deletionProgressLabel.grid(row=7, column=0)
     deletionProgressBar.grid(row=8, column=0, sticky=(W))

@@ -127,9 +127,6 @@ def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDel
 
         timeCreated = arrow.Arrow.fromdatetime(tweet.created_at)
 
-        def deleteTweet(tweet):
-            twitterState['api'].destroy_status(tweet.id)
-
         if (timeCreated > twitterState['timeToSave']):
             currentlyDeletingText.set(f'Tweet: `{tweetSnippet}` is more recent than cutoff, skipping.')
         elif(tweet.favorite_count >= twitterState['maxFavorites']):
@@ -139,8 +136,13 @@ def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDel
             currentlyDeletingText.set(
                 f'Tweet: `{tweetSnippet}` has more retweets than max retweets, skipping.')
         else:
-            currentlyDeletingText.set(f'Deleting tweet: `{tweetSnippet}`')
-            deleteTweet(tweet)
+            if (twitterState['testRun'] == 0):
+
+                currentlyDeletingText.set(f'Deleting tweet: `{tweetSnippet}`')
+                
+                twitterState['api'].destroy_status(tweet.id)
+            else:
+                currentlyDeletingText.set(f'-TEST RUN- Would delete tweet: `{tweetSnippet}`')
 
         numDeletedItemsText.set(f'{str(count)}/{str(totalTweets)} items processed.')
         deletionProgressBar['value'] = round((count / totalTweets) * 100, 1)
@@ -214,3 +216,7 @@ def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, num
 
         time.sleep(1)
 
+# Set whether to run a test run or not (stored in redditState)
+# testRunBool - 0 for real run, 1 for test run
+def setTwitterTestRun(testRunBool):
+    twitterState['testRun'] = testRunBool.get()
