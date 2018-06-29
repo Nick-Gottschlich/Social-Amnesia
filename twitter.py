@@ -176,8 +176,8 @@ def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, num
         # update the id of the oldest tweet less one
         oldest = userFavorites[-1].id - 1
     
-    for favorite in userFavorites:
-        print(favorite.text)
+    # for favorite in userFavorites:
+    #     print(favorite.text)
     
     totalFavorites = len(userFavorites)
 
@@ -195,6 +195,14 @@ def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, num
                 favoriteSnippet = favoriteSnippet.replace(char, '')
 
         currentlyDeletingText.set(f'Deleting favorite: `{favoriteSnippet}`')
+
+        timeCreated = arrow.Arrow.fromdatetime(favorite.created_at)
+
+        if (timeCreated > twitterState['timeToSave']):
+            currentlyDeletingText.set(f'Favorite: `{favoriteSnippet}` is more recent than cutoff, skipping.')
+        else:
+            currentlyDeletingText.set(f'Deleting favorite: `{favoriteSnippet}`')
+            twitterState['api'].destroy_favorite(favorite.id)
 
         numDeletedItemsText.set(
             f'{str(count)}/{str(totalFavorites)} items processed.')
