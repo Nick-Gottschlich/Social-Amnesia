@@ -53,24 +53,25 @@ username={username}'''
 
     redditUsername = str(reddit.user.me())
 
-    loginConfirmText.set(f'Logged in as {redditUsername}')
+    loginConfirmText.set(f'Logged in to reddit as {redditUsername}')
 
     # initialize state
     redditState['user'] = reddit.redditor(redditUsername)
-    redditState['recentlyPostedCutoff'] = arrow.now().replace(hours=0)
+    redditState['timeToSave'] = arrow.now().replace(hours=0)
     redditState['maxScore'] = 0
     redditState['testRun'] = 0
     redditState['gildedSkip'] = 0
+
 
 # Sets the time of comments or submissions to save, stores it in redditState
 #  and updates the UI to show what its currently set to.
 #   ____ToSave: the input received from the UI
 #   currentTimeToSave: what is stored for the user in the UI
-def setTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTimeToSave):
+def setRedditTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTimeToSave):
     totalHours = int(hoursToSave) + (int(daysToSave) * 24) + \
         (int(weeksToSave) * 168) + (int(yearsToSave) * 8736)
 
-    redditState['recentlyPostedCutoff'] = arrow.now().replace(
+    redditState['timeToSave'] = arrow.now().replace(
         hours=-totalHours)
 
     def setText(time, text):
@@ -95,7 +96,7 @@ def setTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTime
 #  updates the UI to show what its currently set to.
 #   maxScore: the input received from the UI
 #   currentMaxScore: what is stored for the user in the UI
-def setMaxScore(maxScore, currentMaxScore):
+def setRedditMaxScore(maxScore, currentMaxScore):
     if (maxScore == ''):
         maxScore = 0
     elif (maxScore == 'Unlimited'):
@@ -109,7 +110,7 @@ def setMaxScore(maxScore, currentMaxScore):
 
 # Set whether to skip gilded comments or not (stored in redditState)
 #   gildedSkipBool - 0 to delete gilded comments, 1 to skip gilded comments
-def setGildedSkip(gildedSkipBool):
+def setRedditGildedSkip(gildedSkipBool):
     if (gildedSkipBool.get()):
         redditState['gildedSkip'] = gildedSkipBool.get()
 
@@ -120,7 +121,7 @@ def setGildedSkip(gildedSkipBool):
 #   deletionProgressBar: updates as the items are looped through
 #   numDeletedItemsText: updates as X out of Y comments are looped through
 #   root: the reference to the actual tkinter GUI window
-def deleteItems(root, commentBool, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
+def deleteRedditItems(root, commentBool, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
     if commentBool:
         totalItems = sum(
             1 for item in redditState['user'].comments.new(limit=None))
@@ -146,8 +147,8 @@ def deleteItems(root, commentBool, currentlyDeletingText, deletionProgressBar, n
                     itemSnippet = itemSnippet.replace(char, '')
         else:
             itemString = 'Submission'
-            itemSnippet = item.title[0:15]
-            if len(item.title) > 15:
+            itemSnippet = item.title[0:50]
+            if len(item.title) > 50:
                 itemSnippet = itemSnippet + '...'
             for char in itemSnippet:
                 # tkinter can't handle certain unicode characters,
@@ -157,7 +158,7 @@ def deleteItems(root, commentBool, currentlyDeletingText, deletionProgressBar, n
 
         timeCreated = arrow.get(item.created_utc)
 
-        if (timeCreated > redditState['recentlyPostedCutoff']):
+        if (timeCreated > redditState['timeToSave']):
             currentlyDeletingText.set(
                 f'{itemString} `{itemSnippet}` more recent than cutoff, skipping.')
         elif (item.score > redditState['maxScore']):
@@ -195,7 +196,7 @@ def deleteItems(root, commentBool, currentlyDeletingText, deletionProgressBar, n
 
 # Set whether to run a test run or not (stored in redditState)
 # testRunBool - 0 for real run, 1 for test run
-def setTestRun(testRunBool):
+def setRedditTestRun(testRunBool):
     redditState['testRun'] = testRunBool.get()
 
 
@@ -206,7 +207,7 @@ alreadyRanBool = False
 #   root: tkinkter window
 #   schedulerBool: true if set to run, false otherwise
 #   hourOfDay: int 0-23, sets hour of day to run on
-#   stringVar, progressVar - empty Vars needed to run the deleteItems function
+#   stringVar, progressVar - empty Vars needed to run the deleteRedditItems function
 def setRedditScheduler(root, schedulerBool, hourOfDay, stringVar, progressVar):
     global alreadyRanBool
     if not schedulerBool.get():
@@ -219,8 +220,8 @@ def setRedditScheduler(root, schedulerBool, hourOfDay, stringVar, progressVar):
         messagebox.showinfo(
             'Scheduler', 'Social Amnesia is now erasing your past on reddit.')
 
-        deleteItems(root, True, stringVar, progressVar, stringVar)
-        deleteItems(root, False, stringVar, progressVar, stringVar)
+        deleteRedditItems(root, True, stringVar, progressVar, stringVar)
+        deleteRedditItems(root, False, stringVar, progressVar, stringVar)
 
         alreadyRanBool = True
     if (currentTime < 23):
