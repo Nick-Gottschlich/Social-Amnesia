@@ -3,11 +3,10 @@ import tweepy
 
 import arrow
 from datetime import datetime
-import time
 import json
 
 # for dev purposes
-from secrets import twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret
+# from secrets import twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret
 
 # twitter state object
 #  Handles configuration options set by the user
@@ -16,13 +15,13 @@ twitterState = {}
 
 def setTwitterLogin(consumerKey, consumerSecret, accessToken, accessTokenSecret, loginConfirmText):
     # ============ REAL =============
-    # auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
-    # auth.set_access_token(accessToken, accessTokenSecret)
+    auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
+    auth.set_access_token(accessToken, accessTokenSecret)
     # ============= REAL ============
 
     # =========== DEV TESTING =============
-    auth = tweepy.OAuthHandler(twitterConsumerKey, twitterConsumerSecret)
-    auth.set_access_token(twitterAccessToken, twitterAccessTokenSecret)
+    # auth = tweepy.OAuthHandler(twitterConsumerKey, twitterConsumerSecret)
+    # auth.set_access_token(twitterAccessToken, twitterAccessTokenSecret)
     # ============== DEV TESTING ==============
 
     api = tweepy.API(auth)
@@ -153,8 +152,6 @@ def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDel
 
         count += 1
 
-        time.sleep(1)
-
 
 def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
     userFavorites = []
@@ -215,8 +212,6 @@ def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, num
         root.update()
 
         count += 1
-
-        time.sleep(1)
 
 
 # Set whether to run a test run or not (stored in twitterState)
