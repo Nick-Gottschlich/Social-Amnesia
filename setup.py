@@ -10,7 +10,7 @@ if sys.platform == "win32":
   os.environ['TK_LIBRARY'] = "C:\\Python36\\tcl\\tk8.6"
 build_exe_options = {"packages": ["os", "idna"]}
 setup(name="Social Amnesia",
-      version="0.1.0",
+      version="0.2.0",
       description="Social Amnesia",
       options={"build_exe": build_exe_options},
       executables=[Executable("SocialAmnesia.py", base=base)])

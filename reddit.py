@@ -9,7 +9,7 @@ from tkinter import messagebox
 import praw
 import arrow
 
-USER_AGENT = 'Social Amensia: v0.1.0 (by /u/JavaOffScript)'
+USER_AGENT = 'Social Amensia: v0.2.0 (by /u/JavaOffScript)'
 
 EDIT_OVERWRITE = 'Wiped by Social Amnesia'
 
