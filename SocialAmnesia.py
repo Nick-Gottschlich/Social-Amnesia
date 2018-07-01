@@ -256,6 +256,7 @@ def buildRedditTab(redditFrame):
     )
 
     testRunBool = IntVar()
+    testRunBool.set(1)
     testRunText = 'TestRun - Checking this will show you what would be deleted, without deleting anything'
     testRunCheckButton = Checkbutton(
         redditFrame, text=testRunText, variable=testRunBool, command=lambda: setRedditTestRun(testRunBool))
@@ -442,6 +443,7 @@ def buildTwitterTab(twitterFrame):
     )
 
     testRunBool = IntVar()
+    testRunBool.set(1)
     testRunText = 'TestRun - Checking this will show you what would be deleted, without actually deleting anything'
     testRunCheckButton = Checkbutton(
         twitterFrame, text=testRunText, variable=testRunBool, command=lambda: setTwitterTestRun(testRunBool))
