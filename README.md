@@ -58,7 +58,7 @@ Don't feel comfortable coding? That's okay! There are plenty of other ways to co
 - Graphic designers are needed to make logos.
 - UX people are needed to help make mockups to improve the design of the application.
 - Do you have a social media account with lots of posts you would like to donate to the cause? Accounts like these can be used to help us bug hunt. Open an issue or tweet [@NickGottschlich](https://twitter.com/NickGottschlich).
-- Be a user tester! Just record your experience using this the first time using screen recording software and upload it as [an issue issue](https://github.com/Nick-Gottschlich/Social-Amnesia/issues/new). Better yet if you can record yourself talking through your thoughts as you try out the software for the first time.
+- Be a user tester! Just record your experience using this the first time using screen recording software and upload it as [an issue](https://github.com/Nick-Gottschlich/Social-Amnesia/issues/new). Better yet if you can record yourself talking through your thoughts as you try out the software for the first time.
 
 ## Links
 
