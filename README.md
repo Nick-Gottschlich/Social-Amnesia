@@ -34,7 +34,6 @@ Note: On windows you may have to copy `tcl86t.dll` and `tk86t.dll` from your `Py
 * Trial run - do a run showing what would be deleted, without actually doing it.
 
 #### How to set up your reddit account
-
 Reddit requires accounts to create a "script" in order for Social Amnesia to run. Don't worry, this is actually quite simple to do. You can see reddit's docs on how to do this [here](https://github.com/reddit-archive/reddit/wiki/OAuth2-Quick-Start-Example#first-steps). Doing this provides you with the reddit "Client ID" and "Client Secret" you will need to log in within the Social Amnesia app.
 
 ### Twitter
@@ -44,6 +43,9 @@ Reddit requires accounts to create a "script" in order for Social Amnesia to run
 * Can keep tweets that have a certain amount of retweets or favorites.
   * This option ignores retweets, these will be removed no matter what if they are out of the time range.
 * Trial run - do a run showing what would be deleted, without actually deleting it.
+
+#### How to set up your twitter account
+Twitter requires you to set up an "app" in order to get Social Amnesia to run. Do this by heading to https://apps.twitter.com/ while logged in, and clicking "Create New App". Then, fill in whatever you'd like for the Name, Description, and Website. Once it's created, click the "Keys and Access Tokens" tab. This will have the consumer key and consumer secret you will need for Social Amnesia. You can then click "Create my Access Token" at the bottom of the page to get the access token and access token secret that Social Amnesia needs. That's it, you have everything needed to get Social Amnesia running with twitter!
 
 ### Scheduler
 
