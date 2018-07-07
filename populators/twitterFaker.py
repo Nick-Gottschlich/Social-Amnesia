@@ -3,15 +3,19 @@
 import tweepy
 from datetime import datetime
 from secrets import twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret
+import random
+
 
 auth = tweepy.OAuthHandler(twitterConsumerKey, twitterConsumerSecret)
 auth.set_access_token(twitterAccessToken, twitterAccessTokenSecret)
 
-api = tweepy.API(auth)
+api = tweepy.API(auth, wait_on_rate_limit=True)
 
 while(1):
-    # this emoji is used so much there will always be new tweets to favorite
-    testTweets = tweepy.Cursor(api.search, q='😂').items(10)
+    # top 10 twitter emojis (http://www.emojitracker.com/), used so much there will always be new tweets to favorite
+    emoji = random.choice('😂❤️♻️😍♥️😭😊😒💕😘')
+    print(emoji)
+    testTweets = tweepy.Cursor(api.search, q=emoji).items(20)
 
     for tweet in testTweets:
         try:
