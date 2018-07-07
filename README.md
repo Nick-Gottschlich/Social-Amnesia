@@ -10,16 +10,23 @@ This is in very early versions, this readme will contain a list of what sites ar
 This is the simplest option. Bundled and easily usable files are available in the zip files on the [releases](https://github.com/Nick-Gottschlich/Social-Amnesia/releases) page.
 
 ### How to run Social Amnesia from the command line
-If you have python3 you can run Social Amnesia directly by cloning this repo and running `python3 SocialAmnesia.py` on a command line. You will have to install several packages with a package manager like "pip" or "pip3".
+*NOTE:* As of 7.07.18 the project is not compatible with Python 3.7 yet - [related tweepy issue](https://github.com/tweepy/tweepy/pull/1042).
 
-`pip3 install praw`
-`pip3 install arrow`
+* Clone the repo
+* Set up a new [virtualenv](https://virtualenv.pypa.io/en/stable/) and activate it
+* Run:
+```
+pip3 install -r requirements.txt
+python3 SocialAmnesia.py
+```
+* Have fun!
 
 ### How to build the executable for Social Amnesia
 
-Build the executable by first installing cx_freeze by running `pip3 install cx_Freeze`. Then you can build the executable running `python3 setup.py `. This will create a folder called `build`, inside you can a folder with some crazy name, and in that you should see a 'Social Amnesia' executable. Run that executable to start the program.
-
-You can build a mac DMG using `python3 setup.py bdist_dmg` and you can build a windows installer using `python3 setup.py bdist_msi`. These will let you install and use Social Amnesia as an actual application.
+Install the requirements using pip3 (see above).
+Then you can build the executable by running `python3 setup.py bdist_msi` (Windows) or `python3 setup.py bdist_dmg` (macOS). 
+This will create a folder called `build`, in which you should find a folder with a name starting with 'exe.'. 
+There should be a 'Social Amnesia' executable waiting inside. Run that executable to start the program.
 
 Note: On windows you may have to copy `tcl86t.dll` and `tk86t.dll` from your `Python3X/DLLs` into the folder with the executable to get this to run.
 
