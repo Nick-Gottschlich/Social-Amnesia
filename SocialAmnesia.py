@@ -4,37 +4,32 @@ import tkinter.ttk as ttk
 from services.reddit import *
 from services.twitter import *
 
-# create the storage folder
-storage_folder_path = Path(f'{os.path.expanduser("~")}/.SocialAmnesia')
-reddit_storage_folder_path = os.path.join(storage_folder_path, "/reddit")
-if not os.path.exists(storage_folder_path):
-    os.makedirs(storage_folder_path)
-    os.makedirs(reddit_storage_folder_path)
+
+def create_storage_folder():
+    storage_folder_path = Path(f'{os.path.expanduser("~")}/.SocialAmnesia')
+    reddit_storage_folder_path = os.path.join(storage_folder_path, "/reddit")
+    if not os.path.exists(storage_folder_path):
+        os.makedirs(str(storage_folder_path))
+        os.makedirs(reddit_storage_folder_path)
 
 
 def handle_callback_error(*args):
     """
-    If the user needs to be informed of an error,
-    this will let tkinter take care of that
-    :param args:
+    Informs the user of errors in a friendly manner
+    :param args: list of errors
     :return: None
     """
-    error_message = str(args[1])
-
-    if error_message == 'received 401 HTTP response':
-        # reddit error, happens if you try to run
-        # `reddit.user.me()` and login fails
-        messagebox.showerror('Error', 'Failed to login to reddit!')
-    elif error_message == "'user'":
-        messagebox.showerror('Error', 'You are not logged into reddit!')
-    elif error_message == "[{'code': 215, 'message': 'Bad Authentication data.'}]":
-        messagebox.showerror('Error', 'Failed to login to twitter!')
-    elif error_message == 'list index out of range':
-        messagebox.showerror('Error', 'No tweets or favorites found!')
-    elif error_message == "'api'":
-        messagebox.showerror('Error', 'You are not logged in to twitter!')
-    else:
-        messagebox.showerror('ERROR', error_message)
+    received_error = str(args[1])
+    errors = {
+        # reddit error, happens if you try to run `reddit.user.me()` and login fails
+        'received 401 HTTP response': 'Failed to login to reddit!',
+        "'user'": 'You are not logged into reddit!',
+        "[{'code': 215, 'message': 'Bad Authentication data.'}]": 'Failed to login to twitter!',
+        'list index out of range': 'No tweets or favorites found!',
+        "'api'": 'You are not logged in to twitter!'
+    }
+    
+    messagebox.showerror('Error', errors.get(received_error, received_error))
 
 
 def build_number_list(max_number):
@@ -533,6 +528,8 @@ def create_ui(master):
 
 
 if __name__ == '__main__':
+    create_storage_folder()
+
     root = tk.Tk()
     create_ui(root)
     root.mainloop()
