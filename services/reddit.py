@@ -18,7 +18,7 @@ reddit_state = {}
 
 
 # Logs into reddit using PRAW, gives user an error on failure
-def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, init):
+def set_login(username, password, client_id, client_secret, login_confirm_text, init):
     if init:
         try:
             reddit = praw.Reddit('user', user_agent=USER_AGENT)
