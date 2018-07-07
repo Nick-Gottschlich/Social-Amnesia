@@ -27,14 +27,26 @@ def build_number_list(max_number):
     return [str(i) for i in range(max_number)]
 
 
+def create_dropdown(master: tk.Frame, width: int, value_quantity: int,
+                    element_state: str = 'readonly', current: int = 0):
+    dropdown = ttk.Combobox(master, width=width)
+    dropdown['values'] = build_number_list(value_quantity)
+    dropdown['state'] = element_state
+    dropdown.current(current)
+    return dropdown
+
+
 class MainApp(tk.Frame):
     def __init__(self, master: tk.Tk, **kw):
         self.master = master
         super().__init__(self.master, **kw)
+        self.configure_gui()
 
         self.tabs = ttk.Notebook(self.master)
-        self.configure_gui()
-        self.create_widgets()
+        self.login_frame = self.build_login_tab()
+        self.reddit_frame = self.build_reddit_tab()
+        self.twitter_frame = self.build_twitter_tab()
+        self.create_tabs()
 
     def configure_gui(self):
         self.master.title('Social Amnesia')
@@ -42,23 +54,10 @@ class MainApp(tk.Frame):
         self.master.createcommand('tk::mac::ReopenApplication', self.master.deiconify)
         self.master.report_callback_exception = self.handle_callback_error
 
-    def create_widgets(self):
-        self.setup_tabs()
-
-    def setup_tabs(self):
-        login_frame = tk.Frame(self.tabs)
-
-        self.build_login_tab(login_frame)
-        self.tabs.add(login_frame, text='Login to accounts')
-
-        reddit_frame = tk.Frame(self.tabs)
-        self.build_reddit_tab(reddit_frame)
-        self.tabs.add(reddit_frame, text='Reddit')
-
-        twitter_frame = tk.Frame(self.tabs)
-        self.build_twitter_tab(twitter_frame)
-        self.tabs.add(twitter_frame, text='Twitter')
-
+    def create_tabs(self):
+        self.tabs.add(self.login_frame, text='Login to accounts')
+        self.tabs.add(self.reddit_frame, text='Reddit')
+        self.tabs.add(self.twitter_frame, text='Twitter')
         self.tabs.pack(expand=1, fill='both')
 
     def handle_callback_error(*args):
@@ -76,157 +75,146 @@ class MainApp(tk.Frame):
             'list index out of range': 'No tweets or favorites found!',
             "'api'": 'You are not logged in to twitter!'
         }
-
         messagebox.showerror('Error', errors.get(received_error, received_error))
 
-    def build_login_tab(self, login_frame: tk.Frame):
+    def build_login_tab(self):
         """
         Builds the tab that lets the user log into their social media accounts
-        :param login_frame:
-        :return:
+        :return: Login frame
         """
-        login_frame.grid()
-        self.build_reddit_frame(login_frame)
-        self.build_twitter_frame(login_frame)
+        frame = tk.Frame(self.tabs)
+        frame.grid()
+        self.build_reddit_frame(frame)
+        self.build_twitter_frame(frame)
+        return frame
 
     @staticmethod
-    def build_twitter_frame(login_frame: tk.Frame):
-        # twitter login
-        twitter_label = tk.Label(login_frame, text='twitter')
-        twitter_label.config(font=('arial', 25))
-        twitter_consumer_key_label = tk.Label(login_frame, text='Enter twitter Consumer Key:')
-        twitter_consumer_key_entry = tk.Entry(login_frame)
-        twitter_consumer_secret_label = tk.Label(login_frame, text='Enter twitter Consumer Secret:')
-        twitter_consumer_secret_entry = tk.Entry(login_frame)
-        twitter_access_token_label = tk.Label(login_frame, text='Enter twitter Access Token:')
-        twitter_access_token_entry = tk.Entry(login_frame)
-        twitter_access_token_secret_label = tk.Label(login_frame, text='Enter twitter Access Token Secret:')
-        twitter_access_token_secret_entry = tk.Entry(login_frame)
-        twitter_login_confirm_text = tk.StringVar()
-        twitter_login_confirm_text.set('Waiting for Login')
-        twitter_login_confirmed_label = tk.Label(login_frame, textvariable=twitter_login_confirm_text)
-        twitter_login_button = tk.Button(
-            login_frame, text='Login to twitter',
-            command=lambda: twitter.setTwitterLogin(
-                twitter_consumer_key_entry.get(),
-                twitter_consumer_secret_entry.get(),
-                twitter_access_token_entry.get(),
-                twitter_access_token_secret_entry.get(),
-                twitter_login_confirm_text)
-        )
-
-        twitter_label.grid(row=0, column=2, columnspan=2)
-        twitter_consumer_key_label.grid(row=1, column=2)
-        twitter_consumer_key_entry.grid(row=1, column=3)
-        twitter_consumer_secret_label.grid(row=2, column=2)
-        twitter_consumer_secret_entry.grid(row=2, column=3)
-        twitter_access_token_label.grid(row=3, column=2)
-        twitter_access_token_entry.grid(row=3, column=3)
-        twitter_access_token_secret_label.grid(row=4, column=2)
-        twitter_access_token_secret_entry.grid(row=4, column=3)
-        twitter_login_button.grid(row=5, column=2)
-        twitter_login_confirmed_label.grid(row=5, column=3)
-
-    @staticmethod
-    def build_reddit_frame(login_frame: tk.Frame):
+    def build_twitter_frame(frame: tk.Frame):
         """
-        Set up reddit frame
-        :param login_frame:
-        :return:
+        Create and place elements in the twitter frame
+        :param frame: frame to set up
+        :return: set up Twitter frame
         """
         # Create elements
-        reddit_label = tk.Label(login_frame, text='reddit')
-        reddit_label.config(font=('arial', 25))
-        reddit_username_label = tk.Label(login_frame, text='Enter reddit username:')
-        reddit_username_entry = tk.Entry(login_frame)
-        reddit_password_label = tk.Label(login_frame, text='Enter reddit password:')
-        reddit_password_entry = tk.Entry(login_frame)
-        reddit_client_id_label = tk.Label(login_frame, text='Enter reddit client ID:')
-        reddit_client_id_entry = tk.Entry(login_frame)
-        reddit_client_secret_label = tk.Label(login_frame, text='Enter reddit client secret:')
-        reddit_client_secret_entry = tk.Entry(login_frame)
-        reddit_login_confirm_text = tk.StringVar()
-        reddit_login_confirm_text.set('Waiting for Login')
-        reddit_login_confirmed_label = tk.Label(login_frame, textvariable=reddit_login_confirm_text)
-        reddit_login_button = tk.Button(
-            login_frame, text='Login to reddit',
+        title = tk.Label(frame, text='Twitter')
+        title.config(font=('arial', 25))
+        consumer_key_label = tk.Label(frame, text='Enter twitter consumer Key:')
+        consumer_key_entry = tk.Entry(frame)
+        consumer_secret_label = tk.Label(frame, text='Enter twitter consumer secret:')
+        consumer_secret_entry = tk.Entry(frame)
+        access_token_label = tk.Label(frame, text='Enter twitter Access Token:')
+        access_token_entry = tk.Entry(frame)
+        access_token_secret_label = tk.Label(frame, text='Enter Twitter access token secret:')
+        access_token_secret_entry = tk.Entry(frame)
+        login_confirm_text = tk.StringVar()
+        login_confirm_text.set('Waiting for login')
+        login_confirmed_label = tk.Label(frame, textvariable=login_confirm_text)
+        login_button = tk.Button(
+            frame, text='Login to Twitter',
+            command=lambda: twitter.setTwitterLogin(
+                consumer_key_entry.get(),
+                consumer_secret_entry.get(),
+                access_token_entry.get(),
+                access_token_secret_entry.get(),
+                login_confirm_text)
+        )
+
+        # Place elements
+        title.grid(row=0, column=2, columnspan=2)
+        consumer_key_label.grid(row=1, column=2)
+        consumer_key_entry.grid(row=1, column=3)
+        consumer_secret_label.grid(row=2, column=2)
+        consumer_secret_entry.grid(row=2, column=3)
+        access_token_label.grid(row=3, column=2)
+        access_token_entry.grid(row=3, column=3)
+        access_token_secret_label.grid(row=4, column=2)
+        access_token_secret_entry.grid(row=4, column=3)
+        login_button.grid(row=5, column=2)
+        login_confirmed_label.grid(row=5, column=3)
+
+    @staticmethod
+    def build_reddit_frame(frame: tk.Frame):
+        """
+        Create and place elements in the frame
+        :param frame: frame to set up
+        :return: None
+        """
+        # Create elements
+        title = tk.Label(frame, text='reddit')
+        title.config(font=('arial', 25))
+        username_label = tk.Label(frame, text='Enter reddit username:')
+        username_entry = tk.Entry(frame)
+        password_label = tk.Label(frame, text='Enter reddit password:')
+        password_entry = tk.Entry(frame)
+        client_id_label = tk.Label(frame, text='Enter reddit client ID:')
+        client_id_entry = tk.Entry(frame)
+        client_secret_label = tk.Label(frame, text='Enter reddit client secret:')
+        client_secret_entry = tk.Entry(frame)
+        login_confirm_text = tk.StringVar()
+        login_confirm_text.set('Waiting for Login')
+        login_confirmed_label = tk.Label(frame, textvariable=login_confirm_text)
+        login_button = tk.Button(
+            frame, text='Login to reddit',
             command=lambda: reddit.set_login(
-                reddit_username_entry.get(),
-                reddit_password_entry.get(),
-                reddit_client_id_entry.get(),
-                reddit_client_secret_entry.get(),
-                reddit_login_confirm_text,
+                username_entry.get(),
+                password_entry.get(),
+                client_id_entry.get(),
+                client_secret_entry.get(),
+                login_confirm_text,
                 False)
         )
 
         # Place elements
-        reddit_label.grid(row=0, column=0, columnspan=2)
-        reddit_username_label.grid(row=1, column=0)
-        reddit_username_entry.grid(row=1, column=1)
-        reddit_password_label.grid(row=2, column=0)
-        reddit_password_entry.grid(row=2, column=1)
-        reddit_client_id_label.grid(row=3, column=0)
-        reddit_client_id_entry.grid(row=3, column=1)
-        reddit_client_secret_label.grid(row=4, column=0)
-        reddit_client_secret_entry.grid(row=4, column=1)
-        reddit_login_button.grid(row=5, column=0)
-        reddit_login_confirmed_label.grid(row=5, column=1)
+        title.grid(row=0, column=0, columnspan=2)
+        username_label.grid(row=1, column=0)
+        username_entry.grid(row=1, column=1)
+        password_label.grid(row=2, column=0)
+        password_entry.grid(row=2, column=1)
+        client_id_label.grid(row=3, column=0)
+        client_id_entry.grid(row=3, column=1)
+        client_secret_label.grid(row=4, column=0)
+        client_secret_entry.grid(row=4, column=1)
+        login_button.grid(row=5, column=0)
+        login_confirmed_label.grid(row=5, column=1)
 
         # If a praw.ini file exists, log in to reddit
         praw_config_file = Path(os.path.join(user_home, '.config/praw.ini'))
         if praw_config_file.is_file():
-            reddit.set_login('', '', '', '', reddit_login_confirm_text, True)
+            reddit.set_login('', '', '', '', login_confirm_text, True)
 
-    @staticmethod
-    def build_reddit_tab(reddit_frame: tk.Frame):
+    def build_reddit_tab(self):
         """
-        Build the tab that will handle reddit configuration and actions
-        :param reddit_frame: frame to set up
-        :return: None
+        Build the tab that will handle Reddit configuration and actions
+        :return: Set up Reddit frame
         """
-        reddit_frame.grid()
+        frame = tk.Frame(self.tabs)
+        frame.grid()
 
         # Configuration section title
-        configuration_label = tk.Label(reddit_frame, text='Configuration')
+        configuration_label = tk.Label(frame, text='Configuration')
         configuration_label.config(font=('arial', 25))
 
         # Configuration to set total time of items to save
         current_time_to_save = tk.StringVar()
         current_time_to_save.set('Currently set to save: [nothing]')
-        time_keep_label = tk.Label(reddit_frame, text='Keep comments/submissions younger than: ')
+        time_keep_label = tk.Label(frame, text='Keep comments/submissions younger than: ')
 
-        # TODO: reduce redundancy
-        hours_drop_down = ttk.Combobox(reddit_frame, width=2)
-        hours_drop_down['values'] = build_number_list(24)
-        hours_drop_down['state'] = 'readonly'
-        hours_drop_down.current(0)
+        hours_dropdown = create_dropdown(frame, 2, 24)
+        days_dropdown = create_dropdown(frame, 2, 7)
+        weeks_dropdown = create_dropdown(frame, 2, 52)
+        years_dropdown = create_dropdown(frame, 2, 15)
 
-        days_drop_down = ttk.Combobox(reddit_frame, width=2)
-        days_drop_down['values'] = build_number_list(7)
-        days_drop_down['state'] = 'readonly'
-        days_drop_down.current(0)
+        hours_label = tk.Label(frame, text='hours')
+        days_label = tk.Label(frame, text='days')
+        weeks_label = tk.Label(frame, text='weeks')
+        years_label = tk.Label(frame, text='years')
 
-        weeks_drop_down = ttk.Combobox(reddit_frame, width=2)
-        weeks_drop_down['values'] = build_number_list(52)
-        weeks_drop_down['state'] = 'readonly'
-        weeks_drop_down.current(0)
-
-        years_drop_down = ttk.Combobox(reddit_frame, width=2)
-        years_drop_down['values'] = build_number_list(15)
-        years_drop_down['state'] = 'readonly'
-        years_drop_down.current(0)
-
-        hours_label = tk.Label(reddit_frame, text='hours')
-        days_label = tk.Label(reddit_frame, text='days')
-        weeks_label = tk.Label(reddit_frame, text='weeks')
-        years_label = tk.Label(reddit_frame, text='years')
-
-        time_currently_set_label = tk.Label(reddit_frame, textvariable=current_time_to_save)
+        time_currently_set_label = tk.Label(frame, textvariable=current_time_to_save)
         set_time_button = tk.Button(
-            reddit_frame, text='Set Total Time To Keep',
+            frame, text='Set Total Time To Keep',
             command=lambda: reddit.set_reddit_time_to_save(
-                hours_drop_down.get(), days_drop_down.get(),
-                weeks_drop_down.get(), years_drop_down.get(),
+                hours_dropdown.get(), days_dropdown.get(),
+                weeks_dropdown.get(), years_dropdown.get(),
                 current_time_to_save)
         )
 
@@ -234,51 +222,53 @@ class MainApp(tk.Frame):
         current_max_score = tk.StringVar()
         current_max_score.set('Currently set to: 0 upvotes')
 
-        max_score_label = tk.Label(reddit_frame, text='Delete comments/submissions less than score:')
-        max_score_entry_field = tk.Entry(reddit_frame, width=5)
-        max_score_currently_set_label = tk.Label(reddit_frame, textvariable=current_max_score)
+        max_score_label = tk.Label(frame, text='Delete comments/submissions less than score:')
+        max_score_entry_field = tk.Entry(frame, width=5)
+        max_score_currently_set_label = tk.Label(frame, textvariable=current_max_score)
 
         set_max_score_button = tk.Button(
-            reddit_frame, text='Set Max Score',
+            frame, text='Set Max Score',
             command=lambda: reddit.set_reddix_max_score(max_score_entry_field.get(), current_max_score)
         )
         set_max_score_unlimited_button = tk.Button(
-            reddit_frame, text='Set Unlimited',
+            frame, text='Set Unlimited',
             command=lambda: reddit.set_reddix_max_score('Unlimited', current_max_score)
         )
 
         # Configuration to let user skip over gilded comments
         gilded_skip_bool = tk.IntVar()
+        # Skip gilded posts by default
         gilded_skip_bool.set(1)
-        gilded_skip_label = tk.Label(reddit_frame, text='Skip Gilded comments:')
+        gilded_skip_label = tk.Label(frame, text='Skip Gilded comments:')
         gilded_skip_check_button = tk.Checkbutton(
-            reddit_frame, variable=gilded_skip_bool,
+            frame, variable=gilded_skip_bool,
             command=lambda: reddit.set_reddit_gilded_skip(gilded_skip_bool))
 
         # Allows the user to actually delete comments or submissions
-        deletion_section_label = tk.Label(reddit_frame, text='Deletion')
+        deletion_section_label = tk.Label(frame, text='Deletion')
         deletion_section_label.config(font=('arial', 25))
 
         currently_deleting_text = tk.StringVar()
         currently_deleting_text.set('')
-        deletion_progress_label = tk.Label(reddit_frame, textvariable=currently_deleting_text)
+        deletion_progress_label = tk.Label(frame, textvariable=currently_deleting_text)
 
-        deletion_progress_bar = ttk.Progressbar(reddit_frame, orient='horizontal',
-                                                length=100, mode='determinate')
+        deletion_progress_bar = ttk.Progressbar(
+            frame, orient='horizontal',
+            length=100, mode='determinate')
 
         num_deleted_items_text = tk.StringVar()
         num_deleted_items_text.set('')
-        num_deleted_items_label = tk.Label(reddit_frame, textvariable=num_deleted_items_text)
+        num_deleted_items_label = tk.Label(frame, textvariable=num_deleted_items_text)
 
         delete_comments_button = tk.Button(
-            reddit_frame, text='Delete comments',
+            frame, text='Delete comments',
             command=lambda: reddit.delete_reddit_items(
                 root, True, currently_deleting_text,
                 deletion_progress_bar, num_deleted_items_text)
         )
 
         delete_submissions_button = tk.Button(
-            reddit_frame, text='Delete submissions',
+            frame, text='Delete submissions',
             command=lambda: reddit.delete_reddit_items(
                 root, False, currently_deleting_text,
                 deletion_progress_bar, num_deleted_items_text)
@@ -288,41 +278,37 @@ class MainApp(tk.Frame):
         test_run_bool.set(1)
         test_run_text = 'TestRun - Checking this will show you what would be deleted, without deleting anything'
         test_run_check_button = tk.Checkbutton(
-            reddit_frame, text=test_run_text,
+            frame, text=test_run_text,
             variable=test_run_bool,
             command=lambda: reddit.set_reddit_test_run(test_run_bool))
 
         # Allows the user to schedule runs
-        scheduler_section_label = tk.Label(reddit_frame, text='Scheduler')
+        scheduler_section_label = tk.Label(frame, text='Scheduler')
         scheduler_section_label.config(font=('arial', 25))
 
-        scheduler_reddit_bool = tk.IntVar()
-        scheduler_reddit_text = 'Select to delete reddit comments + submissions daily at'
+        scheduler_bool = tk.IntVar()
+        scheduler_text = 'Select to delete reddit comments + submissions daily at'
 
-        hours_selection_drop_down = ttk.Combobox(reddit_frame, width=2)
-        hours_selection_drop_down['values'] = build_number_list(24)
-        hours_selection_drop_down['state'] = 'readonly'
-        hours_selection_drop_down.current(0)
+        hours_dropdown = create_dropdown(frame, 2, 24)
 
-        scheduler_reddit_check_button = tk.Checkbutton(
-            reddit_frame, text=scheduler_reddit_text,
-            variable=scheduler_reddit_bool,
+        scheduler_check_button = tk.Checkbutton(
+            frame, text=scheduler_text,
+            variable=scheduler_bool,
             command=lambda: reddit.set_reddit_scheduler(
-                root, scheduler_reddit_bool,
-                int(hours_selection_drop_down.get()),
+                root, scheduler_bool,
+                int(hours_dropdown.get()),
                 tk.StringVar(), ttk.Progressbar()))
 
         # This part actually builds the reddit tab
         configuration_label.grid(row=0, columnspan=11, sticky=(tk.N, tk.S), pady=5)
-
         time_keep_label.grid(row=1, column=0)
-        hours_drop_down.grid(row=1, column=1, sticky=(tk.W,))
+        hours_dropdown.grid(row=1, column=1, sticky=(tk.W,))
         hours_label.grid(row=1, column=2, sticky=(tk.W,))
-        days_drop_down.grid(row=1, column=3, sticky=(tk.W,))
+        days_dropdown.grid(row=1, column=3, sticky=(tk.W,))
         days_label.grid(row=1, column=4, sticky=(tk.W,))
-        weeks_drop_down.grid(row=1, column=5, sticky=(tk.W,))
+        weeks_dropdown.grid(row=1, column=5, sticky=(tk.W,))
         weeks_label.grid(row=1, column=6, sticky=(tk.W,))
-        years_drop_down.grid(row=1, column=7, sticky=(tk.W,))
+        years_dropdown.grid(row=1, column=7, sticky=(tk.W,))
         years_label.grid(row=1, column=8, sticky=(tk.W,))
         set_time_button.grid(row=1, column=9, columnspan=2)
         time_currently_set_label.grid(row=1, column=11)
@@ -336,7 +322,7 @@ class MainApp(tk.Frame):
         gilded_skip_label.grid(row=3, column=0)
         gilded_skip_check_button.grid(row=3, column=1)
 
-        ttk.Separator(reddit_frame, orient=tk.HORIZONTAL).grid(
+        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
             row=4, columnspan=13, sticky=(tk.E, tk.W), pady=5)
 
         deletion_section_label.grid(row=5, columnspan=11, sticky=(tk.N, tk.S), pady=5)
@@ -349,21 +335,21 @@ class MainApp(tk.Frame):
         deletion_progress_bar.grid(row=8, column=0, sticky=(tk.W,))
         num_deleted_items_label.grid(row=8, column=0, sticky=(tk.E,))
 
-        ttk.Separator(reddit_frame, orient=tk.HORIZONTAL).grid(
+        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
             row=9, columnspan=13, sticky=(tk.E, tk.W), pady=5)
 
         scheduler_section_label.grid(row=10, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+        scheduler_check_button.grid(row=11, column=0)
+        hours_dropdown.grid(row=11, column=1)
 
-        scheduler_reddit_check_button.grid(row=11, column=0)
-        hours_selection_drop_down.grid(row=11, column=1)
+        return frame
 
-    @staticmethod
-    def build_twitter_tab(frame):
+    def build_twitter_tab(self):
         """
         Builds tab that handles twitter config and actions
-        :param frame: frame to set up
-        :return:
+        :return: A set up Twitter tab
         """
+        frame = tk.Frame(self.tabs)
         frame.grid()
 
         # Configuration section title
@@ -375,25 +361,10 @@ class MainApp(tk.Frame):
         current_time_to_save.set('Currently set to save: [nothing]')
         time_keep_label = tk.Label(frame, text='Keep items younger than: ')
 
-        hours_drop_down = ttk.Combobox(frame, width=2)
-        hours_drop_down['values'] = build_number_list(24)
-        hours_drop_down['state'] = 'readonly'
-        hours_drop_down.current(0)
-
-        days_drop_down = ttk.Combobox(frame, width=2)
-        days_drop_down['values'] = build_number_list(7)
-        days_drop_down['state'] = 'readonly'
-        days_drop_down.current(0)
-
-        weeks_drop_down = ttk.Combobox(frame, width=2)
-        weeks_drop_down['values'] = build_number_list(52)
-        weeks_drop_down['state'] = 'readonly'
-        weeks_drop_down.current(0)
-
-        years_drop_down = ttk.Combobox(frame, width=2)
-        years_drop_down['values'] = build_number_list(15)
-        years_drop_down['state'] = 'readonly'
-        years_drop_down.current(0)
+        hours_dropdown = create_dropdown(frame, 2, 24)
+        days_dropdown = create_dropdown(frame, 2, 7)
+        weeks_dropdown = create_dropdown(frame, 2, 52)
+        years_dropdown = create_dropdown(frame, 2, 15)
 
         hours_label = tk.Label(frame, text='hours')
         days_label = tk.Label(frame, text='days')
@@ -404,8 +375,8 @@ class MainApp(tk.Frame):
         set_time_button = tk.Button(
             frame, text='Set Total Time To Keep',
             command=lambda: twitter.setTwitterTimeToSave(
-                hours_drop_down.get(), days_drop_down.get(),
-                weeks_drop_down.get(), years_drop_down.get(), current_time_to_save)
+                hours_dropdown.get(), days_dropdown.get(),
+                weeks_dropdown.get(), years_dropdown.get(), current_time_to_save)
         )
 
         # Configuration to set saving items with a certain amount of favorites
@@ -470,7 +441,8 @@ class MainApp(tk.Frame):
 
         test_run_bool = tk.IntVar()
         test_run_bool.set(1)
-        test_run_text = 'TestRun - Checking this will show you what would be deleted, without actually deleting anything'
+        test_run_text = 'TestRun - Checking this will show you what would ' \
+                        'be deleted, without actually deleting anything'
         test_run_check_button = tk.Checkbutton(
             frame, text=test_run_text,
             variable=test_run_bool,
@@ -483,28 +455,29 @@ class MainApp(tk.Frame):
         scheduler_twitter_bool = tk.IntVar()
         scheduler_twitter_text = 'Select to delete twitter comments + submissions daily at'
 
-        hours_selection_drop_down = ttk.Combobox(frame, width=2)
-        hours_selection_drop_down['values'] = build_number_list(24)
-        hours_selection_drop_down['state'] = 'readonly'
-        hours_selection_drop_down.current(0)
+        hours_dropdown = create_dropdown(frame, 2, 24, 'readonly', 0)
+        hours_dropdown = ttk.Combobox(frame, width=2)
+        hours_dropdown['values'] = build_number_list(24)
+        hours_dropdown['state'] = 'readonly'
+        hours_dropdown.current(0)
 
-        scheduler_twitter_check_button = tk.Checkbutton(
+        scheduler_check_button = tk.Checkbutton(
             frame, text=scheduler_twitter_text,
             variable=scheduler_twitter_bool,
             command=lambda: twitter.setTwitterScheduler(
-                root, scheduler_twitter_bool, int(hours_selection_drop_down.get()),
+                root, scheduler_twitter_bool, int(hours_dropdown.get()),
                 tk.StringVar(), ttk.Progressbar()))
 
         # Actually build the twitter tab
         configuration_label.grid(row=0, columnspan=11, sticky=(tk.N, tk.S), pady=5)
         time_keep_label.grid(row=1, column=0)
-        hours_drop_down.grid(row=1, column=1, sticky=(tk.W,))
+        hours_dropdown.grid(row=1, column=1, sticky=(tk.W,))
         hours_label.grid(row=1, column=2, sticky=(tk.W,))
-        days_drop_down.grid(row=1, column=3, sticky=(tk.W,))
+        days_dropdown.grid(row=1, column=3, sticky=(tk.W,))
         days_label.grid(row=1, column=4, sticky=(tk.W,))
-        weeks_drop_down.grid(row=1, column=5, sticky=(tk.W,))
+        weeks_dropdown.grid(row=1, column=5, sticky=(tk.W,))
         weeks_label.grid(row=1, column=6, sticky=(tk.W,))
-        years_drop_down.grid(row=1, column=7, sticky=(tk.W,))
+        years_dropdown.grid(row=1, column=7, sticky=(tk.W,))
         years_label.grid(row=1, column=8, sticky=(tk.W,))
         set_time_button.grid(row=1, column=9, columnspan=2)
         time_currently_set_label.grid(row=1, column=11)
@@ -538,9 +511,10 @@ class MainApp(tk.Frame):
             row=9, columnspan=13, sticky=(tk.E, tk.W), pady=5)
 
         scheduler_section_label.grid(row=10, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+        scheduler_check_button.grid(row=11, column=0)
+        hours_dropdown.grid(row=11, column=1)
 
-        scheduler_twitter_check_button.grid(row=11, column=0)
-        hours_selection_drop_down.grid(row=11, column=1)
+        return frame
 
 
 if __name__ == '__main__':
