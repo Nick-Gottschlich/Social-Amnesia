@@ -6,11 +6,11 @@ from tkinter import messagebox
 
 from services import reddit, twitter
 
-user_home = os.path.expanduser('~')
+USER_HOME_PATH = os.path.expanduser('~')
 
 
 def create_storage_folder():
-    storage_folder_path = os.path.join(user_home, '.SocialAmnesia')
+    storage_folder_path = os.path.join(USER_HOME_PATH, '.SocialAmnesia')
     reddit_storage_folder_path = os.path.join(storage_folder_path, "reddit")
 
     if not os.path.exists(storage_folder_path):
@@ -29,6 +29,15 @@ def build_number_list(max_number):
 
 def create_dropdown(master: tk.Frame, width: int, value_quantity: int,
                     element_state: str = 'readonly', current: int = 0):
+    """
+    Creates a set up dropdown
+    :param master: parent element
+    :param width: width of the element
+    :param value_quantity: how many number to create in the dropdown list
+    :param element_state: preferably set to 'readonly'
+    :param current: current chosen value
+    :return: Dropdown element
+    """
     dropdown = ttk.Combobox(master, width=width)
     dropdown['values'] = build_number_list(value_quantity)
     dropdown['state'] = element_state
@@ -178,7 +187,7 @@ class MainApp(tk.Frame):
         login_confirmed_label.grid(row=5, column=1)
 
         # If a praw.ini file exists, log in to reddit
-        praw_config_file = Path(os.path.join(user_home, '.config/praw.ini'))
+        praw_config_file = Path(os.path.join(USER_HOME_PATH, '.config/praw.ini'))
         if praw_config_file.is_file():
             reddit.set_login('', '', '', '', login_confirm_text, True)
 
@@ -199,6 +208,7 @@ class MainApp(tk.Frame):
         current_time_to_save.set('Currently set to save: [nothing]')
         time_keep_label = tk.Label(frame, text='Keep comments/submissions younger than: ')
 
+        # TODO: Fix hours
         hours_dropdown = create_dropdown(frame, 2, 24)
         days_dropdown = create_dropdown(frame, 2, 7)
         weeks_dropdown = create_dropdown(frame, 2, 52)
@@ -452,20 +462,16 @@ class MainApp(tk.Frame):
         scheduler_section_label = tk.Label(frame, text='Scheduler')
         scheduler_section_label.config(font=('arial', 25))
 
-        scheduler_twitter_bool = tk.IntVar()
-        scheduler_twitter_text = 'Select to delete twitter comments + submissions daily at'
+        scheduler_bool = tk.IntVar()
+        scheduler_text = 'Select to delete twitter comments + submissions daily at'
 
-        hours_dropdown = create_dropdown(frame, 2, 24, 'readonly', 0)
-        hours_dropdown = ttk.Combobox(frame, width=2)
-        hours_dropdown['values'] = build_number_list(24)
-        hours_dropdown['state'] = 'readonly'
-        hours_dropdown.current(0)
+        hours_dropdown = create_dropdown(frame, 2, 24)
 
         scheduler_check_button = tk.Checkbutton(
-            frame, text=scheduler_twitter_text,
-            variable=scheduler_twitter_bool,
+            frame, text=scheduler_text,
+            variable=scheduler_bool,
             command=lambda: twitter.setTwitterScheduler(
-                root, scheduler_twitter_bool, int(hours_dropdown.get()),
+                root, scheduler_bool, int(hours_dropdown.get()),
                 tk.StringVar(), ttk.Progressbar()))
 
         # Actually build the twitter tab
