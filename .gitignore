@@ -10,6 +10,10 @@ praw.ini
 # holder folder
 holder/
 
+# virtualenv
+bin/
+include/
+pip-selfcheck.json
 
 # Created by https://www.gitignore.io/api/git,linux,macos,python,windows,pycharm+all,visualstudiocode
 
