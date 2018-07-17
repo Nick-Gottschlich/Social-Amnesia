@@ -56,7 +56,7 @@ username={username}'''
     reddit_state['user'] = reddit.redditor(reddit_username)
     reddit_state['timeToSave'] = arrow.now().replace(hours=0)
     reddit_state['maxScore'] = 0
-    reddit_state['testRun'] = 0
+    reddit_state['testRun'] = 1
     reddit_state['gildedSkip'] = 0
 
 

@@ -10,6 +10,11 @@ USER_HOME_PATH = os.path.expanduser('~')
 
 
 def create_storage_folder():
+    """
+    Creates the folders that can be used to store states between application usage sections.
+    Currently the only thing stored is login information for reddit.
+    :return: none
+    """
     storage_folder_path = os.path.join(USER_HOME_PATH, '.SocialAmnesia')
     reddit_storage_folder_path = os.path.join(storage_folder_path, "reddit")
 
@@ -77,12 +82,10 @@ class MainApp(tk.Frame):
         """
         received_error = str(args[1])
         errors = {
-            # reddit error, happens if you try to run `reddit.user.me()` and login fails
-            'received 401 HTTP response': 'Failed to login to reddit!',
-            "'user'": 'You are not logged into reddit!',
-            "[{'code': 215, 'message': 'Bad Authentication data.'}]": 'Failed to login to twitter!',
-            'list index out of range': 'No tweets or favorites found!',
-            "'api'": 'You are not logged in to twitter!'
+            "<class 'prawcore.exceptions.ResponseException'>": 'Failed to login to reddit!',
+            "<class 'tweepy.error.TweepError'>": 'Failed to login to twitter!',
+            "<class 'KeyError'>": 'You are not logged in!',
+            "<class 'IndexError'>": 'No tweets/favorites found!',
         }
         messagebox.showerror('Error', errors.get(received_error, received_error))
 
@@ -299,14 +302,14 @@ class MainApp(tk.Frame):
         scheduler_bool = tk.IntVar()
         scheduler_text = 'Select to delete reddit comments + submissions daily at'
 
-        hours_dropdown = create_dropdown(frame, 2, 24)
+        scheduler_hours_dropdown = create_dropdown(frame, 2, 24)
 
         scheduler_check_button = tk.Checkbutton(
             frame, text=scheduler_text,
             variable=scheduler_bool,
             command=lambda: reddit.set_reddit_scheduler(
                 root, scheduler_bool,
-                int(hours_dropdown.get()),
+                int(scheduler_hours_dropdown.get()),
                 tk.StringVar(), ttk.Progressbar()))
 
         # This part actually builds the reddit tab
@@ -350,7 +353,7 @@ class MainApp(tk.Frame):
 
         scheduler_section_label.grid(row=10, columnspan=11, sticky=(tk.N, tk.S), pady=5)
         scheduler_check_button.grid(row=11, column=0)
-        hours_dropdown.grid(row=11, column=1)
+        scheduler_hours_dropdown.grid(row=11, column=1)
 
         return frame
 
@@ -465,19 +468,19 @@ class MainApp(tk.Frame):
         scheduler_bool = tk.IntVar()
         scheduler_text = 'Select to delete twitter comments + submissions daily at'
 
-        hours_dropdown = create_dropdown(frame, 2, 24)
+        scheduler_hours_dropdown = create_dropdown(frame, 2, 24)
 
         scheduler_check_button = tk.Checkbutton(
             frame, text=scheduler_text,
             variable=scheduler_bool,
             command=lambda: twitter.setTwitterScheduler(
-                root, scheduler_bool, int(hours_dropdown.get()),
+                root, scheduler_bool, int(scheduler_hours_dropdown.get()),
                 tk.StringVar(), ttk.Progressbar()))
 
         # Actually build the twitter tab
         configuration_label.grid(row=0, columnspan=11, sticky=(tk.N, tk.S), pady=5)
         time_keep_label.grid(row=1, column=0)
-        hours_dropdown.grid(row=1, column=1, sticky=(tk.W,))
+        scheduler_hours_dropdown.grid(row=1, column=1, sticky=(tk.W,))
         hours_label.grid(row=1, column=2, sticky=(tk.W,))
         days_dropdown.grid(row=1, column=3, sticky=(tk.W,))
         days_label.grid(row=1, column=4, sticky=(tk.W,))
