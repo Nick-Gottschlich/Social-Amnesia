@@ -211,7 +211,6 @@ class MainApp(tk.Frame):
         current_time_to_save.set('Currently set to save: [nothing]')
         time_keep_label = tk.Label(frame, text='Keep comments/submissions younger than: ')
 
-        # TODO: Fix hours
         hours_dropdown = create_dropdown(frame, 2, 24)
         days_dropdown = create_dropdown(frame, 2, 7)
         weeks_dropdown = create_dropdown(frame, 2, 52)

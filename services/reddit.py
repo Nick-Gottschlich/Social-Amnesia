@@ -17,8 +17,16 @@ praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 reddit_state = {}
 
 
-# Logs into reddit using PRAW, gives user an error on failure
 def set_login(username, password, client_id, client_secret, login_confirm_text, init):
+    """
+    Logs into reddit using PRAW, gives user an error on failure
+    :param username: input received from the UI - reddit password
+    :param password: input received from the UI - reddit username
+    :param client_id: input received from the UI - reddit app client id
+    :param client_secret: input received from the UI - reddit app client secret
+    :param login_confirm_text: confirmation text - shown to the user in the UI
+    :param init: boolean, true if this is the run performed on startup, false otherwise
+    """
     if init:
         try:
             reddit = praw.Reddit('user', user_agent=USER_AGENT)
@@ -64,11 +72,11 @@ def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to
     """
     Sets the time of comments or submissions to save, stores it in redditState
     and updates the UI to show what its currently set to.
-    :param hours_to_save: input received from the UI
-    :param days_to_save: input received from the UI
-    :param weeks_to_save: input received from the UI
-    :param years_to_save: input received from the UI
-    :param current_time_to_save: input received from the UI
+    :param hours_to_save: input received from the UI - how many hours of items to save
+    :param days_to_save: input received from the UI - how many days of items to save
+    :param weeks_to_save: input received from the UI - how many weeks of items to save
+    :param years_to_save: input received from the UI - how many years of items to save
+    :param current_time_to_save: text shown to user in UI so they know how much time will be saved
     :return: None
     """
     total_hours = int(hours_to_save) + (int(days_to_save) * 24) + \
@@ -96,9 +104,9 @@ def set_reddix_max_score(max_score, current_max_score):
     """
     Sets the maximum score level, any posts above this store will be skipped over
     updates the UI to show what its currently set to.
-    :param max_score: the input received from the UI
-    :param current_max_score: what is stored for the user in the UI
-    :return:
+    :param max_score: the input received from the UI - any comments greater than or equal to this will be saved
+    :param current_max_score: text to display for the user in the UI - current max_score
+    :return: none
     """
     if max_score == '':
         max_score = 0
@@ -111,9 +119,12 @@ def set_reddix_max_score(max_score, current_max_score):
     current_max_score.set(f'Currently set to: {str(max_score)} upvotes')
 
 
-# Set whether to skip gilded comments or not (stored in redditState)
-#   gildedSkipBool - 0 to delete gilded comments, 1 to skip gilded comments
 def set_reddit_gilded_skip(gilded_skip_bool):
+    """
+    Set whether to skip gilded comments or not
+    :param gildedSkipBool: false to delete gilded comments, true to skip gilded comments
+    :return: none
+    """
     skip_gild = gilded_skip_bool.get()
     if skip_gild:
         reddit_state['gildedSkip'] = skip_gild
@@ -127,7 +138,7 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     :param currently_deleting_text: Describes the item that is currently being deleted.
     :param deletion_progress_bar: updates as the items are looped through
     :param num_deleted_items_text: updates as X out of Y comments are looped through
-    :return:
+    :return: none
     """
     if comment_bool:
         total_items = sum(1 for _ in reddit_state['user'].comments.new(limit=None))
@@ -139,27 +150,30 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     num_deleted_items_text.set(f'0/{str(total_items)} items processed so far')
 
     count = 1
+
+    def format_snippet(text, snippet):
+        """
+        Helper function to format the snippets from reddit comments/submissions
+        :param text: full text of item
+        :param snippet: 50 char snippet of item
+        :return: formatted snippet with '...' if needed
+        """
+        if len(text) > 50:
+            snippet = snippet + '...'
+        for char in snippet:
+            # tkinter can't handle certain unicode characters,
+            # so we strip them
+            if ord(char) > 65535:
+                snippet = snippet.replace(char, '')
+        return snippet
+
     for item in item_array:
         if comment_bool:
             item_string = 'Comment'
-            item_snippet = item.body[0:15]
-            if len(item.body) > 15:
-                item_snippet = item_snippet + '...'
-            for char in item_snippet:
-                # tkinter can't handle certain unicode characters,
-                # so we strip them
-                if ord(char) > 65535:
-                    item_snippet = item_snippet.replace(char, '')
+            item_snippet = format_snippet(item.body, item.body[0:50])
         else:
             item_string = 'Submission'
-            item_snippet = item.title[0:50]
-            if len(item.title) > 50:
-                item_snippet = item_snippet + '...'
-            for char in item_snippet:
-                # tkinter can't handle certain unicode characters,
-                # so we strip them
-                if ord(char) > 65535:
-                    item_snippet = item_snippet.replace(char, '')
+            item_snippet = format_snippet(item.title, item.title[0:50])
 
         time_created = arrow.get(item.created_utc)
 
