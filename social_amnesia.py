@@ -96,16 +96,16 @@ class MainApp(tk.Frame):
         """
         frame = tk.Frame(self.tabs)
         frame.grid()
-        self.build_reddit_frame(frame)
-        self.build_twitter_frame(frame)
+        self.build_reddit_login(frame)
+        self.build_twitter_login(frame)
         return frame
 
     @staticmethod
-    def build_twitter_frame(frame: tk.Frame):
+    def build_twitter_login(frame: tk.Frame):
         """
-        Create and place elements in the twitter frame
-        :param frame: frame to set up
-        :return: set up Twitter frame
+        Create and place elements for twitter in the login frame
+        :param frame: frame to set up, in this case the login tab
+        :return: none
         """
         # Create elements
         title = tk.Label(frame, text='Twitter')
@@ -145,10 +145,10 @@ class MainApp(tk.Frame):
         login_confirmed_label.grid(row=5, column=3)
 
     @staticmethod
-    def build_reddit_frame(frame: tk.Frame):
+    def build_reddit_login(frame: tk.Frame):
         """
-        Create and place elements in the frame
-        :param frame: frame to set up
+        Create and place elements for reddit in the login frame
+        :param frame: frame to set up, in this case the login tab
         :return: None
         """
         # Create elements
