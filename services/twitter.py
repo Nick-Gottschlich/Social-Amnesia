@@ -1,15 +1,14 @@
+from datetime import datetime
 from tkinter import messagebox
-import tweepy
 
 import arrow
-from datetime import datetime
-import json
+import tweepy
 
 # for dev purposes
 # from secrets import twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret
 
 # twitter state object
-#  Handles configuration options set by the user
+# Handles configuration options set by the user
 twitterState = {}
 
 
@@ -40,17 +39,17 @@ def setTwitterLogin(consumerKey, consumerSecret, accessToken, accessTokenSecret,
 
 def setTwitterTimeToSave(hoursToSave, daysToSave, weeksToSave, yearsToSave, currentTimeToSave):
     totalHours = int(hoursToSave) + (int(daysToSave) * 24) + \
-        (int(weeksToSave) * 168) + (int(yearsToSave) * 8736)
+                 (int(weeksToSave) * 168) + (int(yearsToSave) * 8736)
 
     twitterState['timeToSave'] = arrow.now().replace(
         hours=-totalHours)
-    
+
     def setText(time, text):
         if (time == '0'):
             return ''
         else:
             return time + text
-    
+
     hoursText = setText(hoursToSave, 'hours')
     daysText = setText(daysToSave, 'days')
     weeksText = setText(weeksToSave, 'weeks')
@@ -130,17 +129,17 @@ def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDel
 
         if (timeCreated > twitterState['timeToSave']):
             currentlyDeletingText.set(f'Tweet: `{tweetSnippet}` is more recent than cutoff, skipping.')
-        elif(tweet.favorite_count >= twitterState['maxFavorites']):
+        elif (tweet.favorite_count >= twitterState['maxFavorites']):
             currentlyDeletingText.set(
                 f'Tweet: `{tweetSnippet}` has more favorites than max favorites, skipping.')
-        elif(tweet.retweet_count >= twitterState['maxRetweets'] and not tweet.retweeted):
+        elif (tweet.retweet_count >= twitterState['maxRetweets'] and not tweet.retweeted):
             currentlyDeletingText.set(
                 f'Tweet: `{tweetSnippet}` has more retweets than max retweets, skipping.')
         else:
             if (twitterState['testRun'] == 0):
 
                 currentlyDeletingText.set(f'Deleting tweet: `{tweetSnippet}`')
-                
+
                 twitterState['api'].destroy_status(tweet.id)
             else:
                 currentlyDeletingText.set(f'-TEST RUN- Would delete tweet: `{tweetSnippet}`')
@@ -153,7 +152,7 @@ def deleteTwitterTweets(root, currentlyDeletingText, deletionProgressBar, numDel
         count += 1
 
 
-def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
+def delete_twitter_favorites(root, currentlyDeletingText, deletionProgressBar, numDeletedItemsText):
     userFavorites = []
 
     # make initial request for most recent favorites
@@ -176,10 +175,10 @@ def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, num
 
         # update the id of the oldest tweet less one
         oldest = userFavorites[-1].id - 1
-    
+
     # for favorite in userFavorites:
     #     print(favorite.text)
-    
+
     totalFavorites = len(userFavorites)
 
     numDeletedItemsText.set(f'0/{str(totalFavorites)} items processed so far')
@@ -219,8 +218,10 @@ def deleteTwitterFavorites(root, currentlyDeletingText, deletionProgressBar, num
 def setTwitterTestRun(testRunBool):
     twitterState['testRun'] = testRunBool.get()
 
+
 # neccesary global bool for the scheduler
 alreadyRanBool = False
+
 
 def setTwitterScheduler(root, schedulerBool, hourOfDay, stringVar, progressVar):
     global alreadyRanBool
@@ -235,7 +236,7 @@ def setTwitterScheduler(root, schedulerBool, hourOfDay, stringVar, progressVar):
             'Scheduler', 'Social Amnesia is now erasing your past on twitter.')
 
         deleteTwitterTweets(root, stringVar, progressVar, stringVar)
-        deleteTwitterFavorites(root, stringVar, progressVar, stringVar)
+        delete_twitter_favorites(root, stringVar, progressVar, stringVar)
 
         alreadyRanBool = True
     if (currentTime < 23):
