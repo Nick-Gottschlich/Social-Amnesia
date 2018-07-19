@@ -16,6 +16,8 @@ praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 # as well as any configuration options about how to act.
 reddit_state = {}
 
+# neccesary global bool for the scheduler
+alreadyRanBool = False
 
 def set_login(username, password, client_id, client_secret, login_confirm_text, init):
     """
@@ -212,22 +214,24 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
         count += 1
 
 
-# Set whether to run a test run or not (stored in redditState)
-# testRunBool - 0 for real run, 1 for test run
 def set_reddit_test_run(test_run_bool):
+    """
+    Set whether to run a test run or not (stored in redditState)
+    :param testRunBool: 0 for real run, 1 for test run
+    :return: none
+    """
     reddit_state['testRun'] = test_run_bool.get()
 
 
-# neccesary global bool for the scheduler
-alreadyRanBool = False
-
-
-# reddit scheduler
-#   root: tkinkter window
-#   schedulerBool: true if set to run, false otherwise
-#   hourOfDay: int 0-23, sets hour of day to run on
-#   stringVar, progressVar - empty Vars needed to run the deleteRedditItems function
 def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var):
+    """
+    The scheduler that users can use to have social amnesia wipe comments at a set point in time, repeatedly.
+    :param root: tkinkter window
+    :param schedulerBool: true if set to run, false otherwise
+    :param hourOfDay: int 0-23, sets hour of day to run on
+    :param stringVar, progressVar - empty Vars needed to run the deleteRedditItems function
+    :return: none
+    """
     global alreadyRanBool
     if not scheduler_bool.get():
         alreadyRanBool = False
