@@ -123,7 +123,7 @@ class MainApp(tk.Frame):
         login_confirmed_label = tk.Label(frame, textvariable=login_confirm_text)
         login_button = tk.Button(
             frame, text='Login to Twitter',
-            command=lambda: twitter.setTwitterLogin(
+            command=lambda: twitter.set_twitter_login(
                 consumer_key_entry.get(),
                 consumer_secret_entry.get(),
                 access_token_entry.get(),
@@ -386,7 +386,7 @@ class MainApp(tk.Frame):
         time_currently_set_label = tk.Label(frame, textvariable=current_time_to_save)
         set_time_button = tk.Button(
             frame, text='Set Total Time To Keep',
-            command=lambda: twitter.setTwitterTimeToSave(
+            command=lambda: twitter.set_twitter_time_to_save(
                 hours_dropdown.get(), days_dropdown.get(),
                 weeks_dropdown.get(), years_dropdown.get(), current_time_to_save)
         )
@@ -399,12 +399,12 @@ class MainApp(tk.Frame):
         max_favorites_currently_set_label = tk.Label(frame, textvariable=current_max_favorites)
         set_max_favorites_button = tk.Button(
             frame, text='Set Max Favorites',
-            command=lambda: twitter.setTwitterMaxFavorites(
+            command=lambda: twitter.set_twitter_max_favorites(
                 max_favorites_entry_field.get(), current_max_favorites)
         )
         set_max_favorites_unlimited_button = tk.Button(
             frame, text='Set Unlimited',
-            command=lambda: twitter.setTwitterMaxFavorites('Unlimited', current_max_favorites)
+            command=lambda: twitter.set_twitter_max_favorites('Unlimited', current_max_favorites)
         )
 
         # Configuration to set saving items with a certain amount of retweets
@@ -415,12 +415,12 @@ class MainApp(tk.Frame):
         max_retweets_currently_set_label = tk.Label(frame, textvariable=current_max_retweets)
         set_max_retweets_button = tk.Button(
             frame, text='Set Max Retweets',
-            command=lambda: twitter.setTwitterMaxRetweets(
+            command=lambda: twitter.set_twitter_max_retweets(
                 max_retweets_entry_field.get(), current_max_retweets)
         )
         set_max_retweets_unlimited_button = tk.Button(
             frame, text='Set Unlimited',
-            command=lambda: twitter.setTwitterMaxRetweets(
+            command=lambda: twitter.set_twitter_max_retweets(
                 'Unlimited', current_max_retweets)
         )
 
@@ -441,7 +441,7 @@ class MainApp(tk.Frame):
 
         delete_comments_button = tk.Button(
             frame, text='Delete tweets',
-            command=lambda: twitter.deleteTwitterTweets(
+            command=lambda: twitter.delete_twitter_tweets(
                 root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text)
         )
 
@@ -458,7 +458,7 @@ class MainApp(tk.Frame):
         test_run_check_button = tk.Checkbutton(
             frame, text=test_run_text,
             variable=test_run_bool,
-            command=lambda: twitter.setTwitterTestRun(test_run_bool))
+            command=lambda: twitter.set_twitter_test_run(test_run_bool))
 
         # Allows the user to schedule runs
         scheduler_section_label = tk.Label(frame, text='Scheduler')
@@ -472,7 +472,7 @@ class MainApp(tk.Frame):
         scheduler_check_button = tk.Checkbutton(
             frame, text=scheduler_text,
             variable=scheduler_bool,
-            command=lambda: twitter.setTwitterScheduler(
+            command=lambda: twitter.set_twitter_scheduler(
                 root, scheduler_bool, int(scheduler_hours_dropdown.get()),
                 tk.StringVar(), ttk.Progressbar()))
 
