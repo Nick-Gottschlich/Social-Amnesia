@@ -167,7 +167,7 @@ class MainApp(tk.Frame):
         login_confirmed_label = tk.Label(frame, textvariable=login_confirm_text)
         login_button = tk.Button(
             frame, text='Login to reddit',
-            command=lambda: reddit.set_login(
+            command=lambda: reddit.set_reddit_login(
                 username_entry.get(),
                 password_entry.get(),
                 client_id_entry.get(),
@@ -192,7 +192,7 @@ class MainApp(tk.Frame):
         # If a praw.ini file exists, log in to reddit
         praw_config_file = Path(os.path.join(USER_HOME_PATH, '.config/praw.ini'))
         if praw_config_file.is_file():
-            reddit.set_login('', '', '', '', login_confirm_text, True)
+            reddit.set_reddit_login('', '', '', '', login_confirm_text, True)
 
     def build_reddit_tab(self):
         """

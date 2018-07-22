@@ -19,7 +19,7 @@ reddit_state = {}
 # neccesary global bool for the scheduler
 alreadyRanBool = False
 
-def set_login(username, password, client_id, client_secret, login_confirm_text, init):
+def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, init):
     """
     Logs into reddit using PRAW, gives user an error on failure
     :param username: input received from the UI - reddit password

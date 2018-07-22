@@ -11,6 +11,8 @@ import tweepy
 # Handles configuration options set by the user
 twitter_state = {}
 
+# neccesary global bool for the scheduler
+already_ran_bool = False
 
 def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text):
     # ============ REAL =============
@@ -88,26 +90,13 @@ def set_twitter_max_retweets(max_retweets, current_max_retweets):
 
 def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
     user_tweets = []
-
-    # make initial request for most recent tweets 
-    #  (200 is the maximum allowed count)
     new_tweets = twitter_state['api'].user_timeline(count=200)
-
-    # save most recent tweets
     user_tweets.extend(new_tweets)
-
-    # save the id of the oldest tweet less one
     oldest = user_tweets[-1].id - 1
 
-    # keep grabbing tweets until there are no tweets left to grab
     while len(new_tweets) > 0:
-        # all requests use the max_id param to prevent duplicates
         new_tweets = twitter_state['api'].user_timeline(count=200, max_id=oldest)
-
-        # save most recent tweets
         user_tweets.extend(new_tweets)
-
-        # update the id of the oldest tweet less one
         oldest = user_tweets[-1].id - 1
 
     total_tweets = len(user_tweets)
@@ -153,26 +142,13 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
 
 def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
     user_favorites = []
-
-    # make initial request for most recent favorites
-    #  (200 is the maximum allowed count)
     new_favorites = twitter_state['api'].favorites(count=200)
-
-    # save most recent favorite
     user_favorites.extend(new_favorites)
-
-    # save the id of the oldest favorite less one
     oldest = user_favorites[-1].id - 1
 
-    # # keep grabbing favorites until there are no favorites left to grab
     while len(new_favorites) > 0:
-        # all requests use the max_id param to prevent duplicates
         new_favorites = twitter_state['api'].favorites(count=200, max_id=oldest)
-
-        # save most recent tweets
         user_favorites.extend(new_favorites)
-
-        # update the id of the oldest tweet less one
         oldest = user_favorites[-1].id - 1
 
     total_favorites = len(user_favorites)
@@ -213,10 +189,6 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
 # test_run_bool - 0 for real run, 1 for test run
 def set_twitter_test_run(test_run_bool):
     twitter_state['test_run'] = test_run_bool.get()
-
-
-# neccesary global bool for the scheduler
-already_ran_bool = False
 
 
 def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var):
