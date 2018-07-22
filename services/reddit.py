@@ -2,6 +2,9 @@ import os
 from datetime import datetime
 from pathlib import Path
 from tkinter import messagebox
+import sys
+sys.path.insert(0, "../utils")
+from utils import helpers
 
 import arrow
 import praw
@@ -64,42 +67,14 @@ username={username}'''
 
     # initialize state
     reddit_state['user'] = reddit.redditor(reddit_username)
-    reddit_state['timeToSave'] = arrow.now().replace(hours=0)
-    reddit_state['maxScore'] = 0
-    reddit_state['testRun'] = 1
-    reddit_state['gildedSkip'] = 0
-
+    reddit_state['time_to_save'] = arrow.now().replace(hours=0)
+    reddit_state['max_score'] = 0
+    reddit_state['test_run'] = 1
+    reddit_state['gilded_skip'] = 0
 
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
-    """
-    Sets the time of comments or submissions to save, stores it in redditState
-    and updates the UI to show what its currently set to.
-    :param hours_to_save: input received from the UI - how many hours of items to save
-    :param days_to_save: input received from the UI - how many days of items to save
-    :param weeks_to_save: input received from the UI - how many weeks of items to save
-    :param years_to_save: input received from the UI - how many years of items to save
-    :param current_time_to_save: text shown to user in UI so they know how much time will be saved
-    :return: None
-    """
-    total_hours = int(hours_to_save) + (int(days_to_save) * 24) + \
-                  (int(weeks_to_save) * 168) + (int(years_to_save) * 8736)
-
-    reddit_state['timeToSave'] = arrow.now().replace(
-        hours=-total_hours)
-
-    def get_text(time, text):
-        return '' if time == '0' else time + text
-
-    hours_text = get_text(hours_to_save, 'hours')
-    days_text = get_text(days_to_save, 'days')
-    weeks_text = get_text(weeks_to_save, 'weeks')
-    years_text = get_text(years_to_save, 'years')
-
-    if hours_to_save == '0' and days_to_save == '0' and weeks_to_save == '0' and years_to_save == '0':
-        current_time_to_save.set(f'Currently set to save: [nothing]')
-    else:
-        current_time_to_save.set(
-            f'Currently set to save: [{years_text} {weeks_text} {days_text} {hours_text}] of items')
+    reddit_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save,
+                     weeks_to_save, years_to_save, current_time_to_save)
 
 
 def set_reddix_max_score(max_score, current_max_score):
@@ -113,10 +88,10 @@ def set_reddix_max_score(max_score, current_max_score):
     if max_score == '':
         max_score = 0
     elif max_score == 'Unlimited':
-        reddit_state['maxScore'] = 9999999999
+        reddit_state['max_score'] = 9999999999
     else:
         max_score = int(max_score)
-        reddit_state['maxScore'] = max_score
+        reddit_state['max_score'] = max_score
 
     current_max_score.set(f'Currently set to: {str(max_score)} upvotes')
 
@@ -129,7 +104,7 @@ def set_reddit_gilded_skip(gilded_skip_bool):
     """
     skip_gild = gilded_skip_bool.get()
     if skip_gild:
-        reddit_state['gildedSkip'] = skip_gild
+        reddit_state['gilded_skip'] = skip_gild
 
 
 def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
@@ -179,17 +154,17 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
 
         time_created = arrow.get(item.created_utc)
 
-        if time_created > reddit_state['timeToSave']:
+        if time_created > reddit_state['time_to_save']:
             currently_deleting_text.set(
                 f'{item_string} `{item_snippet}` more recent than cutoff, skipping.')
-        elif item.score > reddit_state['maxScore']:
+        elif item.score > reddit_state['max_score']:
             currently_deleting_text.set(
                 f'{item_string} `{item_snippet}` is higher than max score, skipping.')
-        elif item.gilded and reddit_state['gildedSkip']:
+        elif item.gilded and reddit_state['gilded_skip']:
             currently_deleting_text.set(
                 f'{item_string} `{item_snippet}` is gilded, skipping.')
         else:
-            if reddit_state['testRun'] == 0:
+            if reddit_state['test_run'] == 0:
                 # Need the try/except here as it will crash on
                 #  link submissions otherwise
                 try:
@@ -220,7 +195,7 @@ def set_reddit_test_run(test_run_bool):
     :param testRunBool: 0 for real run, 1 for test run
     :return: none
     """
-    reddit_state['testRun'] = test_run_bool.get()
+    reddit_state['test_run'] = test_run_bool.get()
 
 
 def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var):
