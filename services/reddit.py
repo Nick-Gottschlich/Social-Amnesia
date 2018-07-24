@@ -73,27 +73,13 @@ username={username}'''
     reddit_state['test_run'] = 1
     reddit_state['gilded_skip'] = 0
 
+
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
     reddit_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
 
 
 def set_reddix_max_score(max_score, current_max_score):
-    """
-    Sets the maximum score level, any posts above this store will be skipped over
-    updates the UI to show what its currently set to.
-    :param max_score: the input received from the UI - any comments greater than or equal to this will be saved
-    :param current_max_score: text to display for the user in the UI - current max_score
-    :return: none
-    """
-    if max_score == '':
-        max_score = 0
-    elif max_score == 'Unlimited':
-        reddit_state['max_score'] = 9999999999
-    else:
-        max_score = int(max_score)
-        reddit_state['max_score'] = max_score
-
-    current_max_score.set(f'Currently set to: {str(max_score)} upvotes')
+    reddit_state['max_score'] = helpers.set_max_score(max_score, current_max_score, 'upvotes')
 
 
 def set_reddit_gilded_skip(gilded_skip_bool):

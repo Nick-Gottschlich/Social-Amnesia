@@ -29,3 +29,26 @@ def set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, 
             f'Currently set to save: [{years_text} {weeks_text} {days_text} {hours_text}] of items')
 
     return arrow.now().replace(hours=-total_hours)
+
+
+def set_max_score(max_score, current_max_score, item_string):
+    """
+    Sets the maximum score level, any items above this store will be skipped over
+    updates the UI to show what its currently set to.
+    :param max_score: the input received from the UI - any comments greater than or equal to this will be saved
+    :param current_max_score: text to display for the user in the UI - current max_score
+    :param state_key: the key used to identify this value in the state
+    :param ui_string: what will be shown to the user (upvotes, tweets,)
+    :return max_score: the updated score for the state
+    """
+    if max_score == '':
+        max_score = 0
+    elif max_score == 'Unlimited':
+        max_score = 9999999999
+    else:
+        max_score = int(max_score)
+
+    current_max_score.set(f'Currently set to: {str(max_score)} upvotes')
+
+    return max_score
+

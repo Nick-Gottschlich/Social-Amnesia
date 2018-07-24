@@ -46,30 +46,14 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
 def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
     twitter_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
     print(twitter_state)
-    
+
 
 def set_twitter_max_favorites(max_favorites, current_max_favorites):
-    if (max_favorites == ''):
-        max_favorites = 0
-    elif (max_favorites == 'Unlimited'):
-        twitter_state['max_favorites'] = 9999999999
-    else:
-        max_favorites = int(max_favorites)
-        twitter_state['max_favorites'] = max_favorites
-
-    current_max_favorites.set(f'Currently set to: {str(max_favorites)} Favorites')
+    twitter_state['max_score'] = helpers.set_max_score(max_favorites, current_max_favorites, 'favorites')
 
 
 def set_twitter_max_retweets(max_retweets, current_max_retweets):
-    if (max_retweets == ''):
-        max_retweets = 0
-    elif (max_retweets == 'Unlimited'):
-        twitter_state['max_retweets'] = 9999999999
-    else:
-        max_retweets = int(max_retweets)
-        twitter_state['max_retweets'] = max_retweets
-
-    current_max_retweets.set(f'Currently set to: {str(max_retweets)} Retweets')
+    twitter_state['max_retweets'] = helpers.set_max_score(max_retweets, current_max_retweets, 'upvotes')
 
 
 def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):

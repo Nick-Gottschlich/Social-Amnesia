@@ -80,6 +80,7 @@ class MainApp(tk.Frame):
         :param args: list of errors
         :return: None
         """
+        print(args)
         received_error = str(args[1])
         errors = {
             "<class 'prawcore.exceptions.ResponseException'>": 'Failed to login to reddit!',
