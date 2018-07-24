@@ -479,7 +479,7 @@ class MainApp(tk.Frame):
         # Actually build the twitter tab
         configuration_label.grid(row=0, columnspan=11, sticky=(tk.N, tk.S), pady=5)
         time_keep_label.grid(row=1, column=0)
-        scheduler_hours_dropdown.grid(row=1, column=1, sticky=(tk.W,))
+        hours_dropdown.grid(row=1, column=1, sticky=(tk.W,))
         hours_label.grid(row=1, column=2, sticky=(tk.W,))
         days_dropdown.grid(row=1, column=3, sticky=(tk.W,))
         days_label.grid(row=1, column=4, sticky=(tk.W,))
@@ -520,7 +520,7 @@ class MainApp(tk.Frame):
 
         scheduler_section_label.grid(row=10, columnspan=11, sticky=(tk.N, tk.S), pady=5)
         scheduler_check_button.grid(row=11, column=0)
-        hours_dropdown.grid(row=11, column=1)
+        scheduler_hours_dropdown.grid(row=11, column=1)
 
         return frame
 

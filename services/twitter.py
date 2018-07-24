@@ -1,11 +1,15 @@
 from datetime import datetime
 from tkinter import messagebox
 
+import sys
+sys.path.insert(0, "../utils")
+from utils import helpers
+
 import arrow
 import tweepy
 
 # for dev purposes
-# from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
+from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
 
 # twitter state object
 # Handles configuration options set by the user
@@ -16,13 +20,13 @@ already_ran_bool = False
 
 def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text):
     # ============ REAL =============
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
+    # auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    # auth.set_access_token(access_token, access_token_secret)
     # ============= REAL ============
 
     # =========== DEV TESTING =============
-    # auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
-    # auth.set_access_token(twitter_access_token, twitter_access_token_secret)
+    auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
+    auth.set_access_token(twitter_access_token, twitter_access_token_secret)
     # ============== DEV TESTING ==============
 
     api = tweepy.API(auth)
@@ -40,29 +44,9 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
 
 
 def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
-    total_hours = int(hours_to_save) + (int(days_to_save) * 24) + \
-                  (int(weeks_to_save) * 168) + (int(years_to_save) * 8736)
-
-    twitter_state['time_to_save'] = arrow.now().replace(
-        hours=-total_hours)
-
-    def set_text(time, text):
-        if (time == '0'):
-            return ''
-        else:
-            return time + text
-
-    hours_text = set_text(hours_to_save, 'hours')
-    days_text = set_text(days_to_save, 'days')
-    weeks_text = set_text(weeks_to_save, 'weeks')
-    years_text = set_text(years_to_save, 'years')
-
-    if (hours_to_save == '0' and days_to_save == '0' and weeks_to_save == '0' and years_to_save == '0'):
-        current_time_to_save.set(f'Currently set to save: [nothing]')
-    else:
-        current_time_to_save.set(
-            f'Currently set to save: [{years_text} {weeks_text} {days_text} {hours_text}] of items')
-
+    twitter_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
+    print(twitter_state)
+    
 
 def set_twitter_max_favorites(max_favorites, current_max_favorites):
     if (max_favorites == ''):

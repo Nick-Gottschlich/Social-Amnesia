@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 from tkinter import messagebox
+
 import sys
 sys.path.insert(0, "../utils")
 from utils import helpers
@@ -73,8 +74,7 @@ username={username}'''
     reddit_state['gilded_skip'] = 0
 
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
-    reddit_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save,
-                     weeks_to_save, years_to_save, current_time_to_save)
+    reddit_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
 
 
 def set_reddix_max_score(max_score, current_max_score):
