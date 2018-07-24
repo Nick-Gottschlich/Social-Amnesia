@@ -75,10 +75,16 @@ username={username}'''
 
 
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
+    """
+    See set_time_to_save function in helpers.py
+    """
     reddit_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
 
 
 def set_reddix_max_score(max_score, current_max_score):
+    """
+    See set_max_score function in helpers.py
+    """
     reddit_state['max_score'] = helpers.set_max_score(max_score, current_max_score, 'upvotes')
 
 

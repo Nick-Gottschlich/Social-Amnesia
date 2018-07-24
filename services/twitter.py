@@ -56,17 +56,22 @@ def set_twitter_max_retweets(max_retweets, current_max_retweets):
     twitter_state['max_retweets'] = helpers.set_max_score(max_retweets, current_max_retweets, 'upvotes')
 
 
-def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
+def gather_items(item_getter):
     user_tweets = []
-    new_tweets = twitter_state['api'].user_timeline(count=200)
+    new_tweets = item_getter(count=200)
     user_tweets.extend(new_tweets)
     oldest = user_tweets[-1].id - 1
 
     while len(new_tweets) > 0:
-        new_tweets = twitter_state['api'].user_timeline(count=200, max_id=oldest)
+        new_tweets = item_getter(count=200, max_id=oldest)
         user_tweets.extend(new_tweets)
         oldest = user_tweets[-1].id - 1
 
+    return user_tweets
+
+
+def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
+    user_tweets = gather_items(twitter_state['api'].user_timeline)
     total_tweets = len(user_tweets)
 
     num_deleted_items_text.set(f'0/{str(total_tweets)} items processed so far')
@@ -109,16 +114,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
 
 
 def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
-    user_favorites = []
-    new_favorites = twitter_state['api'].favorites(count=200)
-    user_favorites.extend(new_favorites)
-    oldest = user_favorites[-1].id - 1
-
-    while len(new_favorites) > 0:
-        new_favorites = twitter_state['api'].favorites(count=200, max_id=oldest)
-        user_favorites.extend(new_favorites)
-        oldest = user_favorites[-1].id - 1
-
+    user_favorites = gather_items(twitter_state['api'].favorites)
     total_favorites = len(user_favorites)
 
     num_deleted_items_text.set(f'0/{str(total_favorites)} items processed so far')
