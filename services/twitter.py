@@ -49,7 +49,7 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     twitter_state['time_to_save'] = arrow.utcnow().replace(hours=0)
     twitter_state['max_favorites'] = 0
     twitter_state['max_retweets'] = 0
-    twitter_state['test_run'] = 0
+    twitter_state['test_run'] = 1
 
 
 def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
@@ -57,21 +57,20 @@ def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_t
     See set_time_to_save function in helpers.py
     """
     twitter_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
-    print(twitter_state)
 
 
 def set_twitter_max_favorites(max_favorites, current_max_favorites):
     """
     See set_max_score function in helpers.py
     """
-    twitter_state['max_score'] = helpers.set_max_score(max_favorites, current_max_favorites, 'favorites')
+    twitter_state['max_favorites'] = helpers.set_max_score(max_favorites, current_max_favorites, 'favorites')
 
 
 def set_twitter_max_retweets(max_retweets, current_max_retweets):
     """
     See set_max_score function in helpers.py
     """
-    twitter_state['max_retweets'] = helpers.set_max_score(max_retweets, current_max_retweets, 'upvotes')
+    twitter_state['max_retweets'] = helpers.set_max_score(max_retweets, current_max_retweets, 'retweets')
 
 
 def gather_items(item_getter):
@@ -177,8 +176,11 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
         if time_created > twitter_state['time_to_save']:
             currently_deleting_text.set(f'Favorite: `{favorite_snippet}` is more recent than cutoff, skipping.')
         else:
-            currently_deleting_text.set(f'Deleting favorite: `{favorite_snippet}`')
-            twitter_state['api'].destroy_favorite(favorite.id)
+            if (twitter_state['test_run'] == 0):
+                currently_deleting_text.set(f'Deleting favorite: `{favorite_snippet}`')
+                twitter_state['api'].destroy_favorite(favorite.id)
+            else:
+                currently_deleting_text.set(f'-TEST RUN- Would remove favorite: `{favorite_snippet}`')
 
         num_deleted_items_text.set(
             f'{str(count)}/{str(total_favorites)} items processed.')
