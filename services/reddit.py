@@ -26,12 +26,13 @@ alreadyRanBool = False
 def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, init):
     """
     Logs into reddit using PRAW, gives user an error on failure
-    :param username: input received from the UI - reddit password
-    :param password: input received from the UI - reddit username
-    :param client_id: input received from the UI - reddit app client id
-    :param client_secret: input received from the UI - reddit app client secret
+    :param username: input received from the UI
+    :param password: input received from the UI
+    :param client_id: input received from the UI
+    :param client_secret: input received from the UI
     :param login_confirm_text: confirmation text - shown to the user in the UI
     :param init: boolean, true if this is the run performed on startup, false otherwise
+    :return: none
     """
     if init:
         try:
@@ -183,8 +184,8 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
 
 def set_reddit_test_run(test_run_bool):
     """
-    Set whether to run a test run or not (stored in redditState)
-    :param testRunBool: 0 for real run, 1 for test run
+    Set whether to run a test run or not (stored in state)
+    :param test_run_bool: 0 for real run, 1 for test run
     :return: none
     """
     reddit_state['test_run'] = test_run_bool.get()
@@ -194,9 +195,9 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
     """
     The scheduler that users can use to have social amnesia wipe comments at a set point in time, repeatedly.
     :param root: tkinkter window
-    :param schedulerBool: true if set to run, false otherwise
-    :param hourOfDay: int 0-23, sets hour of day to run on
-    :param stringVar, progressVar - empty Vars needed to run the deleteRedditItems function
+    :param scheduler_bool: true if set to run, false otherwise
+    :param hour_of_day: int 0-23, sets hour of day to run on
+    :param string_var, progress_var - empty Vars needed to run the delete_reddit_items function
     :return: none
     """
     global alreadyRanBool
