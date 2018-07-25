@@ -79,9 +79,9 @@ Don't feel comfortable coding? That's okay! There are plenty of other ways to co
 ## Limitations
 
 - Reddit
-  - reddit API currently only indexes ~1k items back (as far as I can tell)
+  - reddit API currently only indexes ~1k most recent items back (confirmed for comments, not submissions)
 - Twitter
-  - twitter API currently only indexes 3200 tweets back (not sure if it's the same for favorites or not)
+  - twitter API currently only indexes ~3200 tweets and favorites back
 
 ## Links
 
