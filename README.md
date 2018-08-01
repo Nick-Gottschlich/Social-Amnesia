@@ -17,7 +17,7 @@ This is the simplest option. Bundled and easily usable files are available in th
 3. Run:
 ```
 pip3 install -r requirements.txt
-python3 SocialAmnesia.py
+python3 social_amnesia.py
 ```
 4. Have fun!
 
