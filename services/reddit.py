@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from pathlib import Path
+import tkinter as tk
 from tkinter import messagebox
 
 import sys
@@ -227,4 +228,5 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
 
 
 def set_reddit_whitelisted_comments(root):
-    print('hi!')
+    whitelist_window = tk.Toplevel(root)
+    
