@@ -73,18 +73,19 @@ username={username}'''
     reddit_state['max_score'] = 0
     reddit_state['test_run'] = 1
     reddit_state['gilded_skip'] = 0
+    reddit_state['whitelisted'] = set()
 
 
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
     """
-    See set_time_to_save function in helpers.py
+    See set_time_to_save function in utils/helpers.py
     """
     reddit_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
 
 
 def set_reddix_max_score(max_score, current_max_score):
     """
-    See set_max_score function in helpers.py
+    See set_max_score function in utils/helpers.py
     """
     reddit_state['max_score'] = helpers.set_max_score(max_score, current_max_score, 'upvotes')
 
@@ -138,6 +139,8 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
         return snippet
 
     for item in item_array:
+        print(item.id)
+
         if comment_bool:
             item_string = 'Comment'
             item_snippet = format_snippet(item.body, item.body[0:50])
@@ -221,3 +224,7 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
 
     root.after(1000, lambda: set_reddit_scheduler(
         root, scheduler_bool, hour_of_day, string_var, progress_var))
+
+
+def set_reddit_whitelisted_comments(root):
+    print('hi!')

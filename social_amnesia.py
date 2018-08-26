@@ -257,6 +257,12 @@ class MainApp(tk.Frame):
             frame, variable=gilded_skip_bool,
             command=lambda: reddit.set_reddit_gilded_skip(gilded_skip_bool))
 
+        # White listing
+        modify_whitelist_button = tk.Button(
+            frame, text='Pick comments to whitelist',
+            command=lambda: reddit.set_reddit_whitelisted_comments(root)
+        )
+
         # Allows the user to actually delete comments or submissions
         deletion_section_label = tk.Label(frame, text='Deletion')
         deletion_section_label.config(font=('arial', 25))
@@ -335,25 +341,27 @@ class MainApp(tk.Frame):
         gilded_skip_label.grid(row=3, column=0)
         gilded_skip_check_button.grid(row=3, column=1)
 
-        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=4, columnspan=13, sticky=(tk.E, tk.W), pady=5)
-
-        deletion_section_label.grid(row=5, columnspan=11, sticky=(tk.N, tk.S), pady=5)
-
-        delete_comments_button.grid(row=6, column=0, sticky=tk.W)
-        delete_submissions_button.grid(row=6, column=0, sticky=(tk.E,))
-        test_run_check_button.grid(row=6, column=1, columnspan=11)
-
-        deletion_progress_label.grid(row=7, column=0)
-        deletion_progress_bar.grid(row=8, column=0, sticky=(tk.W,))
-        num_deleted_items_label.grid(row=8, column=0, sticky=(tk.E,))
+        modify_whitelist_button.grid(row=4, column=0)
 
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=9, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+            row=5, columnspan=13, sticky=(tk.E, tk.W), pady=5)
 
-        scheduler_section_label.grid(row=10, columnspan=11, sticky=(tk.N, tk.S), pady=5)
-        scheduler_check_button.grid(row=11, column=0)
-        scheduler_hours_dropdown.grid(row=11, column=1)
+        deletion_section_label.grid(row=6, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+
+        delete_comments_button.grid(row=7, column=0, sticky=tk.W)
+        delete_submissions_button.grid(row=7, column=0, sticky=(tk.E,))
+        test_run_check_button.grid(row=7, column=1, columnspan=11)
+
+        deletion_progress_label.grid(row=8, column=0)
+        deletion_progress_bar.grid(row=9, column=0, sticky=(tk.W,))
+        num_deleted_items_label.grid(row=9, column=0, sticky=(tk.E,))
+
+        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
+            row=10, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+
+        scheduler_section_label.grid(row=11, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+        scheduler_check_button.grid(row=12, column=0)
+        scheduler_hours_dropdown.grid(row=12, column=1)
 
         return frame
 
