@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from pathlib import Path
+from tkinter import *
 import tkinter as tk
 from tkinter import messagebox
 
@@ -140,8 +141,6 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
         return snippet
 
     for item in item_array:
-        print(item.id)
-
         if comment_bool:
             item_string = 'Comment'
             item_snippet = format_snippet(item.body, item.body[0:50])
@@ -226,7 +225,21 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
     root.after(1000, lambda: set_reddit_scheduler(
         root, scheduler_bool, hour_of_day, string_var, progress_var))
 
-
+# item.id is id of comment, item.body is text
 def set_reddit_whitelisted_comments(root):
     whitelist_window = tk.Toplevel(root)
-    
+
+    total_items = sum(1 for _ in reddit_state['user'].comments.new(limit=None))
+    item_array = reddit_state['user'].comments.new(limit=None)
+
+    def update_whitelisting_of_comment(index):
+        print(index)
+
+    counter = 0
+    for item in item_array:
+        tk.Checkbutton(whitelist_window, 
+            command=lambda: update_whitelisting_of_comment(counter)).grid(row=counter, column=0)
+
+        tk.Label(whitelist_window, text=item.body).grid(row=counter, column=1, sticky=tk.W)
+
+        counter = counter + 1
