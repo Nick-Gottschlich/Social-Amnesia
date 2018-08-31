@@ -159,6 +159,10 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
         elif item.gilded and reddit_state['gilded_skip']:
             currently_deleting_text.set(
                 f'{item_string} `{item_snippet}` is gilded, skipping.')
+        elif reddit_state['whitelisted'][item.id]:
+            currently_deleting_text.set(
+                f'{item_string} `{item_snippet}` is whitelisted, skipping.`'
+            )
         else:
             if reddit_state['test_run'] == 0:
                 # Need the try/except here as it will crash on
@@ -234,7 +238,6 @@ def set_reddit_whitelisted_comments(root):
 
     def flip_whitelist_dict(id):
         reddit_state['whitelisted'][id] = not reddit_state['whitelisted'][id]
-        print(reddit_state['whitelisted'])
 
     counter = 1
     for item in item_array:
