@@ -233,13 +233,22 @@ def set_reddit_whitelisted_comments(root):
     item_array = reddit_state['user'].comments.new(limit=None)
 
 
-    def doThing():
-        print('hi!')
+    def set_whitelist_dict(id):
+        print(item_whitelisted_dict)
+
+        item_whitelisted_dict[id] = not item_whitelisted_dict[id]
+
+        print(item_whitelisted_dict)
+
+    item_whitelisted_dict = {}
 
     counter = 1
     for item in item_array:
-        item.id = Variable();
-        tk.Checkbutton(whitelist_window, variable=item.id, command=lambda: doThing()).grid(row=counter, column=0)
+        item_whitelisted_dict[item.id] = False
+
+        # item.id = Variable();
+        #'''variable=item.id,'''
+        tk.Checkbutton(whitelist_window, command=lambda id=item.id: set_whitelist_dict(id)).grid(row=counter, column=0)
 
         tk.Label(whitelist_window, text=item.body).grid(row=counter, column=1, sticky=tk.W)
 
