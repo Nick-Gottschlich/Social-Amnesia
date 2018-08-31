@@ -75,7 +75,7 @@ username={username}'''
     reddit_state['max_score'] = 0
     reddit_state['test_run'] = 1
     reddit_state['gilded_skip'] = 0
-    reddit_state['whitelisted'] = set()
+    reddit_state['whitelisted'] = {}
 
 
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
@@ -232,23 +232,15 @@ def set_reddit_whitelisted_comments(root):
     total_items = sum(1 for _ in reddit_state['user'].comments.new(limit=None))
     item_array = reddit_state['user'].comments.new(limit=None)
 
-
-    def set_whitelist_dict(id):
-        print(item_whitelisted_dict)
-
-        item_whitelisted_dict[id] = not item_whitelisted_dict[id]
-
-        print(item_whitelisted_dict)
-
-    item_whitelisted_dict = {}
+    def flip_whitelist_dict(id):
+        reddit_state['whitelisted'][id] = not reddit_state['whitelisted'][id]
+        print(reddit_state['whitelisted'])
 
     counter = 1
     for item in item_array:
-        item_whitelisted_dict[item.id] = False
+        reddit_state['whitelisted'][item.id] = False
 
-        # item.id = Variable();
-        #'''variable=item.id,'''
-        tk.Checkbutton(whitelist_window, command=lambda id=item.id: set_whitelist_dict(id)).grid(row=counter, column=0)
+        tk.Checkbutton(whitelist_window, command=lambda id=item.id: flip_whitelist_dict(id)).grid(row=counter, column=0)
 
         tk.Label(whitelist_window, text=item.body).grid(row=counter, column=1, sticky=tk.W)
 
