@@ -232,13 +232,14 @@ def set_reddit_whitelisted_comments(root):
     total_items = sum(1 for _ in reddit_state['user'].comments.new(limit=None))
     item_array = reddit_state['user'].comments.new(limit=None)
 
-    def update_whitelisting_of_comment(index):
-        print(index)
 
-    counter = 0
+    def doThing():
+        print('hi!')
+
+    counter = 1
     for item in item_array:
-        tk.Checkbutton(whitelist_window, 
-            command=lambda: update_whitelisting_of_comment(counter)).grid(row=counter, column=0)
+        item.id = Variable();
+        tk.Checkbutton(whitelist_window, variable=item.id, command=lambda: doThing()).grid(row=counter, column=0)
 
         tk.Label(whitelist_window, text=item.body).grid(row=counter, column=1, sticky=tk.W)
 
