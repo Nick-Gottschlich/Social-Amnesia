@@ -233,17 +233,20 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
 def set_reddit_whitelisted_comments(root):
     whitelist_window = tk.Toplevel(root)
 
-    total_items = sum(1 for _ in reddit_state['user'].comments.new(limit=None))
     item_array = reddit_state['user'].comments.new(limit=None)
 
     def flip_whitelist_dict(id):
         reddit_state['whitelisted'][id] = not reddit_state['whitelisted'][id]
 
+        print(reddit_state['whitelisted'])
+
     counter = 1
     for item in item_array:
-        reddit_state['whitelisted'][item.id] = False
+        if(item.id not in reddit_state['whitelisted']):
+            reddit_state['whitelisted'][item.id] = False
 
-        tk.Checkbutton(whitelist_window, command=lambda id=item.id: flip_whitelist_dict(id)).grid(row=counter, column=0)
+        tk.Checkbutton(whitelist_window, command=lambda 
+            id=item.id: flip_whitelist_dict(id)).grid(row=counter, column=0)
 
         tk.Label(whitelist_window, text=item.body).grid(row=counter, column=1, sticky=tk.W)
 
