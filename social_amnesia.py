@@ -111,17 +111,24 @@ class MainApp(tk.Frame):
         # Create elements
         title = tk.Label(frame, text='Twitter')
         title.config(font=('arial', 25))
+
         consumer_key_label = tk.Label(frame, text='Enter twitter consumer Key:')
         consumer_key_entry = tk.Entry(frame)
+
         consumer_secret_label = tk.Label(frame, text='Enter twitter consumer secret:')
         consumer_secret_entry = tk.Entry(frame)
+
         access_token_label = tk.Label(frame, text='Enter twitter Access Token:')
         access_token_entry = tk.Entry(frame)
+
         access_token_secret_label = tk.Label(frame, text='Enter Twitter access token secret:')
         access_token_secret_entry = tk.Entry(frame)
+
         login_confirm_text = tk.StringVar()
         login_confirm_text.set('Waiting for login')
+
         login_confirmed_label = tk.Label(frame, textvariable=login_confirm_text)
+
         login_button = tk.Button(
             frame, text='Login to Twitter',
             command=lambda: twitter.set_twitter_login(
@@ -134,14 +141,19 @@ class MainApp(tk.Frame):
 
         # Place elements
         title.grid(row=0, column=2, columnspan=2)
+
         consumer_key_label.grid(row=1, column=2)
         consumer_key_entry.grid(row=1, column=3)
+
         consumer_secret_label.grid(row=2, column=2)
         consumer_secret_entry.grid(row=2, column=3)
+
         access_token_label.grid(row=3, column=2)
         access_token_entry.grid(row=3, column=3)
+
         access_token_secret_label.grid(row=4, column=2)
         access_token_secret_entry.grid(row=4, column=3)
+
         login_button.grid(row=5, column=2)
         login_confirmed_label.grid(row=5, column=3)
 
@@ -155,17 +167,24 @@ class MainApp(tk.Frame):
         # Create elements
         title = tk.Label(frame, text='reddit')
         title.config(font=('arial', 25))
+
         username_label = tk.Label(frame, text='Enter reddit username:')
         username_entry = tk.Entry(frame)
+
         password_label = tk.Label(frame, text='Enter reddit password:')
         password_entry = tk.Entry(frame)
+
         client_id_label = tk.Label(frame, text='Enter reddit client ID:')
         client_id_entry = tk.Entry(frame)
+
         client_secret_label = tk.Label(frame, text='Enter reddit client secret:')
         client_secret_entry = tk.Entry(frame)
+
         login_confirm_text = tk.StringVar()
         login_confirm_text.set('Waiting for Login')
+        
         login_confirmed_label = tk.Label(frame, textvariable=login_confirm_text)
+
         login_button = tk.Button(
             frame, text='Login to reddit',
             command=lambda: reddit.set_reddit_login(
@@ -179,14 +198,19 @@ class MainApp(tk.Frame):
 
         # Place elements
         title.grid(row=0, column=0, columnspan=2)
+
         username_label.grid(row=1, column=0)
         username_entry.grid(row=1, column=1)
+
         password_label.grid(row=2, column=0)
         password_entry.grid(row=2, column=1)
+
         client_id_label.grid(row=3, column=0)
         client_id_entry.grid(row=3, column=1)
+
         client_secret_label.grid(row=4, column=0)
         client_secret_entry.grid(row=4, column=1)
+
         login_button.grid(row=5, column=0)
         login_confirmed_label.grid(row=5, column=1)
 
@@ -258,6 +282,7 @@ class MainApp(tk.Frame):
             command=lambda: reddit.set_reddit_gilded_skip(gilded_skip_bool))
 
         # White listing
+        whitelist_label = tk.Label(frame, text='Whitelist comments or submissions:')
         modify_whitelist_button = tk.Button(
             frame, text='Pick comments to whitelist',
             command=lambda: reddit.set_reddit_whitelisted_comments(root)
@@ -333,15 +358,16 @@ class MainApp(tk.Frame):
         time_currently_set_label.grid(row=1, column=11)
 
         max_score_label.grid(row=2, column=0)
-        max_score_entry_field.grid(row=2, column=1, columnspan=8, sticky=(tk.W,))
+        max_score_entry_field.grid(row=2, column=1, columnspan=8, sticky=(tk.W))
         set_max_score_button.grid(row=2, column=9)
         set_max_score_unlimited_button.grid(row=2, column=10)
         max_score_currently_set_label.grid(row=2, column=11)
 
         gilded_skip_label.grid(row=3, column=0)
-        gilded_skip_check_button.grid(row=3, column=1)
+        gilded_skip_check_button.grid(row=3, column=1, sticky=(tk.W))
 
-        modify_whitelist_button.grid(row=4, column=0)
+        whitelist_label.grid(row=4, column=0)
+        modify_whitelist_button.grid(row=4, column=1, columnspan=4)
 
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
             row=5, columnspan=13, sticky=(tk.E, tk.W), pady=5)
