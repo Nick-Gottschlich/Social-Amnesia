@@ -25,6 +25,30 @@ reddit_state = {}
 # neccesary global bool for the scheduler
 alreadyRanBool = False
 
+def format_snippet(text, length):
+    """
+    Helper function to format the snippets from reddit comments/submissions
+    :param text: full text of item
+    :param length: how many chars the snippet should be
+    :return: formatted snippet with '...' if needed
+    """
+    print('=============================================================================')
+    print(text)
+    print('=============================================================================')
+    snippet = ''
+
+    if len(text) > length:
+        snippet = text[0:length] + '...'
+    else:
+        snippet = text
+    for char in snippet:
+        # tkinter can't handle certain unicode characters,
+        # so we strip them
+        if ord(char) > 65535:
+            snippet = snippet.replace(char, '')
+    return snippet
+
+
 def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, init):
     """
     Logs into reddit using PRAW, gives user an error on failure
@@ -124,29 +148,13 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
 
     count = 1
 
-    def format_snippet(text, snippet):
-        """
-        Helper function to format the snippets from reddit comments/submissions
-        :param text: full text of item
-        :param snippet: 50 char snippet of item
-        :return: formatted snippet with '...' if needed
-        """
-        if len(text) > 50:
-            snippet = snippet + '...'
-        for char in snippet:
-            # tkinter can't handle certain unicode characters,
-            # so we strip them
-            if ord(char) > 65535:
-                snippet = snippet.replace(char, '')
-        return snippet
-
     for item in item_array:
         if comment_bool:
             item_string = 'Comment'
-            item_snippet = format_snippet(item.body, item.body[0:50])
+            item_snippet = format_snippet(item.body, 50)
         else:
             item_string = 'Submission'
-            item_snippet = format_snippet(item.title, item.title[0:50])
+            item_snippet = format_snippet(item.title, 50)
 
         time_created = arrow.get(item.created_utc)
 
@@ -229,7 +237,7 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
     root.after(1000, lambda: set_reddit_scheduler(
         root, scheduler_bool, hour_of_day, string_var, progress_var))
 
-# item.id is id of comment, item.body is text
+
 def set_reddit_whitelisted_comments(root):
     whitelist_window = tk.Toplevel(root)
 
@@ -248,6 +256,6 @@ def set_reddit_whitelisted_comments(root):
         tk.Checkbutton(whitelist_window, command=lambda 
             id=item.id: flip_whitelist_dict(id)).grid(row=counter, column=0)
 
-        tk.Label(whitelist_window, text=item.body).grid(row=counter, column=1, sticky=tk.W)
+        tk.Label(whitelist_window, text=format_snippet(item.body, 100)).grid(row=counter, column=1, sticky=tk.W)
 
         counter = counter + 1
