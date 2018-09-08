@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from tkinter import *
 import tkinter as tk
+import tkinter.ttk as ttk
 from tkinter import messagebox
 
 import sys
@@ -255,22 +256,32 @@ def set_reddit_whitelisted_comments(root):
     canvas.pack(side=LEFT, fill=BOTH, expand=True)
     canvas.create_window((4,4), window=frame, anchor="nw")
 
+    whitelist_title_label = tk.Label(
+        frame, text='Pick comments to save', font=('arial', 30))
+
     frame.bind("<Configure>", lambda event,
               canvas=canvas: onFrameConfigure(canvas))
 
-    item_array = reddit_state['user'].comments.new(limit=None)
+    whitelist_title_label.grid(
+        row=0, column=0, columnspan=2, sticky=(tk.N, tk.E, tk.W, tk.S))
+    ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
+        row=1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
 
-    counter = 1
+    item_array = reddit_state['user'].comments.new(limit=None)
+    counter = 2
     for item in item_array:
         if(item.id not in reddit_state['whitelisted']):
             reddit_state['whitelisted'][item.id] = False
 
-        whitelist_checkbutton = tk.Checkbutton(frame, command=lambda 
+        tk.Checkbutton(frame, command=lambda 
             id=item.id: flip_whitelist_dict(id)).grid(row=counter,
                 column=0)
 
-        whitelist_label = tk.Label(frame, 
+        tk.Label(frame, 
             text=format_snippet(item.body, 100)).grid(row=counter,
                 column=1)
 
-        counter = counter + 1
+        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
+            row=counter+1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
+
+        counter = counter + 2
