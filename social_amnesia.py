@@ -283,9 +283,13 @@ class MainApp(tk.Frame):
 
         # White listing
         whitelist_label = tk.Label(frame, text='Whitelist comments or submissions:')
-        modify_whitelist_button = tk.Button(
+        modify_whitelist_comments_button = tk.Button(
             frame, text='Pick comments to whitelist',
-            command=lambda: reddit.set_reddit_whitelisted_comments(root)
+            command=lambda: reddit.set_reddit_whitelist(root, True)
+        )
+        modify_whitelist_posts_button = tk.Button(
+            frame, text='Pick posts to whitelist',
+            command=lambda: reddit.set_reddit_whitelist(root, False)
         )
 
         # Allows the user to actually delete comments or submissions
@@ -367,7 +371,8 @@ class MainApp(tk.Frame):
         gilded_skip_check_button.grid(row=3, column=1, sticky=(tk.W))
 
         whitelist_label.grid(row=4, column=0)
-        modify_whitelist_button.grid(row=4, column=1, columnspan=4)
+        modify_whitelist_comments_button.grid(row=4, column=1, columnspan=4)
+        modify_whitelist_posts_button.grid(row=4, column=5, columnspan=4)
 
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
             row=5, columnspan=13, sticky=(tk.E, tk.W), pady=5)

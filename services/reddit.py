@@ -236,7 +236,7 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
         root, scheduler_bool, hour_of_day, string_var, progress_var))
 
 
-def set_reddit_whitelisted_comments(root):
+def set_reddit_whitelist(root, comment_bool):
     def flip_whitelist_dict(id):
         reddit_state['whitelisted'][id] = not reddit_state['whitelisted'][id]
 
@@ -256,8 +256,13 @@ def set_reddit_whitelisted_comments(root):
     canvas.pack(side=LEFT, fill=BOTH, expand=True)
     canvas.create_window((4,4), window=frame, anchor="nw")
 
+    if comment_bool:
+        identifying_text = 'comments' 
+    else:
+        identifying_text = 'posts'
+
     whitelist_title_label = tk.Label(
-        frame, text='Pick comments to save', font=('arial', 30))
+        frame, text=f'Pick {identifying_text} to save', font=('arial', 30))
 
     frame.bind("<Configure>", lambda event,
               canvas=canvas: onFrameConfigure(canvas))
@@ -267,7 +272,11 @@ def set_reddit_whitelisted_comments(root):
     ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
         row=1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
 
-    item_array = reddit_state['user'].comments.new(limit=None)
+    if comment_bool:
+        item_array = reddit_state['user'].comments.new(limit=None)
+    else:
+        item_array = reddit_state['user'].submissions.new(limit=None)
+
     counter = 2
     for item in item_array:
         if(item.id not in reddit_state['whitelisted']):
@@ -278,7 +287,7 @@ def set_reddit_whitelisted_comments(root):
                 column=0)
 
         tk.Label(frame, 
-            text=format_snippet(item.body, 100)).grid(row=counter,
+            text=format_snippet(item.body if comment_bool else item.title, 100)).grid(row=counter,
                 column=1)
 
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
