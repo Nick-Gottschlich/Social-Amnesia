@@ -32,9 +32,6 @@ def format_snippet(text, length):
     :param length: how many chars the snippet should be
     :return: formatted snippet with '...' if needed
     """
-    print('=============================================================================')
-    print(text)
-    print('=============================================================================')
     snippet = ''
 
     if len(text) > length:
@@ -239,23 +236,41 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
 
 
 def set_reddit_whitelisted_comments(root):
-    whitelist_window = tk.Toplevel(root)
-
-    item_array = reddit_state['user'].comments.new(limit=None)
-
     def flip_whitelist_dict(id):
         reddit_state['whitelisted'][id] = not reddit_state['whitelisted'][id]
 
-        print(reddit_state['whitelisted'])
+    def onFrameConfigure(canvas):
+        '''Reset the scroll region to encompass the inner frame'''
+        canvas.configure(scrollregion=canvas.bbox("all"))
+
+    whitelist_window = tk.Toplevel(root)
+
+    canvas = tk.Canvas(whitelist_window, width=750, height=1000)
+    frame = tk.Frame(canvas)
+
+    scrollbar = tk.Scrollbar(whitelist_window, command=canvas.yview)
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    scrollbar.pack(side=RIGHT, fill=Y)
+    canvas.pack(side=LEFT, fill=BOTH, expand=True)
+    canvas.create_window((4,4), window=frame, anchor="nw")
+
+    frame.bind("<Configure>", lambda event,
+              canvas=canvas: onFrameConfigure(canvas))
+
+    item_array = reddit_state['user'].comments.new(limit=None)
 
     counter = 1
     for item in item_array:
         if(item.id not in reddit_state['whitelisted']):
             reddit_state['whitelisted'][item.id] = False
 
-        tk.Checkbutton(whitelist_window, command=lambda 
-            id=item.id: flip_whitelist_dict(id)).grid(row=counter, column=0)
+        whitelist_checkbutton = tk.Checkbutton(frame, command=lambda 
+            id=item.id: flip_whitelist_dict(id)).grid(row=counter,
+                column=0)
 
-        tk.Label(whitelist_window, text=format_snippet(item.body, 100)).grid(row=counter, column=1, sticky=tk.W)
+        whitelist_label = tk.Label(frame, 
+            text=format_snippet(item.body, 100)).grid(row=counter,
+                column=1)
 
         counter = counter + 1
