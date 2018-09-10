@@ -464,6 +464,18 @@ class MainApp(tk.Frame):
                 'Unlimited', current_max_retweets)
         )
 
+        # White listing tweets or favorites
+        whitelist_label = tk.Label(
+             frame, text='Whitelist tweets or favorites:')
+        modify_whitelist_tweets_button = tk.Button(
+            frame, text='Pick tweets to whitelist',
+            command=lambda: twitter.set_twitter_whitelist(root, True)
+        )
+        modify_whitelist_favorites_button = tk.Button(
+            frame, text='Pick favorites to whitelist',
+            command=lambda: twitter.set_twitter_whitelist(root, False)
+        )
+
         # Allows the user to delete tweets or remove favorites
         deletion_section_label = tk.Label(frame, text='Deletion')
         deletion_section_label.config(font=('arial', 25))
@@ -542,25 +554,29 @@ class MainApp(tk.Frame):
         set_max_retweets_unlimited_button.grid(row=3, column=10)
         max_retweets_currently_set_label.grid(row=3, column=11)
 
-        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=4, columnspan=13, sticky=(tk.E, tk.W), pady=5)
-
-        deletion_section_label.grid(row=5, columnspan=11, sticky=(tk.N, tk.S), pady=5)
-
-        delete_comments_button.grid(row=6, column=0, sticky=(tk.W,))
-        delete_submissions_button.grid(row=6, column=0, sticky=(tk.E,))
-        test_run_check_button.grid(row=6, column=1, columnspan=11)
-
-        deletion_progress_label.grid(row=7, column=0)
-        deletion_progress_bar.grid(row=8, column=0, sticky=(tk.W,))
-        num_deleted_items_label.grid(row=8, column=0, sticky=(tk.E,))
+        whitelist_label.grid(row=4, column=0)
+        modify_whitelist_tweets_button.grid(row=4, column=1, columnspan=4)
+        modify_whitelist_favorites_button.grid(row=4, column=5, columnspan=4)
 
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=9, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+            row=5, columnspan=13, sticky=(tk.E, tk.W), pady=5)
 
-        scheduler_section_label.grid(row=10, columnspan=11, sticky=(tk.N, tk.S), pady=5)
-        scheduler_check_button.grid(row=11, column=0)
-        scheduler_hours_dropdown.grid(row=11, column=1)
+        deletion_section_label.grid(row=6, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+
+        delete_comments_button.grid(row=7, column=0, sticky=(tk.W))
+        delete_submissions_button.grid(row=7, column=0, sticky=(tk.E))
+        test_run_check_button.grid(row=7, column=1, columnspan=11)
+
+        deletion_progress_label.grid(row=8, column=0)
+        deletion_progress_bar.grid(row=9, column=0, sticky=(tk.W,))
+        num_deleted_items_label.grid(row=9, column=0, sticky=(tk.E,))
+
+        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
+            row=10, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+
+        scheduler_section_label.grid(row=11, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+        scheduler_check_button.grid(row=12, column=0)
+        scheduler_hours_dropdown.grid(row=12, column=1)
 
         return frame
 

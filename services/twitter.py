@@ -9,7 +9,7 @@ import arrow
 import tweepy
 
 # for dev purposes
-# from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
+from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
 
 # twitter state object
 # Handles configuration options set by the user
@@ -29,13 +29,13 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     :return: none
     """
     # ============ REAL =============
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
+    # auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    # auth.set_access_token(access_token, access_token_secret)
     # ============= REAL ============
 
     # =========== DEV TESTING =============
-    # auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
-    # auth.set_access_token(twitter_access_token, twitter_access_token_secret)
+    auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
+    auth.set_access_token(twitter_access_token, twitter_access_token_secret)
     # ============== DEV TESTING ==============
 
     api = tweepy.API(auth)
@@ -50,6 +50,8 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     twitter_state['max_favorites'] = 0
     twitter_state['max_retweets'] = 0
     twitter_state['test_run'] = 1
+    twitter_state['whitelisted_tweets'] = {}
+    twitter_state['whitelisted_favorites'] = {}
 
 
 def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
@@ -109,14 +111,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
 
     count = 1
     for tweet in user_tweets:
-        tweet_snippet = tweet.text[0:50]
-        if len(tweet.text) > 50:
-            tweet_snippet = tweet_snippet + '...'
-        for char in tweet_snippet:
-            # tkinter can't handle certain unicode characters,
-            #  so we strip them
-            if (ord(char) > 65535):
-                tweet_snippet = tweet_snippet.replace(char, '')
+        tweet_snippet = helpers.format_snippet(tweet.text, 50)
 
         time_created = arrow.Arrow.fromdatetime(tweet.created_at)
 
@@ -160,14 +155,7 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
 
     count = 1
     for favorite in user_favorites:
-        favorite_snippet = favorite.text[0:50]
-        if len(favorite.text) > 50:
-            favorite_snippet = favorite_snippet + '...'
-        for char in favorite_snippet:
-            # tkinter can't handle certain unicode characters,
-            #  so we strip them
-            if ord(char) > 65535:
-                favorite_snippet = favorite_snippet.replace(char, '')
+        favorite_snippet = helpers.format_snippet(favorite.text, 50)
 
         currently_deleting_text.set(f'Deleting favorite: `{favorite_snippet}`')
 

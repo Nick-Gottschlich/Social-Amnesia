@@ -26,27 +26,6 @@ reddit_state = {}
 # neccesary global bool for the scheduler
 alreadyRanBool = False
 
-def format_snippet(text, length):
-    """
-    Helper function to format the snippets from reddit comments/submissions
-    :param text: full text of item
-    :param length: how many chars the snippet should be
-    :return: formatted snippet with '...' if needed
-    """
-    snippet = ''
-
-    if len(text) > length:
-        snippet = text[0:length] + '...'
-    else:
-        snippet = text
-    for char in snippet:
-        # tkinter can't handle certain unicode characters,
-        # so we strip them
-        if ord(char) > 65535:
-            snippet = snippet.replace(char, '')
-    return snippet
-
-
 def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, init):
     """
     Logs into reddit using PRAW, gives user an error on failure
@@ -97,7 +76,8 @@ username={username}'''
     reddit_state['max_score'] = 0
     reddit_state['test_run'] = 1
     reddit_state['gilded_skip'] = 0
-    reddit_state['whitelisted'] = {}
+    reddit_state['whitelisted_comments'] = {}
+    reddit_state['whitelisted_posts'] = {}
 
 
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
@@ -148,11 +128,13 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
 
     for item in item_array:
         if comment_bool:
+            identifying_text = 'comments'
             item_string = 'Comment'
-            item_snippet = format_snippet(item.body, 50)
+            item_snippet = helpers.format_snippet(item.body, 50)
         else:
+            identifying_text = 'posts'
             item_string = 'Submission'
-            item_snippet = format_snippet(item.title, 50)
+            item_snippet = helpers.format_snippet(item.title, 50)
 
         time_created = arrow.get(item.created_utc)
 
@@ -165,7 +147,7 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
         elif item.gilded and reddit_state['gilded_skip']:
             currently_deleting_text.set(
                 f'{item_string} `{item_snippet}` is gilded, skipping.')
-        elif reddit_state['whitelisted'][item.id]:
+        elif reddit_state[f'whitelisted_{identifying_text}'][item.id]:
             currently_deleting_text.set(
                 f'{item_string} `{item_snippet}` is whitelisted, skipping.`'
             )
@@ -237,12 +219,19 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
 
 
 def set_reddit_whitelist(root, comment_bool):
-    def flip_whitelist_dict(id):
-        reddit_state['whitelisted'][id] = not reddit_state['whitelisted'][id]
+    def flip_whitelist_dict(id, identifying_text):
+        reddit_state[f'whitelisted_{identifying_text}'][id] = not reddit_state[f'whitelisted_{identifying_text}'][id]
 
     def onFrameConfigure(canvas):
         '''Reset the scroll region to encompass the inner frame'''
         canvas.configure(scrollregion=canvas.bbox("all"))
+
+    if comment_bool:
+        identifying_text = 'comments'
+        item_array = reddit_state['user'].comments.new(limit=None)
+    else:
+        identifying_text = 'posts'
+        item_array = reddit_state['user'].submissions.new(limit=None)
 
     whitelist_window = tk.Toplevel(root)
 
@@ -256,11 +245,6 @@ def set_reddit_whitelist(root, comment_bool):
     canvas.pack(side=LEFT, fill=BOTH, expand=True)
     canvas.create_window((4,4), window=frame, anchor="nw")
 
-    if comment_bool:
-        identifying_text = 'comments' 
-    else:
-        identifying_text = 'posts'
-
     whitelist_title_label = tk.Label(
         frame, text=f'Pick {identifying_text} to save', font=('arial', 30))
 
@@ -271,23 +255,19 @@ def set_reddit_whitelist(root, comment_bool):
         row=0, column=0, columnspan=2, sticky=(tk.N, tk.E, tk.W, tk.S))
     ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
         row=1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
-
-    if comment_bool:
-        item_array = reddit_state['user'].comments.new(limit=None)
-    else:
-        item_array = reddit_state['user'].submissions.new(limit=None)
+        
 
     counter = 2
     for item in item_array:
-        if(item.id not in reddit_state['whitelisted']):
-            reddit_state['whitelisted'][item.id] = False
+        if(item.id not in reddit_state[f'whitelisted_{identifying_text}']):
+            reddit_state[f'whitelisted_{identifying_text}'][item.id] = False
 
         tk.Checkbutton(frame, command=lambda 
-            id=item.id: flip_whitelist_dict(id)).grid(row=counter,
+            id=item.id: flip_whitelist_dict(id, identifying_text)).grid(row=counter,
                 column=0)
 
         tk.Label(frame, 
-            text=format_snippet(item.body if comment_bool else item.title, 100)).grid(row=counter,
+            text=helpers.format_snippet(item.body if comment_bool else item.title, 100)).grid(row=counter,
                 column=1)
 
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(

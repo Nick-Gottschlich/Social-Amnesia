@@ -52,3 +52,23 @@ def set_max_score(max_score, current_max_score, item_string):
 
     return max_score
 
+
+def format_snippet(text, length):
+    """
+    Helper function to format the snippets displayed in UI
+    :param text: full text of item
+    :param length: how many chars the snippet should be
+    :return: formatted snippet with '...' if needed
+    """
+    snippet = ''
+
+    if len(text) > length:
+        snippet = text[0:length] + '...'
+    else:
+        snippet = text
+    for char in snippet:
+        # tkinter can't handle certain unicode characters,
+        # so we strip them
+        if ord(char) > 65535:
+            snippet = snippet.replace(char, '')
+    return snippet
