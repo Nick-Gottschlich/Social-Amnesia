@@ -125,7 +125,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
         elif (tweet.retweet_count >= twitter_state['max_retweets'] and not tweet.retweeted):
             currently_deleting_text.set(
                 f'Tweet: `{tweet_snippet}` has more retweets than max retweets, skipping.')
-        elif (tweet.id in twitter_state['whitelisted_tweets']):
+        elif twitter_state['whitelisted_tweets'][tweet.id]:
             currently_deleting_text.set(
                 f'Tweet: `{tweet_snippet}` is whitelisted, skipping.')
         else:
@@ -168,7 +168,7 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
 
         if time_created > twitter_state['time_to_save']:
             currently_deleting_text.set(f'Favorite: `{favorite_snippet}` is more recent than cutoff, skipping.')
-        elif (favorite.id in twitter_state['whitelisted_favorites']):
+        elif twitter_state['whitelisted_favorites'][favorite.id]:
             currently_deleting_text.set(
                 f'Favorite: `{favorite_snippet}` is whitelisted, skipping.')
         else:
@@ -233,6 +233,8 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
 def set_twitter_whitelist(root, tweet_bool):
     def flip_whitelist_dict(id, identifying_text):
         twitter_state[f'whitelisted_{identifying_text}'][id] = not twitter_state[f'whitelisted_{identifying_text}'][id]
+
+        print (twitter_state[f'whitelisted_{identifying_text}'])
 
     def onFrameConfigure(canvas):
         '''Reset the scroll region to encompass the inner frame'''
