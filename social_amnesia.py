@@ -276,7 +276,7 @@ class MainApp(tk.Frame):
         gilded_skip_bool = tk.IntVar()
         # Skip gilded posts by default
         gilded_skip_bool.set(1)
-        gilded_skip_label = tk.Label(frame, text='Skip Gilded comments:')
+        gilded_skip_label = tk.Label(frame, text='Skip Gilded items:')
         gilded_skip_check_button = tk.Checkbutton(
             frame, variable=gilded_skip_bool,
             command=lambda: reddit.set_reddit_gilded_skip(gilded_skip_bool))

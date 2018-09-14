@@ -234,8 +234,6 @@ def set_twitter_whitelist(root, tweet_bool):
     def flip_whitelist_dict(id, identifying_text):
         twitter_state[f'whitelisted_{identifying_text}'][id] = not twitter_state[f'whitelisted_{identifying_text}'][id]
 
-        print (twitter_state[f'whitelisted_{identifying_text}'])
-
     def onFrameConfigure(canvas):
         '''Reset the scroll region to encompass the inner frame'''
         canvas.configure(scrollregion=canvas.bbox("all"))
@@ -275,9 +273,15 @@ def set_twitter_whitelist(root, tweet_bool):
         if(item.id not in twitter_state[f'whitelisted_{identifying_text}']):
             twitter_state[f'whitelisted_{identifying_text}'][item.id] = False
 
-        tk.Checkbutton(frame, command=lambda
-            id=item.id: flip_whitelist_dict(id, identifying_text)).grid(row=counter,column=0)
+        whitelist_checkbutton = tk.Checkbutton(frame, command=lambda
+            id=item.id: flip_whitelist_dict(id, identifying_text))
 
+        if (twitter_state[f'whitelisted_{identifying_text}'][item.id]):
+            whitelist_checkbutton.select()
+        else:
+            whitelist_checkbutton.deselect()
+
+        whitelist_checkbutton.grid(row=counter, column=0)
         tk.Label(frame, 
             text=helpers.format_snippet(item.text, 100)).grid(row=counter, column=1)
 

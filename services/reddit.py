@@ -262,14 +262,18 @@ def set_reddit_whitelist(root, comment_bool):
         if(item.id not in reddit_state[f'whitelisted_{identifying_text}']):
             reddit_state[f'whitelisted_{identifying_text}'][item.id] = False
 
-        tk.Checkbutton(frame, command=lambda 
-            id=item.id: flip_whitelist_dict(id, identifying_text)).grid(row=counter,
-                column=0)
+        whitelist_checkbutton = tk.Checkbutton(frame, command=lambda 
+            id=item.id: flip_whitelist_dict(id, identifying_text))
 
+        if (reddit_state[f'whitelisted_{identifying_text}'][item.id]):
+            whitelist_checkbutton.select()
+        else:
+            whitelist_checkbutton.deselect()
+
+        whitelist_checkbutton.grid(row=counter, column=0)
         tk.Label(frame, 
             text=helpers.format_snippet(item.body if comment_bool else item.title, 100)).grid(row=counter,
                 column=1)
-
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
             row=counter+1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
 
