@@ -1,14 +1,14 @@
 from datetime import datetime
+import arrow
+import tweepy
 from tkinter import messagebox
 import tkinter as tk
-from tkinter import *
+import tkinter.ttk as ttk
 
 import sys
 sys.path.insert(0, "../utils")
-from utils import helpers
 
-import arrow
-import tweepy
+from utils import helpers
 
 # for dev purposes
 from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
@@ -31,13 +31,13 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     :return: none
     """
     # ============ REAL =============
-    # auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    # auth.set_access_token(access_token, access_token_secret)
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
     # ============= REAL ============
 
     # =========== DEV TESTING =============
-    auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
-    auth.set_access_token(twitter_access_token, twitter_access_token_secret)
+    # auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
+    # auth.set_access_token(twitter_access_token, twitter_access_token_secret)
     # ============== DEV TESTING ==============
 
     api = tweepy.API(auth)
@@ -58,14 +58,14 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
 
 def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
     """
-    See set_time_to_save function in helpers.py
+    See set_time_to_save function in utils/helpers.py
     """
     twitter_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
 
 
 def set_twitter_max_favorites(max_favorites, current_max_favorites):
     """
-    See set_max_score function in helpers.py
+    See set_max_score function in utils/helpers.py
     """
     twitter_state['max_favorites'] = helpers.set_max_score(max_favorites, current_max_favorites, 'favorites')
 
@@ -231,6 +231,13 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
 
 
 def set_twitter_whitelist(root, tweet_bool):
+    """
+    Creates a window to let users select which tweets or favorites 
+        to whitelist
+    :param root: the reference to the actual tkinter GUI window
+    :param tweet_bool: true for tweets, false for favorites
+    :return: none
+    """
     def flip_whitelist_dict(id, identifying_text):
         twitter_state[f'whitelisted_{identifying_text}'][id] = not twitter_state[f'whitelisted_{identifying_text}'][id]
 
@@ -253,8 +260,8 @@ def set_twitter_whitelist(root, tweet_bool):
     scrollbar = tk.Scrollbar(whitelist_window, command=canvas.yview)
     canvas.configure(yscrollcommand=scrollbar.set)
 
-    scrollbar.pack(side=RIGHT, fill=Y)
-    canvas.pack(side=LEFT, fill=BOTH, expand=True)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     canvas.create_window((4, 4), window=frame, anchor="nw")
 
     whitelist_title_label = tk.Label(

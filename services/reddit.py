@@ -1,17 +1,16 @@
 import os
 from datetime import datetime
 from pathlib import Path
-from tkinter import *
+import arrow
+import praw
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
 
 import sys
 sys.path.insert(0, "../utils")
-from utils import helpers
 
-import arrow
-import praw
+from utils import helpers
 
 USER_AGENT = 'Social Amnesia: v0.2.0 (by /u/JavaOffScript)'
 EDIT_OVERWRITE = 'Wiped by Social Amnesia'
@@ -219,6 +218,13 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
 
 
 def set_reddit_whitelist(root, comment_bool):
+    """
+    Creates a window to let users select which comments or posts
+        to whitelist
+    :param root: the reference to the actual tkinter GUI window
+    :param comment_bool: true for comments, false for posts
+    :return: none
+    """
     def flip_whitelist_dict(id, identifying_text):
         reddit_state[f'whitelisted_{identifying_text}'][id] = not reddit_state[f'whitelisted_{identifying_text}'][id]
 
@@ -241,8 +247,8 @@ def set_reddit_whitelist(root, comment_bool):
     scrollbar = tk.Scrollbar(whitelist_window, command=canvas.yview)
     canvas.configure(yscrollcommand=scrollbar.set)
 
-    scrollbar.pack(side=RIGHT, fill=Y)
-    canvas.pack(side=LEFT, fill=BOTH, expand=True)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     canvas.create_window((4,4), window=frame, anchor="nw")
 
     whitelist_title_label = tk.Label(
