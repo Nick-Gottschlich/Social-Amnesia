@@ -1,15 +1,17 @@
 from datetime import datetime
+import arrow
+import tweepy
 from tkinter import messagebox
+import tkinter as tk
+import tkinter.ttk as ttk
 
 import sys
 sys.path.insert(0, "../utils")
+
 from utils import helpers
 
-import arrow
-import tweepy
-
 # for dev purposes
-# from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
+from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
 
 # twitter state object
 # Handles configuration options set by the user
@@ -50,18 +52,20 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     twitter_state['max_favorites'] = 0
     twitter_state['max_retweets'] = 0
     twitter_state['test_run'] = 1
+    twitter_state['whitelisted_tweets'] = {}
+    twitter_state['whitelisted_favorites'] = {}
 
 
 def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
     """
-    See set_time_to_save function in helpers.py
+    See set_time_to_save function in utils/helpers.py
     """
     twitter_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
 
 
 def set_twitter_max_favorites(max_favorites, current_max_favorites):
     """
-    See set_max_score function in helpers.py
+    See set_max_score function in utils/helpers.py
     """
     twitter_state['max_favorites'] = helpers.set_max_score(max_favorites, current_max_favorites, 'favorites')
 
@@ -109,14 +113,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
 
     count = 1
     for tweet in user_tweets:
-        tweet_snippet = tweet.text[0:50]
-        if len(tweet.text) > 50:
-            tweet_snippet = tweet_snippet + '...'
-        for char in tweet_snippet:
-            # tkinter can't handle certain unicode characters,
-            #  so we strip them
-            if (ord(char) > 65535):
-                tweet_snippet = tweet_snippet.replace(char, '')
+        tweet_snippet = helpers.format_snippet(tweet.text, 50)
 
         time_created = arrow.Arrow.fromdatetime(tweet.created_at)
 
@@ -128,6 +125,9 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
         elif (tweet.retweet_count >= twitter_state['max_retweets'] and not tweet.retweeted):
             currently_deleting_text.set(
                 f'Tweet: `{tweet_snippet}` has more retweets than max retweets, skipping.')
+        elif twitter_state['whitelisted_tweets'][tweet.id]:
+            currently_deleting_text.set(
+                f'Tweet: `{tweet_snippet}` is whitelisted, skipping.')
         else:
             if (twitter_state['test_run'] == 0):
                 currently_deleting_text.set(f'Deleting tweet: `{tweet_snippet}`')
@@ -160,14 +160,7 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
 
     count = 1
     for favorite in user_favorites:
-        favorite_snippet = favorite.text[0:50]
-        if len(favorite.text) > 50:
-            favorite_snippet = favorite_snippet + '...'
-        for char in favorite_snippet:
-            # tkinter can't handle certain unicode characters,
-            #  so we strip them
-            if ord(char) > 65535:
-                favorite_snippet = favorite_snippet.replace(char, '')
+        favorite_snippet = helpers.format_snippet(favorite.text, 50)
 
         currently_deleting_text.set(f'Deleting favorite: `{favorite_snippet}`')
 
@@ -175,6 +168,9 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
 
         if time_created > twitter_state['time_to_save']:
             currently_deleting_text.set(f'Favorite: `{favorite_snippet}` is more recent than cutoff, skipping.')
+        elif twitter_state['whitelisted_favorites'][favorite.id]:
+            currently_deleting_text.set(
+                f'Favorite: `{favorite_snippet}` is whitelisted, skipping.')
         else:
             if (twitter_state['test_run'] == 0):
                 currently_deleting_text.set(f'Deleting favorite: `{favorite_snippet}`')
@@ -232,3 +228,71 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
 
     root.after(1000, lambda: set_twitter_scheduler(
         root, scheduler_bool, hour_of_day, string_var, progress_var))
+
+
+def set_twitter_whitelist(root, tweet_bool):
+    """
+    Creates a window to let users select which tweets or favorites 
+        to whitelist
+    :param root: the reference to the actual tkinter GUI window
+    :param tweet_bool: true for tweets, false for favorites
+    :return: none
+    """
+    def flip_whitelist_dict(id, identifying_text):
+        twitter_state[f'whitelisted_{identifying_text}'][id] = not twitter_state[f'whitelisted_{identifying_text}'][id]
+
+    def onFrameConfigure(canvas):
+        '''Reset the scroll region to encompass the inner frame'''
+        canvas.configure(scrollregion=canvas.bbox("all"))
+
+    if tweet_bool:
+        identifying_text = 'tweets'
+        item_array = gather_items(twitter_state['api'].user_timeline)
+    else:
+        identifying_text = 'favorites'
+        item_array = gather_items(twitter_state['api'].favorites)
+
+    whitelist_window = tk.Toplevel(root)
+
+    canvas = tk.Canvas(whitelist_window, width=750, height=1000)
+    frame = tk.Frame(canvas)
+
+    scrollbar = tk.Scrollbar(whitelist_window, command=canvas.yview)
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    canvas.create_window((4, 4), window=frame, anchor="nw")
+
+    whitelist_title_label = tk.Label(
+        frame, text=f'Pick {identifying_text} to save', font=('arial', 30))
+
+    frame.bind("<Configure>", lambda event,
+               canvas=canvas: onFrameConfigure(canvas))
+
+    whitelist_title_label.grid(
+        row=0, column=0, columnspan=2, sticky=(tk.N, tk.E, tk.W, tk.S))
+    ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
+        row=1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
+
+    counter = 2
+    for item in item_array:
+        if(item.id not in twitter_state[f'whitelisted_{identifying_text}']):
+            twitter_state[f'whitelisted_{identifying_text}'][item.id] = False
+
+        whitelist_checkbutton = tk.Checkbutton(frame, command=lambda
+            id=item.id: flip_whitelist_dict(id, identifying_text))
+
+        if (twitter_state[f'whitelisted_{identifying_text}'][item.id]):
+            whitelist_checkbutton.select()
+        else:
+            whitelist_checkbutton.deselect()
+
+        whitelist_checkbutton.grid(row=counter, column=0)
+        tk.Label(frame, 
+            text=helpers.format_snippet(item.text, 100)).grid(row=counter, column=1)
+
+        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
+            row=counter+1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
+
+        counter = counter + 2

@@ -111,17 +111,24 @@ class MainApp(tk.Frame):
         # Create elements
         title = tk.Label(frame, text='Twitter')
         title.config(font=('arial', 25))
+
         consumer_key_label = tk.Label(frame, text='Enter twitter consumer Key:')
         consumer_key_entry = tk.Entry(frame)
+
         consumer_secret_label = tk.Label(frame, text='Enter twitter consumer secret:')
         consumer_secret_entry = tk.Entry(frame)
+
         access_token_label = tk.Label(frame, text='Enter twitter Access Token:')
         access_token_entry = tk.Entry(frame)
+
         access_token_secret_label = tk.Label(frame, text='Enter Twitter access token secret:')
         access_token_secret_entry = tk.Entry(frame)
+
         login_confirm_text = tk.StringVar()
         login_confirm_text.set('Waiting for login')
+
         login_confirmed_label = tk.Label(frame, textvariable=login_confirm_text)
+
         login_button = tk.Button(
             frame, text='Login to Twitter',
             command=lambda: twitter.set_twitter_login(
@@ -134,14 +141,19 @@ class MainApp(tk.Frame):
 
         # Place elements
         title.grid(row=0, column=2, columnspan=2)
+
         consumer_key_label.grid(row=1, column=2)
         consumer_key_entry.grid(row=1, column=3)
+
         consumer_secret_label.grid(row=2, column=2)
         consumer_secret_entry.grid(row=2, column=3)
+
         access_token_label.grid(row=3, column=2)
         access_token_entry.grid(row=3, column=3)
+
         access_token_secret_label.grid(row=4, column=2)
         access_token_secret_entry.grid(row=4, column=3)
+
         login_button.grid(row=5, column=2)
         login_confirmed_label.grid(row=5, column=3)
 
@@ -155,17 +167,24 @@ class MainApp(tk.Frame):
         # Create elements
         title = tk.Label(frame, text='reddit')
         title.config(font=('arial', 25))
+
         username_label = tk.Label(frame, text='Enter reddit username:')
         username_entry = tk.Entry(frame)
+
         password_label = tk.Label(frame, text='Enter reddit password:')
         password_entry = tk.Entry(frame)
+
         client_id_label = tk.Label(frame, text='Enter reddit client ID:')
         client_id_entry = tk.Entry(frame)
+
         client_secret_label = tk.Label(frame, text='Enter reddit client secret:')
         client_secret_entry = tk.Entry(frame)
+
         login_confirm_text = tk.StringVar()
         login_confirm_text.set('Waiting for Login')
+        
         login_confirmed_label = tk.Label(frame, textvariable=login_confirm_text)
+
         login_button = tk.Button(
             frame, text='Login to reddit',
             command=lambda: reddit.set_reddit_login(
@@ -179,14 +198,19 @@ class MainApp(tk.Frame):
 
         # Place elements
         title.grid(row=0, column=0, columnspan=2)
+
         username_label.grid(row=1, column=0)
         username_entry.grid(row=1, column=1)
+
         password_label.grid(row=2, column=0)
         password_entry.grid(row=2, column=1)
+
         client_id_label.grid(row=3, column=0)
         client_id_entry.grid(row=3, column=1)
+
         client_secret_label.grid(row=4, column=0)
         client_secret_entry.grid(row=4, column=1)
+
         login_button.grid(row=5, column=0)
         login_confirmed_label.grid(row=5, column=1)
 
@@ -252,10 +276,21 @@ class MainApp(tk.Frame):
         gilded_skip_bool = tk.IntVar()
         # Skip gilded posts by default
         gilded_skip_bool.set(1)
-        gilded_skip_label = tk.Label(frame, text='Skip Gilded comments:')
+        gilded_skip_label = tk.Label(frame, text='Skip Gilded items:')
         gilded_skip_check_button = tk.Checkbutton(
             frame, variable=gilded_skip_bool,
             command=lambda: reddit.set_reddit_gilded_skip(gilded_skip_bool))
+
+        # White listing
+        whitelist_label = tk.Label(frame, text='Whitelist comments or submissions:')
+        modify_whitelist_comments_button = tk.Button(
+            frame, text='Pick comments to whitelist',
+            command=lambda: reddit.set_reddit_whitelist(root, True)
+        )
+        modify_whitelist_posts_button = tk.Button(
+            frame, text='Pick posts to whitelist',
+            command=lambda: reddit.set_reddit_whitelist(root, False)
+        )
 
         # Allows the user to actually delete comments or submissions
         deletion_section_label = tk.Label(frame, text='Deletion')
@@ -327,33 +362,37 @@ class MainApp(tk.Frame):
         time_currently_set_label.grid(row=1, column=11)
 
         max_score_label.grid(row=2, column=0)
-        max_score_entry_field.grid(row=2, column=1, columnspan=8, sticky=(tk.W,))
+        max_score_entry_field.grid(row=2, column=1, columnspan=8, sticky=(tk.W))
         set_max_score_button.grid(row=2, column=9)
         set_max_score_unlimited_button.grid(row=2, column=10)
         max_score_currently_set_label.grid(row=2, column=11)
 
         gilded_skip_label.grid(row=3, column=0)
-        gilded_skip_check_button.grid(row=3, column=1)
+        gilded_skip_check_button.grid(row=3, column=1, sticky=(tk.W))
+
+        whitelist_label.grid(row=4, column=0)
+        modify_whitelist_comments_button.grid(row=4, column=1, columnspan=4)
+        modify_whitelist_posts_button.grid(row=4, column=5, columnspan=4)
 
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=4, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+            row=5, columnspan=13, sticky=(tk.E, tk.W), pady=5)
 
-        deletion_section_label.grid(row=5, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+        deletion_section_label.grid(row=6, columnspan=11, sticky=(tk.N, tk.S), pady=5)
 
-        delete_comments_button.grid(row=6, column=0, sticky=tk.W)
-        delete_submissions_button.grid(row=6, column=0, sticky=(tk.E,))
-        test_run_check_button.grid(row=6, column=1, columnspan=11)
+        delete_comments_button.grid(row=7, column=0, sticky=tk.W)
+        delete_submissions_button.grid(row=7, column=0, sticky=(tk.E,))
+        test_run_check_button.grid(row=7, column=1, columnspan=11)
 
-        deletion_progress_label.grid(row=7, column=0)
-        deletion_progress_bar.grid(row=8, column=0, sticky=(tk.W,))
-        num_deleted_items_label.grid(row=8, column=0, sticky=(tk.E,))
+        deletion_progress_label.grid(row=8, column=0)
+        deletion_progress_bar.grid(row=9, column=0, sticky=(tk.W,))
+        num_deleted_items_label.grid(row=9, column=0, sticky=(tk.E,))
 
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=9, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+            row=10, columnspan=13, sticky=(tk.E, tk.W), pady=5)
 
-        scheduler_section_label.grid(row=10, columnspan=11, sticky=(tk.N, tk.S), pady=5)
-        scheduler_check_button.grid(row=11, column=0)
-        scheduler_hours_dropdown.grid(row=11, column=1)
+        scheduler_section_label.grid(row=11, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+        scheduler_check_button.grid(row=12, column=0)
+        scheduler_hours_dropdown.grid(row=12, column=1)
 
         return frame
 
@@ -423,6 +462,18 @@ class MainApp(tk.Frame):
             frame, text='Set Unlimited',
             command=lambda: twitter.set_twitter_max_retweets(
                 'Unlimited', current_max_retweets)
+        )
+
+        # White listing tweets or favorites
+        whitelist_label = tk.Label(
+             frame, text='Whitelist tweets or favorites:')
+        modify_whitelist_tweets_button = tk.Button(
+            frame, text='Pick tweets to whitelist',
+            command=lambda: twitter.set_twitter_whitelist(root, True)
+        )
+        modify_whitelist_favorites_button = tk.Button(
+            frame, text='Pick favorites to whitelist',
+            command=lambda: twitter.set_twitter_whitelist(root, False)
         )
 
         # Allows the user to delete tweets or remove favorites
@@ -503,25 +554,29 @@ class MainApp(tk.Frame):
         set_max_retweets_unlimited_button.grid(row=3, column=10)
         max_retweets_currently_set_label.grid(row=3, column=11)
 
-        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=4, columnspan=13, sticky=(tk.E, tk.W), pady=5)
-
-        deletion_section_label.grid(row=5, columnspan=11, sticky=(tk.N, tk.S), pady=5)
-
-        delete_comments_button.grid(row=6, column=0, sticky=(tk.W,))
-        delete_submissions_button.grid(row=6, column=0, sticky=(tk.E,))
-        test_run_check_button.grid(row=6, column=1, columnspan=11)
-
-        deletion_progress_label.grid(row=7, column=0)
-        deletion_progress_bar.grid(row=8, column=0, sticky=(tk.W,))
-        num_deleted_items_label.grid(row=8, column=0, sticky=(tk.E,))
+        whitelist_label.grid(row=4, column=0)
+        modify_whitelist_tweets_button.grid(row=4, column=1, columnspan=4)
+        modify_whitelist_favorites_button.grid(row=4, column=5, columnspan=4)
 
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=9, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+            row=5, columnspan=13, sticky=(tk.E, tk.W), pady=5)
 
-        scheduler_section_label.grid(row=10, columnspan=11, sticky=(tk.N, tk.S), pady=5)
-        scheduler_check_button.grid(row=11, column=0)
-        scheduler_hours_dropdown.grid(row=11, column=1)
+        deletion_section_label.grid(row=6, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+
+        delete_comments_button.grid(row=7, column=0, sticky=(tk.W))
+        delete_submissions_button.grid(row=7, column=0, sticky=(tk.E))
+        test_run_check_button.grid(row=7, column=1, columnspan=11)
+
+        deletion_progress_label.grid(row=8, column=0)
+        deletion_progress_bar.grid(row=9, column=0, sticky=(tk.W,))
+        num_deleted_items_label.grid(row=9, column=0, sticky=(tk.E,))
+
+        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
+            row=10, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+
+        scheduler_section_label.grid(row=11, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+        scheduler_check_button.grid(row=12, column=0)
+        scheduler_hours_dropdown.grid(row=12, column=1)
 
         return frame
 
