@@ -11,7 +11,7 @@ sys.path.insert(0, "../utils")
 from utils import helpers
 
 # for dev purposes
-from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
+# from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
 
 # twitter state object
 # Handles configuration options set by the user
@@ -21,13 +21,13 @@ twitter_state = {}
 already_ran_bool = False
 
 # ============ REAL =============
-# auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-# auth.set_access_token(access_token, access_token_secret)
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
 # ============= REAL ============
 
 # =========== DEV TESTING =============
-auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
-auth.set_access_token(twitter_access_token, twitter_access_token_secret)
+# auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
+# auth.set_access_token(twitter_access_token, twitter_access_token_secret)
 # ============== DEV TESTING ==============
 
 def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text):
