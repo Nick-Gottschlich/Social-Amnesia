@@ -11,7 +11,7 @@ sys.path.insert(0, "../utils")
 from utils import helpers
 
 # for dev purposes
-# from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
+from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
 
 # twitter state object
 # Handles configuration options set by the user

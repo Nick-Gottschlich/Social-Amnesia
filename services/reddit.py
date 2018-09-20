@@ -6,6 +6,7 @@ import praw
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
+import shelve
 
 import sys
 sys.path.insert(0, "../utils")
@@ -20,10 +21,13 @@ praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 # The reddit state object
 # Handles the actual praw object that manipulates the reddit account
 # as well as any configuration options about how to act.
-reddit_state = {}
+# reddit_state = {}
 
 # neccesary global bool for the scheduler
 alreadyRanBool = False
+
+# shelf testing
+reddit_state = shelve.open('reddit_state.db')
 
 def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, init):
     """
@@ -77,13 +81,14 @@ username={username}'''
     reddit_state['gilded_skip'] = 0
     reddit_state['whitelisted_comments'] = {}
     reddit_state['whitelisted_posts'] = {}
-
+    reddit_state.sync
 
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
     """
     See set_time_to_save function in utils/helpers.py
     """
     reddit_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
+    reddit_state.sync
 
 
 def set_reddix_max_score(max_score, current_max_score):
@@ -91,6 +96,7 @@ def set_reddix_max_score(max_score, current_max_score):
     See set_max_score function in utils/helpers.py
     """
     reddit_state['max_score'] = helpers.set_max_score(max_score, current_max_score, 'upvotes')
+    reddit_state.sync
 
 
 def set_reddit_gilded_skip(gilded_skip_bool):
@@ -102,6 +108,7 @@ def set_reddit_gilded_skip(gilded_skip_bool):
     skip_gild = gilded_skip_bool.get()
     if skip_gild:
         reddit_state['gilded_skip'] = skip_gild
+        reddit_state.sync
 
 
 def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
@@ -183,6 +190,7 @@ def set_reddit_test_run(test_run_bool):
     :return: none
     """
     reddit_state['test_run'] = test_run_bool.get()
+    reddit_state.sync
 
 
 def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var):
@@ -225,8 +233,12 @@ def set_reddit_whitelist(root, comment_bool):
     :param comment_bool: true for comments, false for posts
     :return: none
     """
+    #TODO: update this to get whether checkbox is selected or unselected instead of blindly flipping from true to false
     def flip_whitelist_dict(id, identifying_text):
-        reddit_state[f'whitelisted_{identifying_text}'][id] = not reddit_state[f'whitelisted_{identifying_text}'][id]
+        whitelist_dict = reddit_state[f'whitelisted_{identifying_text}']
+        whitelist_dict[id] = not whitelist_dict[id]
+        reddit_state[f'whitelisted_{identifying_text}'] = whitelist_dict
+        reddit_state.sync
 
     def onFrameConfigure(canvas):
         '''Reset the scroll region to encompass the inner frame'''
@@ -265,8 +277,13 @@ def set_reddit_whitelist(root, comment_bool):
 
     counter = 2
     for item in item_array:
-        if(item.id not in reddit_state[f'whitelisted_{identifying_text}']):
-            reddit_state[f'whitelisted_{identifying_text}'][item.id] = False
+        if (item.id not in reddit_state[f'whitelisted_{identifying_text}']):
+            # I wish I could tell you why I need to copy the dictionary of whitelisted items, and then modify it, and then
+            #   reassign it back to the persistant shelf. I don't know why this is needed, but it works.
+            whitelist_dict = reddit_state[f'whitelisted_{identifying_text}']
+            whitelist_dict[item.id] = False
+            reddit_state[f'whitelisted_{identifying_text}'] = whitelist_dict
+            reddit_state.sync
 
         whitelist_checkbutton = tk.Checkbutton(frame, command=lambda 
             id=item.id: flip_whitelist_dict(id, identifying_text))
@@ -284,3 +301,5 @@ def set_reddit_whitelist(root, comment_bool):
             row=counter+1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
 
         counter = counter + 2
+    
+    print(reddit_state[f'whitelisted_{identifying_text}'])
