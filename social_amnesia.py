@@ -8,6 +8,7 @@ from services import reddit, twitter
 
 USER_HOME_PATH = os.path.expanduser('~')
 
+reddit_state = shelve.open('reddit_state.db')
 
 def create_storage_folder():
     """
@@ -192,8 +193,8 @@ class MainApp(tk.Frame):
                 password_entry.get(),
                 client_id_entry.get(),
                 client_secret_entry.get(),
-                login_confirm_text,
-                False)
+                login_confirm_text
+            )
         )
 
         # Place elements
@@ -214,10 +215,10 @@ class MainApp(tk.Frame):
         login_button.grid(row=5, column=0)
         login_confirmed_label.grid(row=5, column=1)
 
-        # If a praw.ini file exists, log in to reddit
+        # If a praw.ini file exists, init reddit state
         praw_config_file = Path(os.path.join(USER_HOME_PATH, '.config/praw.ini'))
         if praw_config_file.is_file():
-            reddit.set_reddit_login('', '', '', '', login_confirm_text, True)
+            reddit.initialize_reddit_user(login_confirm_text)
 
     def build_reddit_tab(self):
         """

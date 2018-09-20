@@ -29,7 +29,27 @@ alreadyRanBool = False
 # shelf testing
 reddit_state = shelve.open('reddit_state.db')
 
-def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, init):
+def initialize_reddit_user(login_confirm_text):
+    try:
+        reddit = praw.Reddit('user', user_agent=USER_AGENT)
+        reddit.user.me()
+        login_confirm_text.set(f'Logged in to Reddit as {str(reddit.user.me())}')
+    except:
+        # praw.ini is broken, delete it
+        os.remove(praw_config_file_path)
+
+
+def initialize_reddit_settings():
+    reddit_state['user'] = reddit.redditor(str(reddit.user.me()))
+    reddit_state['time_to_save'] = arrow.now().replace(hours=0)
+    reddit_state['max_score'] = 0
+    reddit_state['test_run'] = 1
+    reddit_state['gilded_skip'] = 0
+    reddit_state['whitelisted_comments'] = {}
+    reddit_state['whitelisted_posts'] = {}
+    reddit_state.sync
+
+def set_reddit_login(username, password, client_id, client_secret, login_confirm_text):
     """
     Logs into reddit using PRAW, gives user an error on failure
     :param username: input received from the UI
@@ -40,48 +60,32 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
     :param init: boolean, true if this is the run performed on startup, false otherwise
     :return: none
     """
-    if init:
-        try:
-            reddit = praw.Reddit('user', user_agent=USER_AGENT)
-            reddit.user.me()
-        except:
-            # praw.ini is broken, delete it
-            os.remove(praw_config_file_path)
-            return
-    else:
-        reddit = praw.Reddit(
-            client_id=client_id,
-            client_secret=client_secret,
-            user_agent=USER_AGENT,
-            username=username,
-            password=password
-        )
+    reddit = praw.Reddit(
+        client_id=client_id,
+        client_secret=client_secret,
+        user_agent=USER_AGENT,
+        username=username,
+        password=password
+    )
 
-        if praw_config_file_path.is_file():
-            os.remove(praw_config_file_path)
+    if praw_config_file_path.is_file():
+        os.remove(praw_config_file_path)
 
-        praw_config_string = f'''[user]
+    praw_config_string = f'''[user]
 client_id={client_id}
 client_secret={client_secret}
 password={password}
 username={username}'''
 
-        with open(praw_config_file_path, 'a') as out:
-            out.write(praw_config_string)
+    with open(praw_config_file_path, 'a') as out:
+        out.write(praw_config_string)
 
     reddit_username = str(reddit.user.me())
 
     login_confirm_text.set(f'Logged in to Reddit as {reddit_username}')
 
-    # initialize state
-    reddit_state['user'] = reddit.redditor(reddit_username)
-    reddit_state['time_to_save'] = arrow.now().replace(hours=0)
-    reddit_state['max_score'] = 0
-    reddit_state['test_run'] = 1
-    reddit_state['gilded_skip'] = 0
-    reddit_state['whitelisted_comments'] = {}
-    reddit_state['whitelisted_posts'] = {}
-    reddit_state.sync
+    initialize_reddit_settings()
+
 
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
     """
