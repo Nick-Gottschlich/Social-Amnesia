@@ -107,9 +107,6 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
     :return: none
     """
 
-    # update the state (once proper state management for twitter is implemented, this can be removed)
-    twitter_state['api'] = tweepy.API(auth)
-
     user_tweets = gather_items(twitter_state['api'].user_timeline)
     total_tweets = len(user_tweets)
 
@@ -156,9 +153,6 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
     :param num_deleted_items_text: updates as X out of Y comments are looped through
     :return: none
     """
-
-    # update the state (once proper state management for twitter is implemented, this can be removed)
-    twitter_state['api'] = tweepy.API(auth)
 
     user_favorites = gather_items(twitter_state['api'].favorites)
     total_favorites = len(user_favorites)
