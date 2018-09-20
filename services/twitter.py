@@ -31,13 +31,13 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     :return: none
     """
     # ============ REAL =============
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
+    # auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    # auth.set_access_token(access_token, access_token_secret)
     # ============= REAL ============
 
     # =========== DEV TESTING =============
-    # auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
-    # auth.set_access_token(twitter_access_token, twitter_access_token_secret)
+    auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
+    auth.set_access_token(twitter_access_token, twitter_access_token_secret)
     # ============== DEV TESTING ==============
 
     api = tweepy.API(auth)
@@ -117,21 +117,20 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
 
         time_created = arrow.Arrow.fromdatetime(tweet.created_at)
 
-        if (time_created > twitter_state['time_to_save']):
+        if time_created > twitter_state['time_to_save']:
             currently_deleting_text.set(f'Tweet: `{tweet_snippet}` is more recent than cutoff, skipping.')
-        elif (tweet.favorite_count >= twitter_state['max_favorites']):
+        elif tweet.favorite_count >= twitter_state['max_favorites']:
             currently_deleting_text.set(
                 f'Tweet: `{tweet_snippet}` has more favorites than max favorites, skipping.')
-        elif (tweet.retweet_count >= twitter_state['max_retweets'] and not tweet.retweeted):
+        elif tweet.retweet_count >= twitter_state['max_retweets'] and not tweet.retweeted:
             currently_deleting_text.set(
                 f'Tweet: `{tweet_snippet}` has more retweets than max retweets, skipping.')
-        elif twitter_state['whitelisted_tweets'][tweet.id]:
+        elif tweet.id in twitter_state['whitelisted_tweets'] and twitter_state['whitelisted_tweets'][tweet.id]:
             currently_deleting_text.set(
                 f'Tweet: `{tweet_snippet}` is whitelisted, skipping.')
         else:
-            if (twitter_state['test_run'] == 0):
+            if twitter_state['test_run'] == 0:
                 currently_deleting_text.set(f'Deleting tweet: `{tweet_snippet}`')
-
                 twitter_state['api'].destroy_status(tweet.id)
             else:
                 currently_deleting_text.set(f'-TEST RUN- Would delete tweet: `{tweet_snippet}`')
@@ -168,11 +167,11 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
 
         if time_created > twitter_state['time_to_save']:
             currently_deleting_text.set(f'Favorite: `{favorite_snippet}` is more recent than cutoff, skipping.')
-        elif twitter_state['whitelisted_favorites'][favorite.id]:
+        elif favorite.id in twitter_state['whitelisted_favorites'] and twitter_state['whitelisted_favorites'][favorite.id]:
             currently_deleting_text.set(
                 f'Favorite: `{favorite_snippet}` is whitelisted, skipping.')
         else:
-            if (twitter_state['test_run'] == 0):
+            if twitter_state['test_run'] == 0:
                 currently_deleting_text.set(f'Deleting favorite: `{favorite_snippet}`')
                 twitter_state['api'].destroy_favorite(favorite.id)
             else:
