@@ -3,6 +3,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from pathlib import Path
 from tkinter import messagebox
+import shelve
 
 from services import reddit, twitter
 
@@ -215,7 +216,7 @@ class MainApp(tk.Frame):
         login_button.grid(row=5, column=0)
         login_confirmed_label.grid(row=5, column=1)
 
-        # If a praw.ini file exists, init reddit state
+        # If a praw.ini file exists, init reddit user
         praw_config_file = Path(os.path.join(USER_HOME_PATH, '.config/praw.ini'))
         if praw_config_file.is_file():
             reddit.initialize_reddit_user(login_confirm_text)
@@ -225,6 +226,8 @@ class MainApp(tk.Frame):
         Build the tab that will handle Reddit configuration and actions
         :return: Set up Reddit frame
         """
+        global reddit_state
+
         frame = tk.Frame(self.tabs)
         frame.grid()
 
@@ -233,7 +236,7 @@ class MainApp(tk.Frame):
         configuration_label.config(font=('arial', 25))
 
         # Configuration to set total time of items to save
-        current_time_to_save = tk.StringVar()
+        current_time_to_save = tk.StringVar()    
         current_time_to_save.set('Currently set to save: [nothing]')
         time_keep_label = tk.Label(frame, text='Keep comments/submissions younger than: ')
 
@@ -258,7 +261,14 @@ class MainApp(tk.Frame):
 
         # Configuration to set saving items with a certain amount of upvotes
         current_max_score = tk.StringVar()
-        current_max_score.set('Currently set to: 0 upvotes')
+        if 'max_score' in reddit_state:
+            if reddit_state['max_score'] == 9999999999:
+                reddit.set_reddit_max_score('Unlimited', current_max_score, reddit_state)
+            else:
+                reddit.set_reddit_max_score(
+                    reddit_state['max_score'], current_max_score, reddit_state)
+        else:
+            current_max_score.set('Currently set to: 0 upvotes')
 
         max_score_label = tk.Label(frame, text='Delete comments/submissions less than score:')
         max_score_entry_field = tk.Entry(frame, width=5)
@@ -266,11 +276,11 @@ class MainApp(tk.Frame):
 
         set_max_score_button = tk.Button(
             frame, text='Set Max Score',
-            command=lambda: reddit.set_reddix_max_score(max_score_entry_field.get(), current_max_score)
+            command=lambda: reddit.set_reddit_max_score(max_score_entry_field.get(), current_max_score, reddit_state)
         )
         set_max_score_unlimited_button = tk.Button(
             frame, text='Set Unlimited',
-            command=lambda: reddit.set_reddix_max_score('Unlimited', current_max_score)
+            command=lambda: reddit.set_reddit_max_score('Unlimited', current_max_score, reddit_state)
         )
 
         # Configuration to let user skip over gilded comments

@@ -43,12 +43,13 @@ def set_max_score(max_score, current_max_score, item_string):
     """
     if max_score == '':
         max_score = 0
+        current_max_score.set(f'Currently set to: {str(max_score)} {item_string}')
     elif max_score == 'Unlimited':
         max_score = 9999999999
+        current_max_score.set(f'Currently set to: unlimited {item_string}')
     else:
         max_score = int(max_score)
-
-    current_max_score.set(f'Currently set to: {str(max_score)} upvotes')
+        current_max_score.set(f'Currently set to: {str(max_score)} {item_string}')
 
     return max_score
 

@@ -18,16 +18,8 @@ EDIT_OVERWRITE = 'Wiped by Social Amnesia'
 
 praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 
-# The reddit state object
-# Handles the actual praw object that manipulates the reddit account
-# as well as any configuration options about how to act.
-# reddit_state = {}
-
 # neccesary global bool for the scheduler
 alreadyRanBool = False
-
-# shelf testing
-reddit_state = shelve.open('reddit_state.db')
 
 def initialize_reddit_user(login_confirm_text):
     try:
@@ -48,6 +40,7 @@ def initialize_reddit_settings():
     reddit_state['whitelisted_comments'] = {}
     reddit_state['whitelisted_posts'] = {}
     reddit_state.sync
+
 
 def set_reddit_login(username, password, client_id, client_secret, login_confirm_text):
     """
@@ -95,7 +88,7 @@ def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to
     reddit_state.sync
 
 
-def set_reddix_max_score(max_score, current_max_score):
+def set_reddit_max_score(max_score, current_max_score, reddit_state):
     """
     See set_max_score function in utils/helpers.py
     """
