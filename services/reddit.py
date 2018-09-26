@@ -80,10 +80,15 @@ username={username}'''
     initialize_reddit_settings()
 
 
-def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
+def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save, reddit_state):
     """
     See set_time_to_save function in utils/helpers.py
     """
+    reddit_state['hours'] =  hours_to_save
+    reddit_state['days'] = days_to_save
+    reddit_state['weeks'] = weeks_to_save
+    reddit_state['years'] = years_to_save
+
     reddit_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
     reddit_state.sync
 

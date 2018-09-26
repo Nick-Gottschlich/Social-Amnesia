@@ -236,8 +236,20 @@ class MainApp(tk.Frame):
         configuration_label.config(font=('arial', 25))
 
         # Configuration to set total time of items to save
-        current_time_to_save = tk.StringVar()    
-        current_time_to_save.set('Currently set to save: [nothing]')
+        current_time_to_save = tk.StringVar()
+        if 'hours' in reddit_state:
+            def get_text(time, text):
+                return '' if time == '0' else time + text
+
+            hours_text = get_text(reddit_state['hours'], 'hours')
+            days_text = get_text(reddit_state['days'], 'days')
+            weeks_text = get_text(reddit_state['weeks'], 'weeks')
+            years_text = get_text(reddit_state['years'], 'years')
+
+            current_time_to_save.set(
+                f'Currently set to save: [{years_text} {weeks_text} {days_text} {hours_text}] of items')
+        else:        
+            current_time_to_save.set('Currently set to save: [nothing]')
         time_keep_label = tk.Label(frame, text='Keep comments/submissions younger than: ')
 
         hours_dropdown = create_dropdown(frame, 2, 24)
@@ -256,7 +268,7 @@ class MainApp(tk.Frame):
             command=lambda: reddit.set_reddit_time_to_save(
                 hours_dropdown.get(), days_dropdown.get(),
                 weeks_dropdown.get(), years_dropdown.get(),
-                current_time_to_save)
+                current_time_to_save, reddit_state)
         )
 
         # Configuration to set saving items with a certain amount of upvotes
