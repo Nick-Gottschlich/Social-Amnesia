@@ -221,7 +221,7 @@ class MainApp(tk.Frame):
         # If a praw.ini file exists, init reddit user
         praw_config_file = Path(os.path.join(USER_HOME_PATH, '.config/praw.ini'))
         if praw_config_file.is_file():
-            reddit.initialize_reddit_user(login_confirm_text)
+            reddit.initialize_reddit_user(login_confirm_text, reddit_state)
 
     def build_reddit_tab(self):
         """
@@ -316,11 +316,11 @@ class MainApp(tk.Frame):
         whitelist_label = tk.Label(frame, text='Whitelist comments or submissions:')
         modify_whitelist_comments_button = tk.Button(
             frame, text='Pick comments to whitelist',
-            command=lambda: reddit.set_reddit_whitelist(root, True)
+            command=lambda: reddit.set_reddit_whitelist(root, True, reddit_state)
         )
         modify_whitelist_posts_button = tk.Button(
             frame, text='Pick posts to whitelist',
-            command=lambda: reddit.set_reddit_whitelist(root, False)
+            command=lambda: reddit.set_reddit_whitelist(root, False, reddit_state)
         )
 
         # Allows the user to actually delete comments or submissions

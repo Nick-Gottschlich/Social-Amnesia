@@ -21,10 +21,12 @@ praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 # neccesary global bool for the scheduler
 alreadyRanBool = False
 
-def initialize_reddit_user(login_confirm_text):
+def initialize_reddit_user(login_confirm_text, reddit_state):
     try:
         reddit = praw.Reddit('user', user_agent=USER_AGENT)
         reddit.user.me()
+        reddit_state['user'] = reddit.redditor(str(reddit.user.me()))
+
         login_confirm_text.set(f'Logged in to Reddit as {str(reddit.user.me())}')
     except:
         # praw.ini is broken, delete it
@@ -32,7 +34,6 @@ def initialize_reddit_user(login_confirm_text):
 
 
 def initialize_reddit_settings():
-    reddit_state['user'] = reddit.redditor(str(reddit.user.me()))
     reddit_state['time_to_save'] = arrow.now().replace(hours=0)
     reddit_state['max_score'] = 0
     reddit_state['test_run'] = 1
@@ -225,7 +226,7 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
         root, scheduler_bool, hour_of_day, string_var, progress_var))
 
 
-def set_reddit_whitelist(root, comment_bool):
+def set_reddit_whitelist(root, comment_bool, reddit_state):
     """
     Creates a window to let users select which comments or posts
         to whitelist
@@ -243,6 +244,11 @@ def set_reddit_whitelist(root, comment_bool):
     def onFrameConfigure(canvas):
         '''Reset the scroll region to encompass the inner frame'''
         canvas.configure(scrollregion=canvas.bbox("all"))
+
+    if 'whitelisted_comments' not in reddit_state:
+        reddit_state['whitelisted_comments'] = {}
+    if 'whitelisted_posts' not in reddit_state:
+        reddit_state['whitelisted_posts'] = {}
 
     if comment_bool:
         identifying_text = 'comments'
@@ -301,5 +307,3 @@ def set_reddit_whitelist(root, comment_bool):
             row=counter+1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
 
         counter = counter + 2
-    
-    print(reddit_state[f'whitelisted_{identifying_text}'])
