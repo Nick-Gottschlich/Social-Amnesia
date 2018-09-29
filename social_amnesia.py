@@ -9,7 +9,9 @@ from services import reddit, twitter
 
 USER_HOME_PATH = os.path.expanduser('~')
 
-reddit_state = shelve.open('reddit_state.db')
+reddit_state_file_path = Path(f'{os.path.expanduser("~")}/.config/reddit_state.db')
+
+reddit_state = shelve.open(str(reddit_state_file_path))
 
 def create_storage_folder():
     """

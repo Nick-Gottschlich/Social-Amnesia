@@ -14,7 +14,7 @@ if sys.platform == 'win32':
     os.environ['TCL_LIBRARY'] = 'C:\\Python36\\tcl\\tcl8.6'
     os.environ['TK_LIBRARY'] = 'C:\\Python36\\tcl\\tk8.6'
 
-build_exe_options = {'packages': ['os', 'idna', 'multiprocessing']}
+build_exe_options = {'packages': ['os', 'idna', 'multiprocessing', 'dbm']}
 executables = [Executable('social_amnesia.py', base=base)]
 
 setup(name=app_name,
