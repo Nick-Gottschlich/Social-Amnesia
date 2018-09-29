@@ -101,16 +101,14 @@ def set_reddit_max_score(max_score, current_max_score, reddit_state):
     reddit_state.sync
 
 
-def set_reddit_gilded_skip(gilded_skip_bool):
+def set_reddit_gilded_skip(gilded_skip_bool, reddit_state):
     """
     Set whether to skip gilded comments or not
     :param gildedSkipBool: false to delete gilded comments, true to skip gilded comments
     :return: none
     """
-    skip_gild = gilded_skip_bool.get()
-    if skip_gild:
-        reddit_state['gilded_skip'] = skip_gild
-        reddit_state.sync
+    reddit_state['gilded_skip'] = gilded_skip_bool.get()
+    reddit_state.sync
 
 
 def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):

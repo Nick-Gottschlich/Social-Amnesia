@@ -300,11 +300,17 @@ class MainApp(tk.Frame):
         # Configuration to let user skip over gilded comments
         gilded_skip_bool = tk.IntVar()
         # Skip gilded posts by default
-        gilded_skip_bool.set(1)
+        if 'gilded_skip' in reddit_state:
+            if reddit_state['gilded_skip'] == 0:
+                gilded_skip_bool.set(0)
+            else:
+                gilded_skip_bool.set(1)
+        else:
+            gilded_skip_bool.set(1)
         gilded_skip_label = tk.Label(frame, text='Skip Gilded items:')
         gilded_skip_check_button = tk.Checkbutton(
             frame, variable=gilded_skip_bool,
-            command=lambda: reddit.set_reddit_gilded_skip(gilded_skip_bool))
+            command=lambda: reddit.set_reddit_gilded_skip(gilded_skip_bool, reddit_state))
 
         # White listing
         whitelist_label = tk.Label(frame, text='Whitelist comments or submissions:')
