@@ -366,9 +366,19 @@ class MainApp(tk.Frame):
         scheduler_section_label.config(font=('arial', 25))
 
         scheduler_bool = tk.IntVar()
+        if 'scheduler_bool' in reddit_state:
+            if reddit_state['scheduler_bool'] == 0:
+                scheduler_bool.set(0)
+            else:
+                scheduler_bool.set(1)
+
         scheduler_text = 'Select to delete reddit comments + submissions daily at'
 
         scheduler_hours_dropdown = create_dropdown(frame, 2, 24)
+
+        scheduler_currently_set_text = tk.StringVar()
+        scheduler_currently_set_text.set('Currently set to: No time set')    
+        scheduler_currently_set_time_label = tk.Label(frame, textvariable=scheduler_currently_set_text)
 
         scheduler_check_button = tk.Checkbutton(
             frame, text=scheduler_text,
@@ -376,7 +386,7 @@ class MainApp(tk.Frame):
             command=lambda: reddit.set_reddit_scheduler(
                 root, scheduler_bool,
                 int(scheduler_hours_dropdown.get()),
-                tk.StringVar(), ttk.Progressbar()))
+                tk.StringVar(), ttk.Progressbar(), scheduler_currently_set_text, reddit_state))
 
         # This part actually builds the reddit tab
         configuration_label.grid(row=0, columnspan=11, sticky=(tk.N, tk.S), pady=5)
@@ -424,6 +434,7 @@ class MainApp(tk.Frame):
         scheduler_section_label.grid(row=11, columnspan=11, sticky=(tk.N, tk.S), pady=5)
         scheduler_check_button.grid(row=12, column=0)
         scheduler_hours_dropdown.grid(row=12, column=1)
+        scheduler_currently_set_time_label.grid(row=12, column=8)
 
         return frame
 

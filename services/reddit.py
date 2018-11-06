@@ -40,6 +40,8 @@ def initialize_reddit_settings():
     reddit_state['gilded_skip'] = 0
     reddit_state['whitelisted_comments'] = {}
     reddit_state['whitelisted_posts'] = {}
+    reddit_state['scheduled_time'] = 0
+    reddit_state['scheduler_bool'] = 0
     reddit_state.sync
 
 
@@ -85,7 +87,7 @@ def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to
     """
     See set_time_to_save function in utils/helpers.py
     """
-    reddit_state['hours'] =  hours_to_save
+    reddit_state['hours'] = hours_to_save
     reddit_state['days'] = days_to_save
     reddit_state['weeks'] = weeks_to_save
     reddit_state['years'] = years_to_save
@@ -194,7 +196,7 @@ def set_reddit_test_run(test_run_bool):
     reddit_state.sync
 
 
-def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var):
+def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var, current_time_text, reddit_state):
     """
     The scheduler that users can use to have social amnesia wipe comments at a set point in time, repeatedly.
     :param root: tkinkter window
@@ -207,6 +209,10 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
     if not scheduler_bool.get():
         alreadyRanBool = False
         return
+
+    reddit_state['scheduled_time'] = hour_of_day
+    reddit_state['scheduler_bool'] = scheduler_bool.get()
+    current_time_text.set(f'Currently set to: {hour_of_day}')
 
     current_time = datetime.now().time().hour
 
@@ -223,7 +229,7 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
         alreadyRanBool = False
 
     root.after(1000, lambda: set_reddit_scheduler(
-        root, scheduler_bool, hour_of_day, string_var, progress_var))
+        root, scheduler_bool, hour_of_day, string_var, progress_var, current_time_text, reddit_state))
 
 
 def set_reddit_whitelist(root, comment_bool, reddit_state):
@@ -279,7 +285,6 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
         row=0, column=0, columnspan=2, sticky=(tk.N, tk.E, tk.W, tk.S))
     ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
         row=1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
-        
 
     counter = 2
     for item in item_array:
