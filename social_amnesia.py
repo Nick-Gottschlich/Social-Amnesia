@@ -371,13 +371,18 @@ class MainApp(tk.Frame):
                 scheduler_bool.set(0)
             else:
                 scheduler_bool.set(1)
+        else:
+            scheduler_bool.set(0)
 
         scheduler_text = 'Select to delete reddit comments + submissions daily at'
 
         scheduler_hours_dropdown = create_dropdown(frame, 2, 24)
 
         scheduler_currently_set_text = tk.StringVar()
-        scheduler_currently_set_text.set('Currently set to: No time set')    
+        if 'scheduled_time' in reddit_state:
+            scheduler_currently_set_text.set(f'Currently set to: {reddit_state["scheduled_time"]}')
+        else:     
+            scheduler_currently_set_text.set('Currently set to: No time set')    
         scheduler_currently_set_time_label = tk.Label(frame, textvariable=scheduler_currently_set_text)
 
         scheduler_check_button = tk.Checkbutton(

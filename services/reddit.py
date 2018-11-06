@@ -205,13 +205,16 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
     :param string_var, progress_var - empty Vars needed to run the delete_reddit_items function
     :return: none
     """
+    reddit_state['scheduler_bool'] = scheduler_bool.get()
+    reddit_state.sync
     global alreadyRanBool
     if not scheduler_bool.get():
         alreadyRanBool = False
         return
 
     reddit_state['scheduled_time'] = hour_of_day
-    reddit_state['scheduler_bool'] = scheduler_bool.get()
+    reddit_state.sync
+
     current_time_text.set(f'Currently set to: {hour_of_day}')
 
     current_time = datetime.now().time().hour
