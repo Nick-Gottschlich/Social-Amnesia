@@ -4,6 +4,7 @@ import tweepy
 from tkinter import messagebox
 import tkinter as tk
 import tkinter.ttk as ttk
+import shelve
 
 import sys
 sys.path.insert(0, "../utils")
@@ -13,14 +14,20 @@ from utils import helpers
 # for dev purposes
 from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
 
-# twitter state object
-# Handles configuration options set by the user
-twitter_state = {}
+twitter_api = {}
 
 # neccesary global bool for the scheduler
 already_ran_bool = False
 
-def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text):
+def initialize_twitter_user(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text):
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
+    api = tweepy.API(auth)
+
+    twitter_username = api.me().screen_name
+    login_confirm_text.set(f'Logged in to twitter as {twitter_username}')
+
+def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text, twitter_state):
     """
     Logs into twitter using tweepy, gives user an error on failure
     :param consumer_key: input received from the UI
@@ -30,15 +37,8 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     :param login_confirm_text: confirmation text - shown to the user in the UI
     :return: none
     """
-    # ============ REAL =============
-    # auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    # auth.set_access_token(access_token, access_token_secret)
-    # ============= REAL ============
-
-    # =========== DEV TESTING =============
-    auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
-    auth.set_access_token(twitter_access_token, twitter_access_token_secret)
-    # ============== DEV TESTING ==============
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
 
     api = tweepy.API(auth)
 
@@ -46,14 +46,20 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
 
     login_confirm_text.set(f'Logged in to twitter as {twitter_username}')
 
-    # initialize state
-    twitter_state['api'] = api
+    twitter_api = api
+    twitter_state['login_info'] = {
+        'consumer_key': consumer_key,
+        'consumer_secret': consumer_secret,
+        'access_token': access_token,
+        'access_token_secret': access_token_secret
+    }
     twitter_state['time_to_save'] = arrow.utcnow().replace(hours=0)
     twitter_state['max_favorites'] = 0
     twitter_state['max_retweets'] = 0
     twitter_state['test_run'] = 1
     twitter_state['whitelisted_tweets'] = {}
     twitter_state['whitelisted_favorites'] = {}
+    twitter_state.sync
 
 
 def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
@@ -107,7 +113,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
     :return: none
     """
 
-    user_tweets = gather_items(twitter_state['api'].user_timeline)
+    user_tweets = gather_items(twitter_api.user_timeline)
     total_tweets = len(user_tweets)
 
     num_deleted_items_text.set(f'0/{str(total_tweets)} items processed so far')
@@ -132,7 +138,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
         else:
             if twitter_state['test_run'] == 0:
                 currently_deleting_text.set(f'Deleting tweet: `{tweet_snippet}`')
-                twitter_state['api'].destroy_status(tweet.id)
+                twitter_api.destroy_status(tweet.id)
             else:
                 currently_deleting_text.set(f'-TEST RUN- Would delete tweet: `{tweet_snippet}`')
 
@@ -154,7 +160,7 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
     :return: none
     """
 
-    user_favorites = gather_items(twitter_state['api'].favorites)
+    user_favorites = gather_items(twitter_api.favorites)
     total_favorites = len(user_favorites)
 
     num_deleted_items_text.set(f'0/{str(total_favorites)} items processed so far')
@@ -175,7 +181,7 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
         else:
             if twitter_state['test_run'] == 0:
                 currently_deleting_text.set(f'Deleting favorite: `{favorite_snippet}`')
-                twitter_state['api'].destroy_favorite(favorite.id)
+                twitter_api.destroy_favorite(favorite.id)
             else:
                 currently_deleting_text.set(f'-TEST RUN- Would remove favorite: `{favorite_snippet}`')
 
@@ -248,10 +254,10 @@ def set_twitter_whitelist(root, tweet_bool):
 
     if tweet_bool:
         identifying_text = 'tweets'
-        item_array = gather_items(twitter_state['api'].user_timeline)
+        item_array = gather_items(twitter_api.user_timeline)
     else:
         identifying_text = 'favorites'
-        item_array = gather_items(twitter_state['api'].favorites)
+        item_array = gather_items(twitter_api.favorites)
 
     whitelist_window = tk.Toplevel(root)
 

@@ -53,7 +53,6 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
     :param client_id: input received from the UI
     :param client_secret: input received from the UI
     :param login_confirm_text: confirmation text - shown to the user in the UI
-    :param init: boolean, true if this is the run performed on startup, false otherwise
     :return: none
     """
     reddit = praw.Reddit(

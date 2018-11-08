@@ -10,8 +10,11 @@ from services import reddit, twitter
 USER_HOME_PATH = os.path.expanduser('~')
 
 reddit_state_file_path = Path(f'{os.path.expanduser("~")}/.config/reddit_state.db')
-
 reddit_state = shelve.open(str(reddit_state_file_path))
+
+twitter_state_file_path = Path(
+    f'{os.path.expanduser("~")}/.config/twitter_state.db')
+twitter_state = shelve.open(str(twitter_state_file_path))
 
 def create_storage_folder():
     """
@@ -140,7 +143,7 @@ class MainApp(tk.Frame):
                 consumer_secret_entry.get(),
                 access_token_entry.get(),
                 access_token_secret_entry.get(),
-                login_confirm_text)
+                login_confirm_text, twitter_state)
         )
 
         # Place elements
@@ -160,6 +163,10 @@ class MainApp(tk.Frame):
 
         login_button.grid(row=5, column=2)
         login_confirmed_label.grid(row=5, column=3)
+
+        if 'login_info' in twitter_state:
+            twitter.initialize_twitter_user(twitter_state['login_info']['consumer_key'], twitter_state['login_info']['consumer_secret'],
+                                            twitter_state['login_info']['access_token'], twitter_state['login_info']['access_token_secret'], login_confirm_text)
 
     @staticmethod
     def build_reddit_login(frame: tk.Frame):
