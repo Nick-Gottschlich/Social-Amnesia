@@ -75,18 +75,20 @@ def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_t
     twitter_state.sync
 
 
-def set_twitter_max_favorites(max_favorites, current_max_favorites):
+def set_twitter_max_favorites(max_favorites, current_max_favorites, twitter_state):
     """
     See set_max_score function in utils/helpers.py
     """
     twitter_state['max_favorites'] = helpers.set_max_score(max_favorites, current_max_favorites, 'favorites')
+    twitter_state.sync
 
 
-def set_twitter_max_retweets(max_retweets, current_max_retweets):
+def set_twitter_max_retweets(max_retweets, current_max_retweets, twitter_state):
     """
     See set_max_score function in helpers.py
     """
     twitter_state['max_retweets'] = helpers.set_max_score(max_retweets, current_max_retweets, 'retweets')
+    twitter_state.sync
 
 
 def gather_items(item_getter):
@@ -207,6 +209,7 @@ def set_twitter_test_run(test_run_bool):
     :return: none
     """
     twitter_state['test_run'] = test_run_bool.get()
+    twitter_state.sync
 
 
 def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var):

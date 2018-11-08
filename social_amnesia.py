@@ -497,35 +497,51 @@ class MainApp(tk.Frame):
 
         # Configuration to set saving items with a certain amount of favorites
         current_max_favorites = tk.StringVar()
-        current_max_favorites.set('Currently set to: 0 Favorites')
+        if 'max_favorites' in twitter_state:
+            if twitter_state['max_favorites'] == 9999999999:
+                twitter.set_twitter_max_favorites(
+                    'Unlimited', current_max_favorites, twitter_state)
+            else:
+                twitter.set_twitter_max_favorites(
+                    twitter_state['max_favorites'], current_max_favorites, twitter_state)
+        else:
+            current_max_favorites.set('Currently set to: 0 upvotes')
         max_favorites_label = tk.Label(frame, text='Delete tweets that have fewer favorites than:')
         max_favorites_entry_field = tk.Entry(frame, width=5)
         max_favorites_currently_set_label = tk.Label(frame, textvariable=current_max_favorites)
         set_max_favorites_button = tk.Button(
             frame, text='Set Max Favorites',
             command=lambda: twitter.set_twitter_max_favorites(
-                max_favorites_entry_field.get(), current_max_favorites)
+                max_favorites_entry_field.get(), current_max_favorites, twitter_state)
         )
         set_max_favorites_unlimited_button = tk.Button(
             frame, text='Set Unlimited',
-            command=lambda: twitter.set_twitter_max_favorites('Unlimited', current_max_favorites)
+            command=lambda: twitter.set_twitter_max_favorites('Unlimited', current_max_favorites, twitter_state)
         )
 
         # Configuration to set saving items with a certain amount of retweets
         current_max_retweets = tk.StringVar()
-        current_max_retweets.set('Currently set to: 0 Retweets')
+        if 'max_retweets' in twitter_state:
+            if twitter_state['max_retweets'] == 9999999999:
+                twitter.set_twitter_max_retweets(
+                    'Unlimited', current_max_retweets, twitter_state)
+            else:
+                twitter.set_twitter_max_retweets(
+                    twitter_state['max_retweets'], current_max_retweets, twitter_state)
+        else:
+            current_max_retweets.set('Currently set to: 0 upvotes')
         max_retweets_label = tk.Label(frame, text='Delete tweets that have fewer retweets than: ')
         max_retweets_entry_field = tk.Entry(frame, width=5)
         max_retweets_currently_set_label = tk.Label(frame, textvariable=current_max_retweets)
         set_max_retweets_button = tk.Button(
             frame, text='Set Max Retweets',
             command=lambda: twitter.set_twitter_max_retweets(
-                max_retweets_entry_field.get(), current_max_retweets)
+                max_retweets_entry_field.get(), current_max_retweets, twitter_state)
         )
         set_max_retweets_unlimited_button = tk.Button(
             frame, text='Set Unlimited',
             command=lambda: twitter.set_twitter_max_retweets(
-                'Unlimited', current_max_retweets)
+                'Unlimited', current_max_retweets, twitter_state)
         )
 
         # White listing tweets or favorites
