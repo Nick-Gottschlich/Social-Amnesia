@@ -464,7 +464,17 @@ class MainApp(tk.Frame):
 
         # Configuration to set total time of items to save
         current_time_to_save = tk.StringVar()
-        current_time_to_save.set('Currently set to save: [nothing]')
+        if 'hours' in twitter_state:
+            def get_text(time, text):
+                return '' if time == '0' else time + text
+            hours_text = get_text(twitter_state['hours'], 'hours')
+            days_text = get_text(twitter_state['days'], 'days')
+            weeks_text = get_text(twitter_state['weeks'], 'weeks')
+            years_text = get_text(twitter_state['years'], 'years')
+            current_time_to_save.set(
+                f'Currently set to save: [{years_text} {weeks_text} {days_text} {hours_text}] of items')
+        else:        
+            current_time_to_save.set('Currently set to save: [nothing]')
         time_keep_label = tk.Label(frame, text='Keep items younger than: ')
 
         hours_dropdown = create_dropdown(frame, 2, 24)
@@ -482,7 +492,7 @@ class MainApp(tk.Frame):
             frame, text='Set Total Time To Keep',
             command=lambda: twitter.set_twitter_time_to_save(
                 hours_dropdown.get(), days_dropdown.get(),
-                weeks_dropdown.get(), years_dropdown.get(), current_time_to_save)
+                weeks_dropdown.get(), years_dropdown.get(), current_time_to_save, twitter_state)
         )
 
         # Configuration to set saving items with a certain amount of favorites

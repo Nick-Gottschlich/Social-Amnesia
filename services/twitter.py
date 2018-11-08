@@ -62,11 +62,17 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     twitter_state.sync
 
 
-def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
+def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save, twitter_state):
     """
     See set_time_to_save function in utils/helpers.py
     """
+    twitter_state['hours'] = hours_to_save
+    twitter_state['days'] = days_to_save
+    twitter_state['weeks'] = weeks_to_save
+    twitter_state['years'] = years_to_save
+
     twitter_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
+    twitter_state.sync
 
 
 def set_twitter_max_favorites(max_favorites, current_max_favorites):
