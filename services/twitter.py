@@ -5,14 +5,9 @@ from tkinter import messagebox
 import tkinter as tk
 import tkinter.ttk as ttk
 import shelve
-
 import sys
 sys.path.insert(0, "../utils")
-
 from utils import helpers
-
-# for dev purposes
-from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
 
 twitter_api = {}
 
@@ -27,6 +22,7 @@ def initialize_twitter_user(consumer_key, consumer_secret, access_token, access_
     twitter_username = api.me().screen_name
     login_confirm_text.set(f'Logged in to twitter as {twitter_username}')
 
+
 def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text, twitter_state):
     """
     Logs into twitter using tweepy, gives user an error on failure
@@ -37,6 +33,8 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     :param login_confirm_text: confirmation text - shown to the user in the UI
     :return: none
     """
+    global twitter_api
+
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
 
@@ -59,6 +57,8 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     twitter_state['test_run'] = 1
     twitter_state['whitelisted_tweets'] = {}
     twitter_state['whitelisted_favorites'] = {}
+    twitter_state['scheduled_time'] = 0
+    twitter_state['scheduler_bool'] = 0
     twitter_state.sync
 
 
@@ -111,7 +111,7 @@ def gather_items(item_getter):
     return user_items
 
 
-def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
+def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state):
     """
     Deletes user's tweets according to user configurations.
     :param root: the reference to the actual tkinter GUI window
@@ -120,6 +120,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
     :param num_deleted_items_text: updates as X out of Y comments are looped through
     :return: none
     """
+    global twitter_api
 
     user_tweets = gather_items(twitter_api.user_timeline)
     total_tweets = len(user_tweets)
@@ -158,7 +159,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
         count += 1
 
 
-def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
+def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state):
     """
     Deletes users's favorites according to user configurations.
     :param root: the reference to the actual tkinter GUI window
@@ -167,6 +168,7 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
     :param num_deleted_items_text: updates as X out of Y comments are looped through
     :return: none
     """
+    global twitter_api
 
     user_favorites = gather_items(twitter_api.favorites)
     total_favorites = len(user_favorites)
@@ -202,7 +204,7 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
         count += 1
 
 
-def set_twitter_test_run(test_run_bool):
+def set_twitter_test_run(test_run_bool, twitter_state):
     """
     Set whether to run a test run or not (stored in state)
     :param test_run_bool: 0 for real run, 1 for test run
@@ -212,7 +214,7 @@ def set_twitter_test_run(test_run_bool):
     twitter_state.sync
 
 
-def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var):
+def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var, current_time_text, twitter_state):
     """
     The scheduler that users can use to have social amnesia wipe 
     tweets/favorites at a set point in time, repeatedly.
@@ -222,10 +224,18 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
     :param string_var, progress_var - empty Vars needed to run the deletion functions
     :return: none
     """
+    twitter_state['scheduler_bool'] = scheduler_bool.get()
+    twitter_state.sync
+
     global already_ran_bool
     if not scheduler_bool.get():
         already_ran_bool = False
         return
+
+    twitter_state['scheduled_time'] = hour_of_day
+    twitter_state.sync
+
+    current_time_text.set(f'Currently set to: {hour_of_day}')
 
     current_time = datetime.now().time().hour
 
@@ -233,8 +243,8 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
         messagebox.showinfo(
             'Scheduler', 'Social Amnesia is now erasing your past on twitter.')
 
-        delete_twitter_tweets(root, string_var, progress_var, string_var)
-        delete_twitter_favorites(root, string_var, progress_var, string_var)
+        delete_twitter_tweets(root, string_var, progress_var, string_var, twitter_state)
+        delete_twitter_favorites(root, string_var, progress_var, string_var, twitter_state)
 
         already_ran_bool = True
     if current_time < 23 and current_time == hour_of_day + 1:
@@ -243,7 +253,7 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
         already_ran_bool = False
 
     root.after(1000, lambda: set_twitter_scheduler(
-        root, scheduler_bool, hour_of_day, string_var, progress_var))
+        root, scheduler_bool, hour_of_day, string_var, progress_var, current_time_text, twitter_state))
 
 
 def set_twitter_whitelist(root, tweet_bool):
@@ -254,6 +264,8 @@ def set_twitter_whitelist(root, tweet_bool):
     :param tweet_bool: true for tweets, false for favorites
     :return: none
     """
+    global twitter_api
+
     def flip_whitelist_dict(id, identifying_text):
         twitter_state[f'whitelisted_{identifying_text}'][id] = not twitter_state[f'whitelisted_{identifying_text}'][id]
 

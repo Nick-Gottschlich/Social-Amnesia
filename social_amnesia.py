@@ -350,14 +350,14 @@ class MainApp(tk.Frame):
             frame, text='Delete comments',
             command=lambda: reddit.delete_reddit_items(
                 root, True, currently_deleting_text,
-                deletion_progress_bar, num_deleted_items_text)
+                deletion_progress_bar, num_deleted_items_text, reddit_state)
         )
 
         delete_submissions_button = tk.Button(
             frame, text='Delete submissions',
             command=lambda: reddit.delete_reddit_items(
                 root, False, currently_deleting_text,
-                deletion_progress_bar, num_deleted_items_text)
+                deletion_progress_bar, num_deleted_items_text, reddit_state)
         )
 
         test_run_bool = tk.IntVar()
@@ -574,13 +574,13 @@ class MainApp(tk.Frame):
         delete_comments_button = tk.Button(
             frame, text='Delete tweets',
             command=lambda: twitter.delete_twitter_tweets(
-                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text)
+                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state)
         )
 
         delete_submissions_button = tk.Button(
             frame, text='Remove Favorites',
             command=lambda: twitter.delete_twitter_favorites(
-                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text)
+                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state)
         )
 
         test_run_bool = tk.IntVar()
@@ -590,23 +590,40 @@ class MainApp(tk.Frame):
         test_run_check_button = tk.Checkbutton(
             frame, text=test_run_text,
             variable=test_run_bool,
-            command=lambda: twitter.set_twitter_test_run(test_run_bool))
+            command=lambda: twitter.set_twitter_test_run(test_run_bool, twitter_state))
 
         # Allows the user to schedule runs
         scheduler_section_label = tk.Label(frame, text='Scheduler')
         scheduler_section_label.config(font=('arial', 25))
 
         scheduler_bool = tk.IntVar()
+        if 'scheduler_bool' in twitter_state:
+            if twitter_state['scheduler_bool'] == 0:
+                scheduler_bool.set(0)
+            else:
+                scheduler_bool.set(1)
+        else:
+            scheduler_bool.set(0)
+
         scheduler_text = 'Select to delete twitter comments + submissions daily at'
 
         scheduler_hours_dropdown = create_dropdown(frame, 2, 24)
+
+        scheduler_currently_set_text = tk.StringVar()
+        if 'scheduled_time' in twitter_state:
+            scheduler_currently_set_text.set(
+                f'Currently set to: {twitter_state["scheduled_time"]}')
+        else:
+            scheduler_currently_set_text.set('Currently set to: No time set')
+        scheduler_currently_set_time_label = tk.Label(
+            frame, textvariable=scheduler_currently_set_text)
 
         scheduler_check_button = tk.Checkbutton(
             frame, text=scheduler_text,
             variable=scheduler_bool,
             command=lambda: twitter.set_twitter_scheduler(
                 root, scheduler_bool, int(scheduler_hours_dropdown.get()),
-                tk.StringVar(), ttk.Progressbar()))
+                tk.StringVar(), ttk.Progressbar(), scheduler_currently_set_text, twitter_state))
 
         # Actually build the twitter tab
         configuration_label.grid(row=0, columnspan=11, sticky=(tk.N, tk.S), pady=5)
@@ -657,6 +674,7 @@ class MainApp(tk.Frame):
         scheduler_section_label.grid(row=11, columnspan=11, sticky=(tk.N, tk.S), pady=5)
         scheduler_check_button.grid(row=12, column=0)
         scheduler_hours_dropdown.grid(row=12, column=1)
+        scheduler_currently_set_time_label.grid(row=12, column=8)
 
         return frame
 

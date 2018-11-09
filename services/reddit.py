@@ -7,13 +7,11 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
 import shelve
-
 import sys
 sys.path.insert(0, "../utils")
-
 from utils import helpers
 
-USER_AGENT = 'Social Amnesia: v0.2.0 (by /u/JavaOffScript)'
+USER_AGENT = 'Social Amnesia (by /u/JavaOffScript)'
 EDIT_OVERWRITE = 'Wiped by Social Amnesia'
 
 praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
@@ -113,7 +111,7 @@ def set_reddit_gilded_skip(gilded_skip_bool, reddit_state):
     reddit_state.sync
 
 
-def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
+def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, reddit_state):
     """
     Deletes the items according to user configurations.
     :param root: the reference to the actual tkinter GUI window
@@ -221,8 +219,8 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
     if current_time == hour_of_day and not alreadyRanBool:
         messagebox.showinfo('Scheduler', 'Social Amnesia is now erasing your past on reddit.')
 
-        delete_reddit_items(root, True, string_var, progress_var, string_var)
-        delete_reddit_items(root, False, string_var, progress_var, string_var)
+        delete_reddit_items(root, True, string_var, progress_var, string_var, reddit_state)
+        delete_reddit_items(root, False, string_var, progress_var, string_var, reddit_state)
 
         alreadyRanBool = True
     if current_time < 23 and current_time == hour_of_day + 1:
