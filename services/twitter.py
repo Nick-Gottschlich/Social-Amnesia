@@ -15,11 +15,13 @@ twitter_api = {}
 already_ran_bool = False
 
 def initialize_twitter_user(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text):
+    global twitter_api
+
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
-    api = tweepy.API(auth)
+    twitter_api = tweepy.API(auth)
 
-    twitter_username = api.me().screen_name
+    twitter_username = twitter_api.me().screen_name
     login_confirm_text.set(f'Logged in to twitter as {twitter_username}')
 
 
@@ -256,7 +258,7 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
         root, scheduler_bool, hour_of_day, string_var, progress_var, current_time_text, twitter_state))
 
 
-def set_twitter_whitelist(root, tweet_bool):
+def set_twitter_whitelist(root, tweet_bool, twitter_state):
     """
     Creates a window to let users select which tweets or favorites 
         to whitelist
@@ -267,11 +269,19 @@ def set_twitter_whitelist(root, tweet_bool):
     global twitter_api
 
     def flip_whitelist_dict(id, identifying_text):
-        twitter_state[f'whitelisted_{identifying_text}'][id] = not twitter_state[f'whitelisted_{identifying_text}'][id]
+        whitelist_dict = twitter_state[f'whitelisted_{identifying_text}']
+        whitelist_dict[id] = not whitelist_dict[id]
+        twitter_state[f'whitelisted_{identifying_text}'] = whitelist_dict
+        twitter_state.sync
 
     def onFrameConfigure(canvas):
         '''Reset the scroll region to encompass the inner frame'''
         canvas.configure(scrollregion=canvas.bbox("all"))
+
+    if 'whitelisted_comments' not in twitter_state:
+        twitter_state['whitelisted_comments'] = {}
+    if 'whitelisted_posts' not in twitter_state:
+        twitter_state['whitelisted_posts'] = {}
 
     if tweet_bool:
         identifying_text = 'tweets'
@@ -305,8 +315,13 @@ def set_twitter_whitelist(root, tweet_bool):
 
     counter = 2
     for item in item_array:
-        if(item.id not in twitter_state[f'whitelisted_{identifying_text}']):
-            twitter_state[f'whitelisted_{identifying_text}'][item.id] = False
+        if (item.id not in twitter_state[f'whitelisted_{identifying_text}']):
+            # I wish I could tell you why I need to copy the dictionary of whitelisted items, and then modify it, and then
+            #   reassign it back to the persistant shelf. I don't know why this is needed, but it works.
+            whitelist_dict = twitter_state[f'whitelisted_{identifying_text}']
+            whitelist_dict[item.id] = False
+            twitter_state[f'whitelisted_{identifying_text}'] = whitelist_dict
+            twitter_state.sync
 
         whitelist_checkbutton = tk.Checkbutton(frame, command=lambda
             id=item.id: flip_whitelist_dict(id, identifying_text))

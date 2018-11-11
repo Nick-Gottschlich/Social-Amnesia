@@ -168,6 +168,7 @@ class MainApp(tk.Frame):
             twitter.initialize_twitter_user(twitter_state['login_info']['consumer_key'], twitter_state['login_info']['consumer_secret'],
                                             twitter_state['login_info']['access_token'], twitter_state['login_info']['access_token_secret'], login_confirm_text)
 
+
     @staticmethod
     def build_reddit_login(frame: tk.Frame):
         """
@@ -549,11 +550,11 @@ class MainApp(tk.Frame):
              frame, text='Whitelist tweets or favorites:')
         modify_whitelist_tweets_button = tk.Button(
             frame, text='Pick tweets to whitelist',
-            command=lambda: twitter.set_twitter_whitelist(root, True)
+            command=lambda: twitter.set_twitter_whitelist(root, True, twitter_state)
         )
         modify_whitelist_favorites_button = tk.Button(
             frame, text='Pick favorites to whitelist',
-            command=lambda: twitter.set_twitter_whitelist(root, False)
+            command=lambda: twitter.set_twitter_whitelist(root, False, twitter_state)
         )
 
         # Allows the user to delete tweets or remove favorites
