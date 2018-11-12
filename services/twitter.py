@@ -14,15 +14,9 @@ twitter_api = {}
 # neccesary global bool for the scheduler
 already_ran_bool = False
 
-def initialize_twitter_user(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text):
-    global twitter_api
-
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
-    twitter_api = tweepy.API(auth)
-
-    twitter_username = twitter_api.me().screen_name
-    login_confirm_text.set(f'Logged in to twitter as {twitter_username}')
+def check_for_existence(string, twitter_state, value):
+    if string not in twitter_state:
+        twitter_state[string] = value
 
 
 def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text, twitter_state):
@@ -43,7 +37,6 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     api = tweepy.API(auth)
 
     twitter_username = api.me().screen_name
-
     login_confirm_text.set(f'Logged in to twitter as {twitter_username}')
 
     twitter_api = api
@@ -53,14 +46,16 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
         'access_token': access_token,
         'access_token_secret': access_token_secret
     }
-    twitter_state['time_to_save'] = arrow.utcnow().replace(hours=0)
-    twitter_state['max_favorites'] = 0
-    twitter_state['max_retweets'] = 0
-    twitter_state['test_run'] = 1
-    twitter_state['whitelisted_tweets'] = {}
-    twitter_state['whitelisted_favorites'] = {}
-    twitter_state['scheduled_time'] = 0
+    
+    check_for_existence('time_to_save', twitter_state, arrow.utcnow().replace(hours=0))
+    check_for_existence('max_favorites', twitter_state, 0)
+    check_for_existence('max_retweets', twitter_state, 0)
+    check_for_existence('whitelisted_tweets', twitter_state, {})
+    check_for_existence('whitelisted_favorites', twitter_state, {})
+    check_for_existence('scheduled_time', twitter_state, 0)
+
     twitter_state['scheduler_bool'] = 0
+    twitter_state['test_run'] = 1
     twitter_state.sync
 
 

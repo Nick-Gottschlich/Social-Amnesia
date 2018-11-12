@@ -165,8 +165,8 @@ class MainApp(tk.Frame):
         login_confirmed_label.grid(row=5, column=3)
 
         if 'login_info' in twitter_state:
-            twitter.initialize_twitter_user(twitter_state['login_info']['consumer_key'], twitter_state['login_info']['consumer_secret'],
-                                            twitter_state['login_info']['access_token'], twitter_state['login_info']['access_token_secret'], login_confirm_text)
+            twitter.set_twitter_login(twitter_state['login_info']['consumer_key'], twitter_state['login_info']['consumer_secret'],
+                                            twitter_state['login_info']['access_token'], twitter_state['login_info']['access_token_secret'], login_confirm_text, twitter_state)
 
 
     @staticmethod
@@ -204,7 +204,8 @@ class MainApp(tk.Frame):
                 password_entry.get(),
                 client_id_entry.get(),
                 client_secret_entry.get(),
-                login_confirm_text
+                login_confirm_text,
+                reddit_state
             )
         )
 
@@ -367,7 +368,7 @@ class MainApp(tk.Frame):
         test_run_check_button = tk.Checkbutton(
             frame, text=test_run_text,
             variable=test_run_bool,
-            command=lambda: reddit.set_reddit_test_run(test_run_bool))
+            command=lambda: reddit.set_reddit_test_run(test_run_bool, reddit_state))
 
         # Allows the user to schedule runs
         scheduler_section_label = tk.Label(frame, text='Scheduler')

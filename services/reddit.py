@@ -19,31 +19,40 @@ praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 # neccesary global bool for the scheduler
 alreadyRanBool = False
 
+def check_for_existence(string, reddit_state, value):
+    if string not in reddit_state:
+        reddit_state[string] = value
+
+
+def initialize_state(reddit_state):
+    check_for_existence('time_to_save', reddit_state, arrow.now().replace(hours=0))
+    check_for_existence('max_score', reddit_state, 0)
+    check_for_existence('gilded_skip', reddit_state, 0)
+    check_for_existence('whitelisted_comments', reddit_state, {})
+    check_for_existence('whitelisted_posts', reddit_state, {})
+    check_for_existence('scheduled_time', reddit_state, 0)
+
+    reddit_state['scheduler_bool'] = 0
+    reddit_state['test_run'] = 1
+
+
 def initialize_reddit_user(login_confirm_text, reddit_state):
     try:
         reddit = praw.Reddit('user', user_agent=USER_AGENT)
         reddit.user.me()
-        reddit_state['user'] = reddit.redditor(str(reddit.user.me()))
 
-        login_confirm_text.set(f'Logged in to Reddit as {str(reddit.user.me())}')
+        reddit_username = str(reddit.user.me())
+        reddit_state['user'] = reddit.redditor(reddit_username)
+
+        login_confirm_text.set(f'Logged in to Reddit as {reddit_username}')
+
+        initialize_state(reddit_state)
     except:
         # praw.ini is broken, delete it
         os.remove(praw_config_file_path)
 
 
-def initialize_reddit_settings():
-    reddit_state['time_to_save'] = arrow.now().replace(hours=0)
-    reddit_state['max_score'] = 0
-    reddit_state['test_run'] = 1
-    reddit_state['gilded_skip'] = 0
-    reddit_state['whitelisted_comments'] = {}
-    reddit_state['whitelisted_posts'] = {}
-    reddit_state['scheduled_time'] = 0
-    reddit_state['scheduler_bool'] = 0
-    reddit_state.sync
-
-
-def set_reddit_login(username, password, client_id, client_secret, login_confirm_text):
+def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, reddit_state):
     """
     Logs into reddit using PRAW, gives user an error on failure
     :param username: input received from the UI
@@ -74,10 +83,11 @@ username={username}'''
         out.write(praw_config_string)
 
     reddit_username = str(reddit.user.me())
-
+    reddit_state['user'] = reddit.redditor(reddit_username)
     login_confirm_text.set(f'Logged in to Reddit as {reddit_username}')
 
-    initialize_reddit_settings()
+    initialize_state(reddit_state)
+    reddit_state.sync
 
 
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save, reddit_state):
@@ -183,7 +193,7 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
         count += 1
 
 
-def set_reddit_test_run(test_run_bool):
+def set_reddit_test_run(test_run_bool, reddit_state):
     """
     Set whether to run a test run or not (stored in state)
     :param test_run_bool: 0 for real run, 1 for test run
