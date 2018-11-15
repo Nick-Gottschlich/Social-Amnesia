@@ -230,6 +230,7 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
     :param scheduler_bool: true if set to run, false otherwise
     :param hour_of_day: int 0-23, sets hour of day to run on
     :param string_var, progress_var - empty Vars needed to run the deletion functions
+    :param current_time_text: The UI text saying "currently set to TIME"
     :param twitter_state: dictionary holding twitter settings
     :return: none
     """

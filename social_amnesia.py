@@ -19,7 +19,6 @@ twitter_state = shelve.open(str(twitter_state_file_path))
 def create_storage_folder():
     """
     Creates the folders that can be used to store states between application usage sections.
-    Currently the only thing stored is login information for reddit.
     :return: none
     """
     storage_folder_path = os.path.join(USER_HOME_PATH, '.SocialAmnesia')
