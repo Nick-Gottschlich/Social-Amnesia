@@ -15,6 +15,9 @@ bin/
 include/
 pip-selfcheck.json
 
+# state management with shelve
+reddit_state.db
+
 # Created by https://www.gitignore.io/api/git,linux,macos,python,windows,pycharm+all,visualstudiocode
 
 ### Git ###
@@ -240,6 +243,7 @@ venv.bak/
 .venv/
 
 ### VisualStudioCode ###
+.vscode/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

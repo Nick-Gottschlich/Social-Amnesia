@@ -3,16 +3,22 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from pathlib import Path
 from tkinter import messagebox
+import shelve
 
 from services import reddit, twitter
 
 USER_HOME_PATH = os.path.expanduser('~')
 
+reddit_state_file_path = Path(f'{os.path.expanduser("~")}/.config/reddit_state.db')
+reddit_state = shelve.open(str(reddit_state_file_path))
+
+twitter_state_file_path = Path(
+    f'{os.path.expanduser("~")}/.config/twitter_state.db')
+twitter_state = shelve.open(str(twitter_state_file_path))
 
 def create_storage_folder():
     """
     Creates the folders that can be used to store states between application usage sections.
-    Currently the only thing stored is login information for reddit.
     :return: none
     """
     storage_folder_path = os.path.join(USER_HOME_PATH, '.SocialAmnesia')
@@ -136,7 +142,7 @@ class MainApp(tk.Frame):
                 consumer_secret_entry.get(),
                 access_token_entry.get(),
                 access_token_secret_entry.get(),
-                login_confirm_text)
+                login_confirm_text, twitter_state)
         )
 
         # Place elements
@@ -156,6 +162,12 @@ class MainApp(tk.Frame):
 
         login_button.grid(row=5, column=2)
         login_confirmed_label.grid(row=5, column=3)
+
+        if 'login_info' in twitter_state:
+            login_dict = twitter_state['login_info']
+            twitter.set_twitter_login(login_dict['consumer_key'], login_dict['consumer_secret'],
+                                            login_dict['access_token'], login_dict['access_token_secret'], login_confirm_text, twitter_state)
+
 
     @staticmethod
     def build_reddit_login(frame: tk.Frame):
@@ -193,7 +205,8 @@ class MainApp(tk.Frame):
                 client_id_entry.get(),
                 client_secret_entry.get(),
                 login_confirm_text,
-                False)
+                reddit_state
+            )
         )
 
         # Place elements
@@ -214,16 +227,18 @@ class MainApp(tk.Frame):
         login_button.grid(row=5, column=0)
         login_confirmed_label.grid(row=5, column=1)
 
-        # If a praw.ini file exists, log in to reddit
+        # If a praw.ini file exists, init reddit user
         praw_config_file = Path(os.path.join(USER_HOME_PATH, '.config/praw.ini'))
         if praw_config_file.is_file():
-            reddit.set_reddit_login('', '', '', '', login_confirm_text, True)
+            reddit.initialize_reddit_user(login_confirm_text, reddit_state)
 
     def build_reddit_tab(self):
         """
         Build the tab that will handle Reddit configuration and actions
         :return: Set up Reddit frame
         """
+        global reddit_state
+
         frame = tk.Frame(self.tabs)
         frame.grid()
 
@@ -233,7 +248,19 @@ class MainApp(tk.Frame):
 
         # Configuration to set total time of items to save
         current_time_to_save = tk.StringVar()
-        current_time_to_save.set('Currently set to save: [nothing]')
+        if 'hours' in reddit_state:
+            def get_text(time, text):
+                return '' if time == '0' else time + text
+
+            hours_text = get_text(reddit_state['hours'], 'hours')
+            days_text = get_text(reddit_state['days'], 'days')
+            weeks_text = get_text(reddit_state['weeks'], 'weeks')
+            years_text = get_text(reddit_state['years'], 'years')
+
+            current_time_to_save.set(
+                f'Currently set to save: [{years_text} {weeks_text} {days_text} {hours_text}] of items')
+        else:        
+            current_time_to_save.set('Currently set to save: [nothing]')
         time_keep_label = tk.Label(frame, text='Keep comments/submissions younger than: ')
 
         hours_dropdown = create_dropdown(frame, 2, 24)
@@ -252,12 +279,19 @@ class MainApp(tk.Frame):
             command=lambda: reddit.set_reddit_time_to_save(
                 hours_dropdown.get(), days_dropdown.get(),
                 weeks_dropdown.get(), years_dropdown.get(),
-                current_time_to_save)
+                current_time_to_save, reddit_state)
         )
 
         # Configuration to set saving items with a certain amount of upvotes
         current_max_score = tk.StringVar()
-        current_max_score.set('Currently set to: 0 upvotes')
+        if 'max_score' in reddit_state:
+            if reddit_state['max_score'] == 9999999999:
+                reddit.set_reddit_max_score('Unlimited', current_max_score, reddit_state)
+            else:
+                reddit.set_reddit_max_score(
+                    reddit_state['max_score'], current_max_score, reddit_state)
+        else:
+            current_max_score.set('Currently set to: 0 upvotes')
 
         max_score_label = tk.Label(frame, text='Delete comments/submissions less than score:')
         max_score_entry_field = tk.Entry(frame, width=5)
@@ -265,31 +299,37 @@ class MainApp(tk.Frame):
 
         set_max_score_button = tk.Button(
             frame, text='Set Max Score',
-            command=lambda: reddit.set_reddix_max_score(max_score_entry_field.get(), current_max_score)
+            command=lambda: reddit.set_reddit_max_score(max_score_entry_field.get(), current_max_score, reddit_state)
         )
         set_max_score_unlimited_button = tk.Button(
             frame, text='Set Unlimited',
-            command=lambda: reddit.set_reddix_max_score('Unlimited', current_max_score)
+            command=lambda: reddit.set_reddit_max_score('Unlimited', current_max_score, reddit_state)
         )
 
         # Configuration to let user skip over gilded comments
         gilded_skip_bool = tk.IntVar()
         # Skip gilded posts by default
-        gilded_skip_bool.set(1)
+        if 'gilded_skip' in reddit_state:
+            if reddit_state['gilded_skip'] == 0:
+                gilded_skip_bool.set(0)
+            else:
+                gilded_skip_bool.set(1)
+        else:
+            gilded_skip_bool.set(1)
         gilded_skip_label = tk.Label(frame, text='Skip Gilded items:')
         gilded_skip_check_button = tk.Checkbutton(
             frame, variable=gilded_skip_bool,
-            command=lambda: reddit.set_reddit_gilded_skip(gilded_skip_bool))
+            command=lambda: reddit.set_reddit_gilded_skip(gilded_skip_bool, reddit_state))
 
         # White listing
         whitelist_label = tk.Label(frame, text='Whitelist comments or submissions:')
         modify_whitelist_comments_button = tk.Button(
             frame, text='Pick comments to whitelist',
-            command=lambda: reddit.set_reddit_whitelist(root, True)
+            command=lambda: reddit.set_reddit_whitelist(root, True, reddit_state)
         )
         modify_whitelist_posts_button = tk.Button(
             frame, text='Pick posts to whitelist',
-            command=lambda: reddit.set_reddit_whitelist(root, False)
+            command=lambda: reddit.set_reddit_whitelist(root, False, reddit_state)
         )
 
         # Allows the user to actually delete comments or submissions
@@ -312,14 +352,14 @@ class MainApp(tk.Frame):
             frame, text='Delete comments',
             command=lambda: reddit.delete_reddit_items(
                 root, True, currently_deleting_text,
-                deletion_progress_bar, num_deleted_items_text)
+                deletion_progress_bar, num_deleted_items_text, reddit_state)
         )
 
         delete_submissions_button = tk.Button(
             frame, text='Delete submissions',
             command=lambda: reddit.delete_reddit_items(
                 root, False, currently_deleting_text,
-                deletion_progress_bar, num_deleted_items_text)
+                deletion_progress_bar, num_deleted_items_text, reddit_state)
         )
 
         test_run_bool = tk.IntVar()
@@ -328,16 +368,25 @@ class MainApp(tk.Frame):
         test_run_check_button = tk.Checkbutton(
             frame, text=test_run_text,
             variable=test_run_bool,
-            command=lambda: reddit.set_reddit_test_run(test_run_bool))
+            command=lambda: reddit.set_reddit_test_run(test_run_bool, reddit_state))
 
         # Allows the user to schedule runs
         scheduler_section_label = tk.Label(frame, text='Scheduler')
         scheduler_section_label.config(font=('arial', 25))
 
         scheduler_bool = tk.IntVar()
+        scheduler_bool.set(0)
+
         scheduler_text = 'Select to delete reddit comments + submissions daily at'
 
         scheduler_hours_dropdown = create_dropdown(frame, 2, 24)
+
+        scheduler_currently_set_text = tk.StringVar()
+        if 'scheduled_time' in reddit_state:
+            scheduler_currently_set_text.set(f'Currently set to: {reddit_state["scheduled_time"]}')
+        else:     
+            scheduler_currently_set_text.set('Currently set to: No time set')    
+        scheduler_currently_set_time_label = tk.Label(frame, textvariable=scheduler_currently_set_text)
 
         scheduler_check_button = tk.Checkbutton(
             frame, text=scheduler_text,
@@ -345,7 +394,7 @@ class MainApp(tk.Frame):
             command=lambda: reddit.set_reddit_scheduler(
                 root, scheduler_bool,
                 int(scheduler_hours_dropdown.get()),
-                tk.StringVar(), ttk.Progressbar()))
+                tk.StringVar(), ttk.Progressbar(), scheduler_currently_set_text, reddit_state))
 
         # This part actually builds the reddit tab
         configuration_label.grid(row=0, columnspan=11, sticky=(tk.N, tk.S), pady=5)
@@ -393,6 +442,7 @@ class MainApp(tk.Frame):
         scheduler_section_label.grid(row=11, columnspan=11, sticky=(tk.N, tk.S), pady=5)
         scheduler_check_button.grid(row=12, column=0)
         scheduler_hours_dropdown.grid(row=12, column=1)
+        scheduler_currently_set_time_label.grid(row=12, column=8)
 
         return frame
 
@@ -410,7 +460,17 @@ class MainApp(tk.Frame):
 
         # Configuration to set total time of items to save
         current_time_to_save = tk.StringVar()
-        current_time_to_save.set('Currently set to save: [nothing]')
+        if 'hours' in twitter_state:
+            def get_text(time, text):
+                return '' if time == '0' else time + text
+            hours_text = get_text(twitter_state['hours'], 'hours')
+            days_text = get_text(twitter_state['days'], 'days')
+            weeks_text = get_text(twitter_state['weeks'], 'weeks')
+            years_text = get_text(twitter_state['years'], 'years')
+            current_time_to_save.set(
+                f'Currently set to save: [{years_text} {weeks_text} {days_text} {hours_text}] of items')
+        else:        
+            current_time_to_save.set('Currently set to save: [nothing]')
         time_keep_label = tk.Label(frame, text='Keep items younger than: ')
 
         hours_dropdown = create_dropdown(frame, 2, 24)
@@ -428,40 +488,56 @@ class MainApp(tk.Frame):
             frame, text='Set Total Time To Keep',
             command=lambda: twitter.set_twitter_time_to_save(
                 hours_dropdown.get(), days_dropdown.get(),
-                weeks_dropdown.get(), years_dropdown.get(), current_time_to_save)
+                weeks_dropdown.get(), years_dropdown.get(), current_time_to_save, twitter_state)
         )
 
         # Configuration to set saving items with a certain amount of favorites
         current_max_favorites = tk.StringVar()
-        current_max_favorites.set('Currently set to: 0 Favorites')
+        if 'max_favorites' in twitter_state:
+            if twitter_state['max_favorites'] == 9999999999:
+                twitter.set_twitter_max_favorites(
+                    'Unlimited', current_max_favorites, twitter_state)
+            else:
+                twitter.set_twitter_max_favorites(
+                    twitter_state['max_favorites'], current_max_favorites, twitter_state)
+        else:
+            current_max_favorites.set('Currently set to: 0 upvotes')
         max_favorites_label = tk.Label(frame, text='Delete tweets that have fewer favorites than:')
         max_favorites_entry_field = tk.Entry(frame, width=5)
         max_favorites_currently_set_label = tk.Label(frame, textvariable=current_max_favorites)
         set_max_favorites_button = tk.Button(
             frame, text='Set Max Favorites',
             command=lambda: twitter.set_twitter_max_favorites(
-                max_favorites_entry_field.get(), current_max_favorites)
+                max_favorites_entry_field.get(), current_max_favorites, twitter_state)
         )
         set_max_favorites_unlimited_button = tk.Button(
             frame, text='Set Unlimited',
-            command=lambda: twitter.set_twitter_max_favorites('Unlimited', current_max_favorites)
+            command=lambda: twitter.set_twitter_max_favorites('Unlimited', current_max_favorites, twitter_state)
         )
 
         # Configuration to set saving items with a certain amount of retweets
         current_max_retweets = tk.StringVar()
-        current_max_retweets.set('Currently set to: 0 Retweets')
+        if 'max_retweets' in twitter_state:
+            if twitter_state['max_retweets'] == 9999999999:
+                twitter.set_twitter_max_retweets(
+                    'Unlimited', current_max_retweets, twitter_state)
+            else:
+                twitter.set_twitter_max_retweets(
+                    twitter_state['max_retweets'], current_max_retweets, twitter_state)
+        else:
+            current_max_retweets.set('Currently set to: 0 upvotes')
         max_retweets_label = tk.Label(frame, text='Delete tweets that have fewer retweets than: ')
         max_retweets_entry_field = tk.Entry(frame, width=5)
         max_retweets_currently_set_label = tk.Label(frame, textvariable=current_max_retweets)
         set_max_retweets_button = tk.Button(
             frame, text='Set Max Retweets',
             command=lambda: twitter.set_twitter_max_retweets(
-                max_retweets_entry_field.get(), current_max_retweets)
+                max_retweets_entry_field.get(), current_max_retweets, twitter_state)
         )
         set_max_retweets_unlimited_button = tk.Button(
             frame, text='Set Unlimited',
             command=lambda: twitter.set_twitter_max_retweets(
-                'Unlimited', current_max_retweets)
+                'Unlimited', current_max_retweets, twitter_state)
         )
 
         # White listing tweets or favorites
@@ -469,11 +545,11 @@ class MainApp(tk.Frame):
              frame, text='Whitelist tweets or favorites:')
         modify_whitelist_tweets_button = tk.Button(
             frame, text='Pick tweets to whitelist',
-            command=lambda: twitter.set_twitter_whitelist(root, True)
+            command=lambda: twitter.set_twitter_whitelist(root, True, twitter_state)
         )
         modify_whitelist_favorites_button = tk.Button(
             frame, text='Pick favorites to whitelist',
-            command=lambda: twitter.set_twitter_whitelist(root, False)
+            command=lambda: twitter.set_twitter_whitelist(root, False, twitter_state)
         )
 
         # Allows the user to delete tweets or remove favorites
@@ -494,13 +570,13 @@ class MainApp(tk.Frame):
         delete_comments_button = tk.Button(
             frame, text='Delete tweets',
             command=lambda: twitter.delete_twitter_tweets(
-                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text)
+                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state)
         )
 
         delete_submissions_button = tk.Button(
             frame, text='Remove Favorites',
             command=lambda: twitter.delete_twitter_favorites(
-                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text)
+                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state)
         )
 
         test_run_bool = tk.IntVar()
@@ -510,23 +586,34 @@ class MainApp(tk.Frame):
         test_run_check_button = tk.Checkbutton(
             frame, text=test_run_text,
             variable=test_run_bool,
-            command=lambda: twitter.set_twitter_test_run(test_run_bool))
+            command=lambda: twitter.set_twitter_test_run(test_run_bool, twitter_state))
 
         # Allows the user to schedule runs
         scheduler_section_label = tk.Label(frame, text='Scheduler')
         scheduler_section_label.config(font=('arial', 25))
 
         scheduler_bool = tk.IntVar()
+        scheduler_bool.set(0)
+
         scheduler_text = 'Select to delete twitter comments + submissions daily at'
 
         scheduler_hours_dropdown = create_dropdown(frame, 2, 24)
+
+        scheduler_currently_set_text = tk.StringVar()
+        if 'scheduled_time' in twitter_state:
+            scheduler_currently_set_text.set(
+                f'Currently set to: {twitter_state["scheduled_time"]}')
+        else:
+            scheduler_currently_set_text.set('Currently set to: No time set')
+        scheduler_currently_set_time_label = tk.Label(
+            frame, textvariable=scheduler_currently_set_text)
 
         scheduler_check_button = tk.Checkbutton(
             frame, text=scheduler_text,
             variable=scheduler_bool,
             command=lambda: twitter.set_twitter_scheduler(
                 root, scheduler_bool, int(scheduler_hours_dropdown.get()),
-                tk.StringVar(), ttk.Progressbar()))
+                tk.StringVar(), ttk.Progressbar(), scheduler_currently_set_text, twitter_state))
 
         # Actually build the twitter tab
         configuration_label.grid(row=0, columnspan=11, sticky=(tk.N, tk.S), pady=5)
@@ -577,6 +664,7 @@ class MainApp(tk.Frame):
         scheduler_section_label.grid(row=11, columnspan=11, sticky=(tk.N, tk.S), pady=5)
         scheduler_check_button.grid(row=12, column=0)
         scheduler_hours_dropdown.grid(row=12, column=1)
+        scheduler_currently_set_time_label.grid(row=12, column=8)
 
         return frame
 

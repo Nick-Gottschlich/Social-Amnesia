@@ -6,26 +6,72 @@ import praw
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
-
+import shelve
 import sys
 sys.path.insert(0, "../utils")
-
 from utils import helpers
 
-USER_AGENT = 'Social Amnesia: v0.2.0 (by /u/JavaOffScript)'
+USER_AGENT = 'Social Amnesia (by /u/JavaOffScript)'
 EDIT_OVERWRITE = 'Wiped by Social Amnesia'
 
 praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 
-# The reddit state object
-# Handles the actual praw object that manipulates the reddit account
-# as well as any configuration options about how to act.
-reddit_state = {}
-
 # neccesary global bool for the scheduler
 alreadyRanBool = False
 
-def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, init):
+def check_for_existence(string, reddit_state, value):
+    """
+    Initialize a key/value pair if it doesn't already exist.
+    :param string: the key
+    :param reddit_state: dictionary holding reddit settings
+    :param value: the value
+    :return: none
+    """
+    if string not in reddit_state:
+        reddit_state[string] = value
+
+
+def initialize_state(reddit_state):
+    """
+    Sets up the reddit state
+    :param reddit_state: dictionary holding reddit settings
+    :return: none
+    """
+    check_for_existence('time_to_save', reddit_state, arrow.now().replace(hours=0))
+    check_for_existence('max_score', reddit_state, 0)
+    check_for_existence('gilded_skip', reddit_state, 0)
+    check_for_existence('whitelisted_comments', reddit_state, {})
+    check_for_existence('whitelisted_posts', reddit_state, {})
+    check_for_existence('scheduled_time', reddit_state, 0)
+
+    reddit_state['scheduler_bool'] = 0
+    reddit_state['test_run'] = 1
+
+
+def initialize_reddit_user(login_confirm_text, reddit_state):
+    """
+    Looks for if a praw reddit user already exists, and if so logs in with it
+    On error it will assume the praw.ini file is broken and remove it
+    :param login_confirm_text: The UI text saying "logged in as USER"
+    :param reddit_state: dictionary holding reddit settings
+    :return: none
+    """
+    try:
+        reddit = praw.Reddit('user', user_agent=USER_AGENT)
+        reddit.user.me()
+
+        reddit_username = str(reddit.user.me())
+        reddit_state['user'] = reddit.redditor(reddit_username)
+
+        login_confirm_text.set(f'Logged in to Reddit as {reddit_username}')
+
+        initialize_state(reddit_state)
+    except:
+        # praw.ini is broken, delete it
+        os.remove(praw_config_file_path)
+
+
+def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, reddit_state):
     """
     Logs into reddit using PRAW, gives user an error on failure
     :param username: input received from the UI
@@ -33,78 +79,70 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
     :param client_id: input received from the UI
     :param client_secret: input received from the UI
     :param login_confirm_text: confirmation text - shown to the user in the UI
-    :param init: boolean, true if this is the run performed on startup, false otherwise
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
-    if init:
-        try:
-            reddit = praw.Reddit('user', user_agent=USER_AGENT)
-            reddit.user.me()
-        except:
-            # praw.ini is broken, delete it
-            os.remove(praw_config_file_path)
-            return
-    else:
-        reddit = praw.Reddit(
-            client_id=client_id,
-            client_secret=client_secret,
-            user_agent=USER_AGENT,
-            username=username,
-            password=password
-        )
+    reddit = praw.Reddit(
+        client_id=client_id,
+        client_secret=client_secret,
+        user_agent=USER_AGENT,
+        username=username,
+        password=password
+    )
 
-        if praw_config_file_path.is_file():
-            os.remove(praw_config_file_path)
+    if praw_config_file_path.is_file():
+        os.remove(praw_config_file_path)
 
-        praw_config_string = f'''[user]
+    praw_config_string = f'''[user]
 client_id={client_id}
 client_secret={client_secret}
 password={password}
 username={username}'''
 
-        with open(praw_config_file_path, 'a') as out:
-            out.write(praw_config_string)
+    with open(praw_config_file_path, 'a') as out:
+        out.write(praw_config_string)
 
     reddit_username = str(reddit.user.me())
-
+    reddit_state['user'] = reddit.redditor(reddit_username)
     login_confirm_text.set(f'Logged in to Reddit as {reddit_username}')
 
-    # initialize state
-    reddit_state['user'] = reddit.redditor(reddit_username)
-    reddit_state['time_to_save'] = arrow.now().replace(hours=0)
-    reddit_state['max_score'] = 0
-    reddit_state['test_run'] = 1
-    reddit_state['gilded_skip'] = 0
-    reddit_state['whitelisted_comments'] = {}
-    reddit_state['whitelisted_posts'] = {}
+    initialize_state(reddit_state)
+    reddit_state.sync
 
 
-def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
+def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save, reddit_state):
     """
     See set_time_to_save function in utils/helpers.py
     """
+    reddit_state['hours'] = hours_to_save
+    reddit_state['days'] = days_to_save
+    reddit_state['weeks'] = weeks_to_save
+    reddit_state['years'] = years_to_save
+
     reddit_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
+    reddit_state.sync
 
 
-def set_reddix_max_score(max_score, current_max_score):
+def set_reddit_max_score(max_score, current_max_score, reddit_state):
     """
     See set_max_score function in utils/helpers.py
     """
     reddit_state['max_score'] = helpers.set_max_score(max_score, current_max_score, 'upvotes')
+    reddit_state.sync
 
 
-def set_reddit_gilded_skip(gilded_skip_bool):
+def set_reddit_gilded_skip(gilded_skip_bool, reddit_state):
     """
     Set whether to skip gilded comments or not
     :param gildedSkipBool: false to delete gilded comments, true to skip gilded comments
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
-    skip_gild = gilded_skip_bool.get()
-    if skip_gild:
-        reddit_state['gilded_skip'] = skip_gild
+    reddit_state['gilded_skip'] = gilded_skip_bool.get()
+    reddit_state.sync
 
 
-def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
+def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, reddit_state):
     """
     Deletes the items according to user configurations.
     :param root: the reference to the actual tkinter GUI window
@@ -112,6 +150,7 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     :param currently_deleting_text: Describes the item that is currently being deleted.
     :param deletion_progress_bar: updates as the items are looped through
     :param num_deleted_items_text: updates as X out of Y comments are looped through
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
     if comment_bool:
@@ -176,36 +215,48 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
         count += 1
 
 
-def set_reddit_test_run(test_run_bool):
+def set_reddit_test_run(test_run_bool, reddit_state):
     """
     Set whether to run a test run or not (stored in state)
     :param test_run_bool: 0 for real run, 1 for test run
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
     reddit_state['test_run'] = test_run_bool.get()
+    reddit_state.sync
 
 
-def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var):
+def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var, current_time_text, reddit_state):
     """
     The scheduler that users can use to have social amnesia wipe comments at a set point in time, repeatedly.
     :param root: tkinkter window
     :param scheduler_bool: true if set to run, false otherwise
     :param hour_of_day: int 0-23, sets hour of day to run on
-    :param string_var, progress_var - empty Vars needed to run the delete_reddit_items function
+    :param string_var, progress_var: - empty Vars needed to run the delete_reddit_items function
+    :param current_time_text: The UI text saying "currently set to TIME"
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
+    reddit_state['scheduler_bool'] = scheduler_bool.get()
+    reddit_state.sync
+    
     global alreadyRanBool
     if not scheduler_bool.get():
         alreadyRanBool = False
         return
+
+    reddit_state['scheduled_time'] = hour_of_day
+    reddit_state.sync
+
+    current_time_text.set(f'Currently set to: {hour_of_day}')
 
     current_time = datetime.now().time().hour
 
     if current_time == hour_of_day and not alreadyRanBool:
         messagebox.showinfo('Scheduler', 'Social Amnesia is now erasing your past on reddit.')
 
-        delete_reddit_items(root, True, string_var, progress_var, string_var)
-        delete_reddit_items(root, False, string_var, progress_var, string_var)
+        delete_reddit_items(root, True, string_var, progress_var, string_var, reddit_state)
+        delete_reddit_items(root, False, string_var, progress_var, string_var, reddit_state)
 
         alreadyRanBool = True
     if current_time < 23 and current_time == hour_of_day + 1:
@@ -214,23 +265,33 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
         alreadyRanBool = False
 
     root.after(1000, lambda: set_reddit_scheduler(
-        root, scheduler_bool, hour_of_day, string_var, progress_var))
+        root, scheduler_bool, hour_of_day, string_var, progress_var, current_time_text, reddit_state))
 
 
-def set_reddit_whitelist(root, comment_bool):
+def set_reddit_whitelist(root, comment_bool, reddit_state):
     """
     Creates a window to let users select which comments or posts
         to whitelist
     :param root: the reference to the actual tkinter GUI window
     :param comment_bool: true for comments, false for posts
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
+    #TODO: update this to get whether checkbox is selected or unselected instead of blindly flipping from true to false
     def flip_whitelist_dict(id, identifying_text):
-        reddit_state[f'whitelisted_{identifying_text}'][id] = not reddit_state[f'whitelisted_{identifying_text}'][id]
+        whitelist_dict = reddit_state[f'whitelisted_{identifying_text}']
+        whitelist_dict[id] = not whitelist_dict[id]
+        reddit_state[f'whitelisted_{identifying_text}'] = whitelist_dict
+        reddit_state.sync
 
     def onFrameConfigure(canvas):
         '''Reset the scroll region to encompass the inner frame'''
         canvas.configure(scrollregion=canvas.bbox("all"))
+
+    if 'whitelisted_comments' not in reddit_state:
+        reddit_state['whitelisted_comments'] = {}
+    if 'whitelisted_posts' not in reddit_state:
+        reddit_state['whitelisted_posts'] = {}
 
     if comment_bool:
         identifying_text = 'comments'
@@ -261,12 +322,16 @@ def set_reddit_whitelist(root, comment_bool):
         row=0, column=0, columnspan=2, sticky=(tk.N, tk.E, tk.W, tk.S))
     ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
         row=1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
-        
 
     counter = 2
     for item in item_array:
-        if(item.id not in reddit_state[f'whitelisted_{identifying_text}']):
-            reddit_state[f'whitelisted_{identifying_text}'][item.id] = False
+        if (item.id not in reddit_state[f'whitelisted_{identifying_text}']):
+            # I wish I could tell you why I need to copy the dictionary of whitelisted items, and then modify it, and then
+            #   reassign it back to the persistant shelf. I don't know why this is needed, but it works.
+            whitelist_dict = reddit_state[f'whitelisted_{identifying_text}']
+            whitelist_dict[item.id] = False
+            reddit_state[f'whitelisted_{identifying_text}'] = whitelist_dict
+            reddit_state.sync
 
         whitelist_checkbutton = tk.Checkbutton(frame, command=lambda 
             id=item.id: flip_whitelist_dict(id, identifying_text))

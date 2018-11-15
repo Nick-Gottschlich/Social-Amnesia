@@ -4,77 +4,96 @@ import tweepy
 from tkinter import messagebox
 import tkinter as tk
 import tkinter.ttk as ttk
-
+import shelve
 import sys
 sys.path.insert(0, "../utils")
-
 from utils import helpers
 
-# for dev purposes
-# from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
-
-# twitter state object
-# Handles configuration options set by the user
-twitter_state = {}
+twitter_api = {}
 
 # neccesary global bool for the scheduler
 already_ran_bool = False
 
-def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text):
+def check_for_existence(string, twitter_state, value):
+    """
+    Initialize a key/value pair if it doesn't already exist.
+    :param string: the key
+    :param twitter_state: dictionary holding reddit settings
+    :param value: the value
+    :return: none
+    """
+    if string not in twitter_state:
+        twitter_state[string] = value
+
+
+def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_secret, login_confirm_text, twitter_state):
     """
     Logs into twitter using tweepy, gives user an error on failure
     :param consumer_key: input received from the UI
     :param consumer_secret: input received from the UI
     :param access_token: input received from the UI
-    :param access: input received from the UI
+    :param access_token_secret: input received from the UI
     :param login_confirm_text: confirmation text - shown to the user in the UI
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
-    # ============ REAL =============
-    # auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    # auth.set_access_token(access_token, access_token_secret)
-    # ============= REAL ============
+    global twitter_api
 
-    # =========== DEV TESTING =============
-    auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
-    auth.set_access_token(twitter_access_token, twitter_access_token_secret)
-    # ============== DEV TESTING ==============
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
 
     api = tweepy.API(auth)
 
     twitter_username = api.me().screen_name
-
     login_confirm_text.set(f'Logged in to twitter as {twitter_username}')
 
-    # initialize state
-    twitter_state['api'] = api
-    twitter_state['time_to_save'] = arrow.utcnow().replace(hours=0)
-    twitter_state['max_favorites'] = 0
-    twitter_state['max_retweets'] = 0
+    twitter_api = api
+    twitter_state['login_info'] = {
+        'consumer_key': consumer_key,
+        'consumer_secret': consumer_secret,
+        'access_token': access_token,
+        'access_token_secret': access_token_secret
+    }
+    
+    check_for_existence('time_to_save', twitter_state, arrow.utcnow().replace(hours=0))
+    check_for_existence('max_favorites', twitter_state, 0)
+    check_for_existence('max_retweets', twitter_state, 0)
+    check_for_existence('whitelisted_tweets', twitter_state, {})
+    check_for_existence('whitelisted_favorites', twitter_state, {})
+    check_for_existence('scheduled_time', twitter_state, 0)
+
+    twitter_state['scheduler_bool'] = 0
     twitter_state['test_run'] = 1
-    twitter_state['whitelisted_tweets'] = {}
-    twitter_state['whitelisted_favorites'] = {}
+    twitter_state.sync
 
 
-def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save):
+def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save, twitter_state):
     """
     See set_time_to_save function in utils/helpers.py
     """
+    twitter_state['hours'] = hours_to_save
+    twitter_state['days'] = days_to_save
+    twitter_state['weeks'] = weeks_to_save
+    twitter_state['years'] = years_to_save
+
     twitter_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
+    twitter_state.sync
 
 
-def set_twitter_max_favorites(max_favorites, current_max_favorites):
+def set_twitter_max_favorites(max_favorites, current_max_favorites, twitter_state):
     """
     See set_max_score function in utils/helpers.py
     """
     twitter_state['max_favorites'] = helpers.set_max_score(max_favorites, current_max_favorites, 'favorites')
+    twitter_state.sync
 
 
-def set_twitter_max_retweets(max_retweets, current_max_retweets):
+def set_twitter_max_retweets(max_retweets, current_max_retweets, twitter_state):
     """
     See set_max_score function in helpers.py
     """
     twitter_state['max_retweets'] = helpers.set_max_score(max_retweets, current_max_retweets, 'retweets')
+    twitter_state.sync
 
 
 def gather_items(item_getter):
@@ -97,17 +116,19 @@ def gather_items(item_getter):
     return user_items
 
 
-def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
+def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state):
     """
     Deletes user's tweets according to user configurations.
     :param root: the reference to the actual tkinter GUI window
     :param currently_deleting_text: Describes the item that is currently being deleted.
     :param deletion_progress_bar: updates as the items are looped through
     :param num_deleted_items_text: updates as X out of Y comments are looped through
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
+    global twitter_api
 
-    user_tweets = gather_items(twitter_state['api'].user_timeline)
+    user_tweets = gather_items(twitter_api.user_timeline)
     total_tweets = len(user_tweets)
 
     num_deleted_items_text.set(f'0/{str(total_tweets)} items processed so far')
@@ -132,7 +153,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
         else:
             if twitter_state['test_run'] == 0:
                 currently_deleting_text.set(f'Deleting tweet: `{tweet_snippet}`')
-                twitter_state['api'].destroy_status(tweet.id)
+                twitter_api.destroy_status(tweet.id)
             else:
                 currently_deleting_text.set(f'-TEST RUN- Would delete tweet: `{tweet_snippet}`')
 
@@ -144,17 +165,19 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
         count += 1
 
 
-def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text):
+def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state):
     """
     Deletes users's favorites according to user configurations.
     :param root: the reference to the actual tkinter GUI window
     :param currently_deleting_text: Describes the item that is currently being deleted.
     :param deletion_progress_bar: updates as the items are looped through
     :param num_deleted_items_text: updates as X out of Y comments are looped through
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
+    global twitter_api
 
-    user_favorites = gather_items(twitter_state['api'].favorites)
+    user_favorites = gather_items(twitter_api.favorites)
     total_favorites = len(user_favorites)
 
     num_deleted_items_text.set(f'0/{str(total_favorites)} items processed so far')
@@ -175,7 +198,7 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
         else:
             if twitter_state['test_run'] == 0:
                 currently_deleting_text.set(f'Deleting favorite: `{favorite_snippet}`')
-                twitter_state['api'].destroy_favorite(favorite.id)
+                twitter_api.destroy_favorite(favorite.id)
             else:
                 currently_deleting_text.set(f'-TEST RUN- Would remove favorite: `{favorite_snippet}`')
 
@@ -188,16 +211,18 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
         count += 1
 
 
-def set_twitter_test_run(test_run_bool):
+def set_twitter_test_run(test_run_bool, twitter_state):
     """
     Set whether to run a test run or not (stored in state)
     :param test_run_bool: 0 for real run, 1 for test run
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
     twitter_state['test_run'] = test_run_bool.get()
+    twitter_state.sync
 
 
-def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var):
+def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var, current_time_text, twitter_state):
     """
     The scheduler that users can use to have social amnesia wipe 
     tweets/favorites at a set point in time, repeatedly.
@@ -205,12 +230,22 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
     :param scheduler_bool: true if set to run, false otherwise
     :param hour_of_day: int 0-23, sets hour of day to run on
     :param string_var, progress_var - empty Vars needed to run the deletion functions
+    :param current_time_text: The UI text saying "currently set to TIME"
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
+    twitter_state['scheduler_bool'] = scheduler_bool.get()
+    twitter_state.sync
+
     global already_ran_bool
     if not scheduler_bool.get():
         already_ran_bool = False
         return
+
+    twitter_state['scheduled_time'] = hour_of_day
+    twitter_state.sync
+
+    current_time_text.set(f'Currently set to: {hour_of_day}')
 
     current_time = datetime.now().time().hour
 
@@ -218,8 +253,8 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
         messagebox.showinfo(
             'Scheduler', 'Social Amnesia is now erasing your past on twitter.')
 
-        delete_twitter_tweets(root, string_var, progress_var, string_var)
-        delete_twitter_favorites(root, string_var, progress_var, string_var)
+        delete_twitter_tweets(root, string_var, progress_var, string_var, twitter_state)
+        delete_twitter_favorites(root, string_var, progress_var, string_var, twitter_state)
 
         already_ran_bool = True
     if current_time < 23 and current_time == hour_of_day + 1:
@@ -228,30 +263,41 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
         already_ran_bool = False
 
     root.after(1000, lambda: set_twitter_scheduler(
-        root, scheduler_bool, hour_of_day, string_var, progress_var))
+        root, scheduler_bool, hour_of_day, string_var, progress_var, current_time_text, twitter_state))
 
 
-def set_twitter_whitelist(root, tweet_bool):
+def set_twitter_whitelist(root, tweet_bool, twitter_state):
     """
     Creates a window to let users select which tweets or favorites 
         to whitelist
     :param root: the reference to the actual tkinter GUI window
     :param tweet_bool: true for tweets, false for favorites
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
+    global twitter_api
+    #TODO: update this to get whether checkbox is selected or unselected instead of blindly flipping from true to false
     def flip_whitelist_dict(id, identifying_text):
-        twitter_state[f'whitelisted_{identifying_text}'][id] = not twitter_state[f'whitelisted_{identifying_text}'][id]
+        whitelist_dict = twitter_state[f'whitelisted_{identifying_text}']
+        whitelist_dict[id] = not whitelist_dict[id]
+        twitter_state[f'whitelisted_{identifying_text}'] = whitelist_dict
+        twitter_state.sync
 
     def onFrameConfigure(canvas):
         '''Reset the scroll region to encompass the inner frame'''
         canvas.configure(scrollregion=canvas.bbox("all"))
 
+    if 'whitelisted_comments' not in twitter_state:
+        twitter_state['whitelisted_comments'] = {}
+    if 'whitelisted_posts' not in twitter_state:
+        twitter_state['whitelisted_posts'] = {}
+
     if tweet_bool:
         identifying_text = 'tweets'
-        item_array = gather_items(twitter_state['api'].user_timeline)
+        item_array = gather_items(twitter_api.user_timeline)
     else:
         identifying_text = 'favorites'
-        item_array = gather_items(twitter_state['api'].favorites)
+        item_array = gather_items(twitter_api.favorites)
 
     whitelist_window = tk.Toplevel(root)
 
@@ -278,8 +324,13 @@ def set_twitter_whitelist(root, tweet_bool):
 
     counter = 2
     for item in item_array:
-        if(item.id not in twitter_state[f'whitelisted_{identifying_text}']):
-            twitter_state[f'whitelisted_{identifying_text}'][item.id] = False
+        if (item.id not in twitter_state[f'whitelisted_{identifying_text}']):
+            # I wish I could tell you why I need to copy the dictionary of whitelisted items, and then modify it, and then
+            #   reassign it back to the persistant shelf. I don't know why this is needed, but it works.
+            whitelist_dict = twitter_state[f'whitelisted_{identifying_text}']
+            whitelist_dict[item.id] = False
+            twitter_state[f'whitelisted_{identifying_text}'] = whitelist_dict
+            twitter_state.sync
 
         whitelist_checkbutton = tk.Checkbutton(frame, command=lambda
             id=item.id: flip_whitelist_dict(id, identifying_text))
