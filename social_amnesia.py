@@ -164,8 +164,9 @@ class MainApp(tk.Frame):
         login_confirmed_label.grid(row=5, column=3)
 
         if 'login_info' in twitter_state:
-            twitter.set_twitter_login(twitter_state['login_info']['consumer_key'], twitter_state['login_info']['consumer_secret'],
-                                            twitter_state['login_info']['access_token'], twitter_state['login_info']['access_token_secret'], login_confirm_text, twitter_state)
+            login_dict = twitter_state['login_info']
+            twitter.set_twitter_login(login_dict['consumer_key'], login_dict['consumer_secret'],
+                                            login_dict['access_token'], login_dict['access_token_secret'], login_confirm_text, twitter_state)
 
 
     @staticmethod
@@ -374,13 +375,7 @@ class MainApp(tk.Frame):
         scheduler_section_label.config(font=('arial', 25))
 
         scheduler_bool = tk.IntVar()
-        if 'scheduler_bool' in reddit_state:
-            if reddit_state['scheduler_bool'] == 0:
-                scheduler_bool.set(0)
-            else:
-                scheduler_bool.set(1)
-        else:
-            scheduler_bool.set(0)
+        scheduler_bool.set(0)
 
         scheduler_text = 'Select to delete reddit comments + submissions daily at'
 
@@ -598,13 +593,7 @@ class MainApp(tk.Frame):
         scheduler_section_label.config(font=('arial', 25))
 
         scheduler_bool = tk.IntVar()
-        if 'scheduler_bool' in twitter_state:
-            if twitter_state['scheduler_bool'] == 0:
-                scheduler_bool.set(0)
-            else:
-                scheduler_bool.set(1)
-        else:
-            scheduler_bool.set(0)
+        scheduler_bool.set(0)
 
         scheduler_text = 'Select to delete twitter comments + submissions daily at'
 
