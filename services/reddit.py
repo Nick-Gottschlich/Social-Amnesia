@@ -20,11 +20,23 @@ praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 alreadyRanBool = False
 
 def check_for_existence(string, reddit_state, value):
+    """
+    Initialize a key/value pair if it doesn't already exist.
+    :param string: the key
+    :param reddit_state: dictionary holding reddit settings
+    :param value: the value
+    :return: none
+    """
     if string not in reddit_state:
         reddit_state[string] = value
 
 
 def initialize_state(reddit_state):
+    """
+    Sets up the reddit state
+    :param reddit_state: dictionary holding reddit settings
+    :return: none
+    """
     check_for_existence('time_to_save', reddit_state, arrow.now().replace(hours=0))
     check_for_existence('max_score', reddit_state, 0)
     check_for_existence('gilded_skip', reddit_state, 0)
@@ -37,6 +49,13 @@ def initialize_state(reddit_state):
 
 
 def initialize_reddit_user(login_confirm_text, reddit_state):
+    """
+    Looks for if a praw reddit user already exists, and if so logs in with it
+    On error it will assume the praw.ini file is broken and remove it
+    :param login_confirm_text: The UI text saying "logged in as USER"
+    :param reddit_state: dictionary holding reddit settings
+    :return: none
+    """
     try:
         reddit = praw.Reddit('user', user_agent=USER_AGENT)
         reddit.user.me()
@@ -60,6 +79,7 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
     :param client_id: input received from the UI
     :param client_secret: input received from the UI
     :param login_confirm_text: confirmation text - shown to the user in the UI
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
     reddit = praw.Reddit(
@@ -115,6 +135,7 @@ def set_reddit_gilded_skip(gilded_skip_bool, reddit_state):
     """
     Set whether to skip gilded comments or not
     :param gildedSkipBool: false to delete gilded comments, true to skip gilded comments
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
     reddit_state['gilded_skip'] = gilded_skip_bool.get()
@@ -129,6 +150,7 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     :param currently_deleting_text: Describes the item that is currently being deleted.
     :param deletion_progress_bar: updates as the items are looped through
     :param num_deleted_items_text: updates as X out of Y comments are looped through
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
     if comment_bool:
@@ -197,6 +219,7 @@ def set_reddit_test_run(test_run_bool, reddit_state):
     """
     Set whether to run a test run or not (stored in state)
     :param test_run_bool: 0 for real run, 1 for test run
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
     reddit_state['test_run'] = test_run_bool.get()
@@ -209,11 +232,14 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
     :param root: tkinkter window
     :param scheduler_bool: true if set to run, false otherwise
     :param hour_of_day: int 0-23, sets hour of day to run on
-    :param string_var, progress_var - empty Vars needed to run the delete_reddit_items function
+    :param string_var, progress_var: - empty Vars needed to run the delete_reddit_items function
+    :param current_time_text: The UI text saying "currently set to TIME"
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
     reddit_state['scheduler_bool'] = scheduler_bool.get()
     reddit_state.sync
+    
     global alreadyRanBool
     if not scheduler_bool.get():
         alreadyRanBool = False
@@ -248,6 +274,7 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
         to whitelist
     :param root: the reference to the actual tkinter GUI window
     :param comment_bool: true for comments, false for posts
+    :param reddit_state: dictionary holding reddit settings
     :return: none
     """
     #TODO: update this to get whether checkbox is selected or unselected instead of blindly flipping from true to false
