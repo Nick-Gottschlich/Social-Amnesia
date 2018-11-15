@@ -15,6 +15,13 @@ twitter_api = {}
 already_ran_bool = False
 
 def check_for_existence(string, twitter_state, value):
+    """
+    Initialize a key/value pair if it doesn't already exist.
+    :param string: the key
+    :param twitter_state: dictionary holding reddit settings
+    :param value: the value
+    :return: none
+    """
     if string not in twitter_state:
         twitter_state[string] = value
 
@@ -25,8 +32,9 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     :param consumer_key: input received from the UI
     :param consumer_secret: input received from the UI
     :param access_token: input received from the UI
-    :param access: input received from the UI
+    :param access_token_secret: input received from the UI
     :param login_confirm_text: confirmation text - shown to the user in the UI
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
     global twitter_api
@@ -115,6 +123,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
     :param currently_deleting_text: Describes the item that is currently being deleted.
     :param deletion_progress_bar: updates as the items are looped through
     :param num_deleted_items_text: updates as X out of Y comments are looped through
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
     global twitter_api
@@ -163,6 +172,7 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
     :param currently_deleting_text: Describes the item that is currently being deleted.
     :param deletion_progress_bar: updates as the items are looped through
     :param num_deleted_items_text: updates as X out of Y comments are looped through
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
     global twitter_api
@@ -205,6 +215,7 @@ def set_twitter_test_run(test_run_bool, twitter_state):
     """
     Set whether to run a test run or not (stored in state)
     :param test_run_bool: 0 for real run, 1 for test run
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
     twitter_state['test_run'] = test_run_bool.get()
@@ -219,6 +230,7 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
     :param scheduler_bool: true if set to run, false otherwise
     :param hour_of_day: int 0-23, sets hour of day to run on
     :param string_var, progress_var - empty Vars needed to run the deletion functions
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
     twitter_state['scheduler_bool'] = scheduler_bool.get()
@@ -259,10 +271,11 @@ def set_twitter_whitelist(root, tweet_bool, twitter_state):
         to whitelist
     :param root: the reference to the actual tkinter GUI window
     :param tweet_bool: true for tweets, false for favorites
+    :param twitter_state: dictionary holding twitter settings
     :return: none
     """
     global twitter_api
-
+    #TODO: update this to get whether checkbox is selected or unselected instead of blindly flipping from true to false
     def flip_whitelist_dict(id, identifying_text):
         whitelist_dict = twitter_state[f'whitelisted_{identifying_text}']
         whitelist_dict[id] = not whitelist_dict[id]
