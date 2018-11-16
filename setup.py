@@ -18,7 +18,7 @@ build_exe_options = {'packages': ['os', 'idna', 'multiprocessing', 'dbm']}
 executables = [Executable('social_amnesia.py', base=base)]
 
 setup(name=app_name,
-      version='0.2.0',
+      version='0.3.0',
       description=app_description,
       options={'build_exe': build_exe_options},
       executables=executables)
