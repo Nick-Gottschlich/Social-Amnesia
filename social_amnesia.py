@@ -9,6 +9,10 @@ from services import reddit, twitter
 
 USER_HOME_PATH = os.path.expanduser('~')
 
+config_path = Path(f'{os.path.expanduser("~")}/.config')
+if not os.path.exists(config_path):
+    os.makedirs(config_path)
+
 reddit_state_file_path = Path(f'{os.path.expanduser("~")}/.config/reddit_state.db')
 reddit_state = shelve.open(str(reddit_state_file_path))
 
