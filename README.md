@@ -25,7 +25,7 @@ python3 social_amnesia.py
 
 1. Install the requirements using pip3 (see above).
 2. Build the executable by running `python3 setup.py bdist_msi` (Windows) or `python3 setup.py bdist_dmg` (macOS). 
-3. A folder called `build` will be created, in which you should find a folder with a name starting with 'exe.' with a 'Social Amnesia' executable waiting inside. 
+3. A folder called `build` will be created, in which you should find the executable or bundled file containing the Social Amnesia application.
 4. Run that executable to start the program.
 
 Note: On windows you may have to copy `tcl86t.dll` and `tk86t.dll` from your `Python3X/DLLs` into the folder with the executable to get this to run.
