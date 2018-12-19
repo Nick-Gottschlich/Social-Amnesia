@@ -19,6 +19,7 @@ praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 # neccesary global bool for the scheduler
 alreadyRanBool = False
 
+
 def check_for_existence(string, reddit_state, value):
     """
     Initialize a key/value pair if it doesn't already exist.
@@ -37,7 +38,8 @@ def initialize_state(reddit_state):
     :param reddit_state: dictionary holding reddit settings
     :return: none
     """
-    check_for_existence('time_to_save', reddit_state, arrow.now().replace(hours=0))
+    check_for_existence('time_to_save', reddit_state,
+                        arrow.now().replace(hours=0))
     check_for_existence('max_score', reddit_state, 0)
     check_for_existence('gilded_skip', reddit_state, 0)
     check_for_existence('whitelisted_comments', reddit_state, {})
@@ -119,7 +121,8 @@ def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to
     reddit_state['weeks'] = weeks_to_save
     reddit_state['years'] = years_to_save
 
-    reddit_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
+    reddit_state['time_to_save'] = helpers.set_time_to_save(
+        hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
     reddit_state.sync
 
 
@@ -127,7 +130,8 @@ def set_reddit_max_score(max_score, current_max_score, reddit_state):
     """
     See set_max_score function in utils/helpers.py
     """
-    reddit_state['max_score'] = helpers.set_max_score(max_score, current_max_score, 'upvotes')
+    reddit_state['max_score'] = helpers.set_max_score(
+        max_score, current_max_score, 'upvotes')
     reddit_state.sync
 
 
@@ -154,10 +158,12 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     :return: none
     """
     if comment_bool:
-        total_items = sum(1 for _ in reddit_state['user'].comments.new(limit=None))
+        total_items = sum(
+            1 for _ in reddit_state['user'].comments.new(limit=None))
         item_array = reddit_state['user'].comments.new(limit=None)
     else:
-        total_items = sum(1 for _ in reddit_state['user'].submissions.new(limit=None))
+        total_items = sum(
+            1 for _ in reddit_state['user'].submissions.new(limit=None))
         item_array = reddit_state['user'].submissions.new(limit=None)
 
     num_deleted_items_text.set(f'0/{str(total_items)} items processed so far')
@@ -239,7 +245,7 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
     """
     reddit_state['scheduler_bool'] = scheduler_bool.get()
     reddit_state.sync
-    
+
     global alreadyRanBool
     if not scheduler_bool.get():
         alreadyRanBool = False
@@ -253,10 +259,13 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
     current_time = datetime.now().time().hour
 
     if current_time == hour_of_day and not alreadyRanBool:
-        messagebox.showinfo('Scheduler', 'Social Amnesia is now erasing your past on reddit.')
+        messagebox.showinfo(
+            'Scheduler', 'Social Amnesia is now erasing your past on reddit.')
 
-        delete_reddit_items(root, True, string_var, progress_var, string_var, reddit_state)
-        delete_reddit_items(root, False, string_var, progress_var, string_var, reddit_state)
+        delete_reddit_items(root, True, string_var,
+                            progress_var, string_var, reddit_state)
+        delete_reddit_items(root, False, string_var,
+                            progress_var, string_var, reddit_state)
 
         alreadyRanBool = True
     if current_time < 23 and current_time == hour_of_day + 1:
@@ -277,7 +286,7 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
     :param reddit_state: dictionary holding reddit settings
     :return: none
     """
-    #TODO: update this to get whether checkbox is selected or unselected instead of blindly flipping from true to false
+    # TODO: update this to get whether checkbox is selected or unselected instead of blindly flipping from true to false
     def flip_whitelist_dict(id, identifying_text):
         whitelist_dict = reddit_state[f'whitelisted_{identifying_text}']
         whitelist_dict[id] = not whitelist_dict[id]
@@ -310,13 +319,13 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
 
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
     canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-    canvas.create_window((4,4), window=frame, anchor="nw")
+    canvas.create_window((4, 4), window=frame, anchor="nw")
 
     whitelist_title_label = tk.Label(
         frame, text=f'Pick {identifying_text} to save', font=('arial', 30))
 
     frame.bind("<Configure>", lambda event,
-              canvas=canvas: onFrameConfigure(canvas))
+               canvas=canvas: onFrameConfigure(canvas))
 
     whitelist_title_label.grid(
         row=0, column=0, columnspan=2, sticky=(tk.N, tk.E, tk.W, tk.S))
@@ -333,8 +342,8 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
             reddit_state[f'whitelisted_{identifying_text}'] = whitelist_dict
             reddit_state.sync
 
-        whitelist_checkbutton = tk.Checkbutton(frame, command=lambda 
-            id=item.id: flip_whitelist_dict(id, identifying_text))
+        whitelist_checkbutton = tk.Checkbutton(frame, command=lambda
+                                               id=item.id: flip_whitelist_dict(id, identifying_text))
 
         if (reddit_state[f'whitelisted_{identifying_text}'][item.id]):
             whitelist_checkbutton.select()
@@ -342,9 +351,9 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
             whitelist_checkbutton.deselect()
 
         whitelist_checkbutton.grid(row=counter, column=0)
-        tk.Label(frame, 
-            text=helpers.format_snippet(item.body if comment_bool else item.title, 100)).grid(row=counter,
-                column=1)
+        tk.Label(frame,
+                 text=helpers.format_snippet(item.body if comment_bool else item.title, 100)).grid(row=counter,
+                                                                                                   column=1)
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
             row=counter+1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
 

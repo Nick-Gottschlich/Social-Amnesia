@@ -14,6 +14,7 @@ twitter_api = {}
 # neccesary global bool for the scheduler
 already_ran_bool = False
 
+
 def check_for_existence(string, twitter_state, value):
     """
     Initialize a key/value pair if it doesn't already exist.
@@ -54,8 +55,9 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
         'access_token': access_token,
         'access_token_secret': access_token_secret
     }
-    
-    check_for_existence('time_to_save', twitter_state, arrow.utcnow().replace(hours=0))
+
+    check_for_existence('time_to_save', twitter_state,
+                        arrow.utcnow().replace(hours=0))
     check_for_existence('max_favorites', twitter_state, 0)
     check_for_existence('max_retweets', twitter_state, 0)
     check_for_existence('whitelisted_tweets', twitter_state, {})
@@ -76,7 +78,8 @@ def set_twitter_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_t
     twitter_state['weeks'] = weeks_to_save
     twitter_state['years'] = years_to_save
 
-    twitter_state['time_to_save'] = helpers.set_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
+    twitter_state['time_to_save'] = helpers.set_time_to_save(
+        hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save)
     twitter_state.sync
 
 
@@ -84,7 +87,8 @@ def set_twitter_max_favorites(max_favorites, current_max_favorites, twitter_stat
     """
     See set_max_score function in utils/helpers.py
     """
-    twitter_state['max_favorites'] = helpers.set_max_score(max_favorites, current_max_favorites, 'favorites')
+    twitter_state['max_favorites'] = helpers.set_max_score(
+        max_favorites, current_max_favorites, 'favorites')
     twitter_state.sync
 
 
@@ -92,7 +96,8 @@ def set_twitter_max_retweets(max_retweets, current_max_retweets, twitter_state):
     """
     See set_max_score function in helpers.py
     """
-    twitter_state['max_retweets'] = helpers.set_max_score(max_retweets, current_max_retweets, 'retweets')
+    twitter_state['max_retweets'] = helpers.set_max_score(
+        max_retweets, current_max_retweets, 'retweets')
     twitter_state.sync
 
 
@@ -140,7 +145,8 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
         time_created = arrow.Arrow.fromdatetime(tweet.created_at)
 
         if time_created > twitter_state['time_to_save']:
-            currently_deleting_text.set(f'Tweet: `{tweet_snippet}` is more recent than cutoff, skipping.')
+            currently_deleting_text.set(
+                f'Tweet: `{tweet_snippet}` is more recent than cutoff, skipping.')
         elif tweet.favorite_count >= twitter_state['max_favorites']:
             currently_deleting_text.set(
                 f'Tweet: `{tweet_snippet}` has more favorites than max favorites, skipping.')
@@ -152,12 +158,15 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
                 f'Tweet: `{tweet_snippet}` is whitelisted, skipping.')
         else:
             if twitter_state['test_run'] == 0:
-                currently_deleting_text.set(f'Deleting tweet: `{tweet_snippet}`')
+                currently_deleting_text.set(
+                    f'Deleting tweet: `{tweet_snippet}`')
                 twitter_api.destroy_status(tweet.id)
             else:
-                currently_deleting_text.set(f'-TEST RUN- Would delete tweet: `{tweet_snippet}`')
+                currently_deleting_text.set(
+                    f'-TEST RUN- Would delete tweet: `{tweet_snippet}`')
 
-        num_deleted_items_text.set(f'{str(count)}/{str(total_tweets)} items processed.')
+        num_deleted_items_text.set(
+            f'{str(count)}/{str(total_tweets)} items processed.')
         deletion_progress_bar['value'] = round((count / total_tweets) * 100, 1)
 
         root.update()
@@ -180,7 +189,8 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
     user_favorites = gather_items(twitter_api.favorites)
     total_favorites = len(user_favorites)
 
-    num_deleted_items_text.set(f'0/{str(total_favorites)} items processed so far')
+    num_deleted_items_text.set(
+        f'0/{str(total_favorites)} items processed so far')
 
     count = 1
     for favorite in user_favorites:
@@ -191,20 +201,24 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
         time_created = arrow.Arrow.fromdatetime(favorite.created_at)
 
         if time_created > twitter_state['time_to_save']:
-            currently_deleting_text.set(f'Favorite: `{favorite_snippet}` is more recent than cutoff, skipping.')
+            currently_deleting_text.set(
+                f'Favorite: `{favorite_snippet}` is more recent than cutoff, skipping.')
         elif favorite.id in twitter_state['whitelisted_favorites'] and twitter_state['whitelisted_favorites'][favorite.id]:
             currently_deleting_text.set(
                 f'Favorite: `{favorite_snippet}` is whitelisted, skipping.')
         else:
             if twitter_state['test_run'] == 0:
-                currently_deleting_text.set(f'Deleting favorite: `{favorite_snippet}`')
+                currently_deleting_text.set(
+                    f'Deleting favorite: `{favorite_snippet}`')
                 twitter_api.destroy_favorite(favorite.id)
             else:
-                currently_deleting_text.set(f'-TEST RUN- Would remove favorite: `{favorite_snippet}`')
+                currently_deleting_text.set(
+                    f'-TEST RUN- Would remove favorite: `{favorite_snippet}`')
 
         num_deleted_items_text.set(
             f'{str(count)}/{str(total_favorites)} items processed.')
-        deletion_progress_bar['value'] = round((count / total_favorites) * 100, 1)
+        deletion_progress_bar['value'] = round(
+            (count / total_favorites) * 100, 1)
 
         root.update()
 
@@ -253,8 +267,10 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
         messagebox.showinfo(
             'Scheduler', 'Social Amnesia is now erasing your past on twitter.')
 
-        delete_twitter_tweets(root, string_var, progress_var, string_var, twitter_state)
-        delete_twitter_favorites(root, string_var, progress_var, string_var, twitter_state)
+        delete_twitter_tweets(
+            root, string_var, progress_var, string_var, twitter_state)
+        delete_twitter_favorites(
+            root, string_var, progress_var, string_var, twitter_state)
 
         already_ran_bool = True
     if current_time < 23 and current_time == hour_of_day + 1:
@@ -276,7 +292,8 @@ def set_twitter_whitelist(root, tweet_bool, twitter_state):
     :return: none
     """
     global twitter_api
-    #TODO: update this to get whether checkbox is selected or unselected instead of blindly flipping from true to false
+    # TODO: update this to get whether checkbox is selected or unselected instead of blindly flipping from true to false
+
     def flip_whitelist_dict(id, identifying_text):
         whitelist_dict = twitter_state[f'whitelisted_{identifying_text}']
         whitelist_dict[id] = not whitelist_dict[id]
@@ -333,7 +350,7 @@ def set_twitter_whitelist(root, tweet_bool, twitter_state):
             twitter_state.sync
 
         whitelist_checkbutton = tk.Checkbutton(frame, command=lambda
-            id=item.id: flip_whitelist_dict(id, identifying_text))
+                                               id=item.id: flip_whitelist_dict(id, identifying_text))
 
         if (twitter_state[f'whitelisted_{identifying_text}'][item.id]):
             whitelist_checkbutton.select()
@@ -341,8 +358,8 @@ def set_twitter_whitelist(root, tweet_bool, twitter_state):
             whitelist_checkbutton.deselect()
 
         whitelist_checkbutton.grid(row=counter, column=0)
-        tk.Label(frame, 
-            text=helpers.format_snippet(item.text, 100)).grid(row=counter, column=1)
+        tk.Label(frame,
+                 text=helpers.format_snippet(item.text, 100)).grid(row=counter, column=1)
 
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
             row=counter+1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
