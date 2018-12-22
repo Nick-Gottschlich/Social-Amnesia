@@ -1,3 +1,4 @@
+from utils import helpers
 from datetime import datetime
 import arrow
 import tweepy
@@ -7,7 +8,6 @@ import tkinter.ttk as ttk
 import shelve
 import sys
 sys.path.insert(0, "../utils")
-from utils import helpers
 
 twitter_api = {}
 
@@ -66,6 +66,7 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
 
     twitter_state['scheduler_bool'] = 0
     twitter_state['test_run'] = 1
+    twitter_state['whitelist_window_open'] = 0
     twitter_state.sync
 
 
@@ -304,10 +305,9 @@ def set_twitter_whitelist(root, tweet_bool, twitter_state):
         '''Reset the scroll region to encompass the inner frame'''
         canvas.configure(scrollregion=canvas.bbox("all"))
 
-    if 'whitelisted_comments' not in twitter_state:
-        twitter_state['whitelisted_comments'] = {}
-    if 'whitelisted_posts' not in twitter_state:
-        twitter_state['whitelisted_posts'] = {}
+    def closeWindow(whitelist_window):
+        twitter_state['whitelist_window_open'] = 0
+        whitelist_window.destroy()
 
     if tweet_bool:
         identifying_text = 'tweets'
@@ -317,6 +317,10 @@ def set_twitter_whitelist(root, tweet_bool, twitter_state):
         item_array = gather_items(twitter_api.favorites)
 
     whitelist_window = tk.Toplevel(root)
+    twitter_state['whitelist_window_open'] = 1
+
+    whitelist_window.protocol(
+        'WM_DELETE_WINDOW', lambda: closeWindow(whitelist_window))
 
     canvas = tk.Canvas(whitelist_window, width=750, height=1000)
     frame = tk.Frame(canvas)
