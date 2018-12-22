@@ -100,6 +100,7 @@ class MainApp(tk.Frame):
             "<class 'tweepy.error.TweepError'>": 'Failed to login to twitter!',
             "<class 'KeyError'>": 'You are not logged in!',
             "<class 'IndexError'>": 'No tweets/favorites found!',
+            "<class 'AttributeError'>": 'You are not logged in!'
         }
         messagebox.showerror('Error', errors.get(
             received_error, received_error))

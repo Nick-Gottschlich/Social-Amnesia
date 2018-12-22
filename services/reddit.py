@@ -1,3 +1,4 @@
+from utils import helpers
 import os
 from datetime import datetime
 from pathlib import Path
@@ -9,7 +10,6 @@ from tkinter import messagebox
 import shelve
 import sys
 sys.path.insert(0, "../utils")
-from utils import helpers
 
 USER_AGENT = 'Social Amnesia (by /u/JavaOffScript)'
 EDIT_OVERWRITE = 'Wiped by Social Amnesia'
@@ -48,6 +48,8 @@ def initialize_state(reddit_state):
 
     reddit_state['scheduler_bool'] = 0
     reddit_state['test_run'] = 1
+    reddit_state['whitelist_window_open'] = 0
+    reddit_state.sync
 
 
 def initialize_reddit_user(login_confirm_text, reddit_state):
@@ -297,10 +299,12 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
         '''Reset the scroll region to encompass the inner frame'''
         canvas.configure(scrollregion=canvas.bbox("all"))
 
-    if 'whitelisted_comments' not in reddit_state:
-        reddit_state['whitelisted_comments'] = {}
-    if 'whitelisted_posts' not in reddit_state:
-        reddit_state['whitelisted_posts'] = {}
+    def closeWindow(whitelist_window):
+        reddit_state['whitelist_window_open'] = 0
+        whitelist_window.destroy()
+
+    if reddit_state['whitelist_window_open'] == 1:
+        return
 
     if comment_bool:
         identifying_text = 'comments'
@@ -310,6 +314,10 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
         item_array = reddit_state['user'].submissions.new(limit=None)
 
     whitelist_window = tk.Toplevel(root)
+    reddit_state['whitelist_window_open'] = 1
+
+    whitelist_window.protocol(
+        'WM_DELETE_WINDOW', lambda: closeWindow(whitelist_window))
 
     canvas = tk.Canvas(whitelist_window, width=750, height=1000)
     frame = tk.Frame(canvas)
