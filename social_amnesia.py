@@ -133,7 +133,7 @@ class MainApp(tk.Frame):
 
         consumer_secret_label = tk.Label(
             frame, text='Enter twitter consumer secret:')
-        consumer_secret_entry = tk.Entry(frame)
+        consumer_secret_entry = tk.Entry(frame, show="*")
 
         access_token_label = tk.Label(
             frame, text='Enter twitter Access Token:')
@@ -141,7 +141,7 @@ class MainApp(tk.Frame):
 
         access_token_secret_label = tk.Label(
             frame, text='Enter Twitter access token secret:')
-        access_token_secret_entry = tk.Entry(frame)
+        access_token_secret_entry = tk.Entry(frame, show="*")
 
         login_confirm_text = tk.StringVar()
         login_confirm_text.set('Waiting for login')
@@ -197,14 +197,14 @@ class MainApp(tk.Frame):
         username_entry = tk.Entry(frame)
 
         password_label = tk.Label(frame, text='Enter reddit password:')
-        password_entry = tk.Entry(frame)
+        password_entry = tk.Entry(frame, show="*")
 
         client_id_label = tk.Label(frame, text='Enter reddit client ID:')
         client_id_entry = tk.Entry(frame)
 
         client_secret_label = tk.Label(
             frame, text='Enter reddit client secret:')
-        client_secret_entry = tk.Entry(frame)
+        client_secret_entry = tk.Entry(frame, show="*")
 
         login_confirm_text = tk.StringVar()
         login_confirm_text.set('Waiting for Login')
