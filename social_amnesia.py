@@ -4,6 +4,7 @@ import tkinter.ttk as ttk
 from pathlib import Path
 from tkinter import messagebox
 import shelve
+import webbrowser
 
 from services import reddit, twitter
 
@@ -111,9 +112,23 @@ class MainApp(tk.Frame):
         :return: Login frame
         """
         frame = tk.Frame(self.tabs)
+        
         frame.grid()
+        frame.columnconfigure(1, pad=20)
+        
         self.build_reddit_login(frame)
         self.build_twitter_login(frame)
+
+        helpUrl = r'https://github.com/Nick-Gottschlich/Social-Amnesia#how-to-set-up-your-reddit-account'
+
+        def callback(event):
+            webbrowser.open_new(helpUrl)
+
+        howToLink = tk.Label(
+            frame, text='Where do I find these values?', fg="blue", cursor="hand2")
+        howToLink.bind("<Button-1>", callback)
+        howToLink.grid(row=6, column=0, sticky='W')
+
         return frame
 
     @staticmethod
@@ -128,15 +143,15 @@ class MainApp(tk.Frame):
         title.config(font=('arial', 25))
 
         consumer_key_label = tk.Label(
-            frame, text='Enter twitter consumer Key:')
+            frame, text='Enter Twitter consumer key:')
         consumer_key_entry = tk.Entry(frame)
 
         consumer_secret_label = tk.Label(
-            frame, text='Enter twitter consumer secret:')
+            frame, text='Enter Twitter consumer secret:')
         consumer_secret_entry = tk.Entry(frame, show="*")
 
         access_token_label = tk.Label(
-            frame, text='Enter twitter Access Token:')
+            frame, text='Enter Twitter access token:')
         access_token_entry = tk.Entry(frame)
 
         access_token_secret_label = tk.Label(
@@ -160,22 +175,22 @@ class MainApp(tk.Frame):
         )
 
         # Place elements
-        title.grid(row=0, column=2, columnspan=2)
+        title.grid(row=0, column=2, columnspan=2, sticky='W')
 
-        consumer_key_label.grid(row=1, column=2)
-        consumer_key_entry.grid(row=1, column=3)
+        consumer_key_label.grid(row=1, column=2, sticky='W')
+        consumer_key_entry.grid(row=1, column=3, sticky='W')
 
-        consumer_secret_label.grid(row=2, column=2)
-        consumer_secret_entry.grid(row=2, column=3)
+        consumer_secret_label.grid(row=2, column=2, sticky='W')
+        consumer_secret_entry.grid(row=2, column=3, sticky='W')
 
-        access_token_label.grid(row=3, column=2)
-        access_token_entry.grid(row=3, column=3)
+        access_token_label.grid(row=3, column=2, sticky='W')
+        access_token_entry.grid(row=3, column=3, sticky='W')
 
-        access_token_secret_label.grid(row=4, column=2)
-        access_token_secret_entry.grid(row=4, column=3)
+        access_token_secret_label.grid(row=4, column=2, sticky='W')
+        access_token_secret_entry.grid(row=4, column=3, sticky='W')
 
-        login_button.grid(row=5, column=2)
-        login_confirmed_label.grid(row=5, column=3)
+        login_button.grid(row=5, column=2, sticky='W')
+        login_confirmed_label.grid(row=5, column=3, sticky='W')
 
         if 'login_info' in twitter_state:
             login_dict = twitter_state['login_info']
@@ -190,20 +205,20 @@ class MainApp(tk.Frame):
         :return: None
         """
         # Create elements
-        title = tk.Label(frame, text='reddit')
+        title = tk.Label(frame, text='Reddit')
         title.config(font=('arial', 25))
 
-        username_label = tk.Label(frame, text='Enter reddit username:')
+        username_label = tk.Label(frame, text='Enter Reddit username:')
         username_entry = tk.Entry(frame)
 
-        password_label = tk.Label(frame, text='Enter reddit password:')
+        password_label = tk.Label(frame, text='Enter Reddit password:')
         password_entry = tk.Entry(frame, show="*")
 
-        client_id_label = tk.Label(frame, text='Enter reddit client ID:')
+        client_id_label = tk.Label(frame, text='Enter Reddit client ID:')
         client_id_entry = tk.Entry(frame)
 
         client_secret_label = tk.Label(
-            frame, text='Enter reddit client secret:')
+            frame, text='Enter Reddit client secret:')
         client_secret_entry = tk.Entry(frame, show="*")
 
         login_confirm_text = tk.StringVar()
@@ -213,7 +228,7 @@ class MainApp(tk.Frame):
             frame, textvariable=login_confirm_text)
 
         login_button = tk.Button(
-            frame, text='Login to reddit',
+            frame, text='Login to Reddit',
             command=lambda: reddit.set_reddit_login(
                 username_entry.get(),
                 password_entry.get(),
@@ -225,22 +240,22 @@ class MainApp(tk.Frame):
         )
 
         # Place elements
-        title.grid(row=0, column=0, columnspan=2)
+        title.grid(row=0, column=0, columnspan=2, sticky='W')
 
-        username_label.grid(row=1, column=0)
-        username_entry.grid(row=1, column=1)
+        username_label.grid(row=1, column=0, sticky='W')
+        username_entry.grid(row=1, column=1, sticky='W')
 
-        password_label.grid(row=2, column=0)
-        password_entry.grid(row=2, column=1)
+        password_label.grid(row=2, column=0, sticky='W')
+        password_entry.grid(row=2, column=1, sticky='W')
 
-        client_id_label.grid(row=3, column=0)
-        client_id_entry.grid(row=3, column=1)
+        client_id_label.grid(row=3, column=0, sticky='W')
+        client_id_entry.grid(row=3, column=1, sticky='W')
 
-        client_secret_label.grid(row=4, column=0)
-        client_secret_entry.grid(row=4, column=1)
+        client_secret_label.grid(row=4, column=0, sticky='W')
+        client_secret_entry.grid(row=4, column=1, sticky='W')
 
-        login_button.grid(row=5, column=0)
-        login_confirmed_label.grid(row=5, column=1)
+        login_button.grid(row=5, column=0, sticky='W')
+        login_confirmed_label.grid(row=5, column=1, sticky='W')
 
         # If a praw.ini file exists, init reddit user
         praw_config_file = Path(os.path.join(
@@ -722,5 +737,7 @@ if __name__ == '__main__':
     create_storage_folder()
 
     root = tk.Tk()
+    root.style = ttk.Style()
+    root.style.theme_use('clam')
     app = MainApp(root)
     root.mainloop()
