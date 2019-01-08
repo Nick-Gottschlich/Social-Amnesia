@@ -271,10 +271,20 @@ class MainApp(tk.Frame):
         global reddit_state
 
         frame = tk.Frame(self.tabs)
-        frame.grid()
+        # frame.grid()
+
+        configuration_frame = tk.Frame(frame)
+        configuration_frame.grid(row=0, column=0, sticky='w')
+
+        deletion_frame = tk.Frame(frame)
+        deletion_frame.grid(row=1, column=0, sticky='w')
+
+        scheduler_frame = tk.Frame(frame)
+        scheduler_frame.grid(row=2, column=0, sticky='w')
 
         # Configuration section title
-        configuration_label = tk.Label(frame, text='Configuration')
+        configuration_label = tk.Label(
+            configuration_frame, text='Configuration')
         configuration_label.config(font=('arial', 25))
 
         # Configuration to set total time of items to save
@@ -293,22 +303,22 @@ class MainApp(tk.Frame):
         else:
             current_time_to_save.set('Currently set to save: [nothing]')
         time_keep_label = tk.Label(
-            frame, text='Keep comments/submissions younger than: ')
+            configuration_frame, text='Keep comments/submissions younger than: ')
 
-        hours_dropdown = create_dropdown(frame, 2, 24)
-        days_dropdown = create_dropdown(frame, 2, 7)
-        weeks_dropdown = create_dropdown(frame, 2, 52)
-        years_dropdown = create_dropdown(frame, 2, 15)
+        hours_dropdown = create_dropdown(configuration_frame, 2, 24)
+        days_dropdown = create_dropdown(configuration_frame, 2, 7)
+        weeks_dropdown = create_dropdown(configuration_frame, 2, 52)
+        years_dropdown = create_dropdown(configuration_frame, 2, 15)
 
-        hours_label = tk.Label(frame, text='hours')
-        days_label = tk.Label(frame, text='days')
-        weeks_label = tk.Label(frame, text='weeks')
-        years_label = tk.Label(frame, text='years')
+        hours_label = tk.Label(configuration_frame, text='hours')
+        days_label = tk.Label(configuration_frame, text='days')
+        weeks_label = tk.Label(configuration_frame, text='weeks')
+        years_label = tk.Label(configuration_frame, text='years')
 
         time_currently_set_label = tk.Label(
-            frame, textvariable=current_time_to_save)
+            configuration_frame, textvariable=current_time_to_save)
         set_time_button = tk.Button(
-            frame, text='Set Total Time To Keep',
+            configuration_frame, text='Set Total Time To Keep',
             command=lambda: reddit.set_reddit_time_to_save(
                 hours_dropdown.get(), days_dropdown.get(),
                 weeks_dropdown.get(), years_dropdown.get(),
@@ -328,18 +338,18 @@ class MainApp(tk.Frame):
             current_max_score.set('Currently set to: 0 upvotes')
 
         max_score_label = tk.Label(
-            frame, text='Delete comments/submissions less than score:')
-        max_score_entry_field = tk.Entry(frame, width=5)
+            configuration_frame, text='Delete comments/submissions less than score:')
+        max_score_entry_field = tk.Entry(configuration_frame, width=5)
         max_score_currently_set_label = tk.Label(
-            frame, textvariable=current_max_score)
+            configuration_frame, textvariable=current_max_score)
 
         set_max_score_button = tk.Button(
-            frame, text='Set Max Score',
+            configuration_frame, text='Set Max Score',
             command=lambda: reddit.set_reddit_max_score(
                 max_score_entry_field.get(), current_max_score, reddit_state)
         )
         set_max_score_unlimited_button = tk.Button(
-            frame, text='Set Unlimited',
+            configuration_frame, text='Set Unlimited',
             command=lambda: reddit.set_reddit_max_score(
                 'Unlimited', current_max_score, reddit_state)
         )
@@ -354,52 +364,53 @@ class MainApp(tk.Frame):
                 gilded_skip_bool.set(1)
         else:
             gilded_skip_bool.set(1)
-        gilded_skip_label = tk.Label(frame, text='Skip Gilded items:')
+        gilded_skip_label = tk.Label(
+            configuration_frame, text='Skip Gilded items:')
         gilded_skip_check_button = tk.Checkbutton(
-            frame, variable=gilded_skip_bool,
+            configuration_frame, variable=gilded_skip_bool,
             command=lambda: reddit.set_reddit_gilded_skip(gilded_skip_bool, reddit_state))
 
         # White listing
         whitelist_label = tk.Label(
-            frame, text='Whitelist comments or submissions:')
+            configuration_frame, text='Whitelist comments or submissions:')
         modify_whitelist_comments_button = tk.Button(
-            frame, text='Pick comments to whitelist',
+            configuration_frame, text='Pick comments to whitelist',
             command=lambda: reddit.set_reddit_whitelist(
                 root, True, reddit_state)
         )
         modify_whitelist_posts_button = tk.Button(
-            frame, text='Pick posts to whitelist',
+            configuration_frame, text='Pick posts to whitelist',
             command=lambda: reddit.set_reddit_whitelist(
                 root, False, reddit_state)
         )
 
         # Allows the user to actually delete comments or submissions
-        deletion_section_label = tk.Label(frame, text='Deletion')
+        deletion_section_label = tk.Label(deletion_frame, text='Deletion')
         deletion_section_label.config(font=('arial', 25))
 
         currently_deleting_text = tk.StringVar()
         currently_deleting_text.set('')
         deletion_progress_label = tk.Label(
-            frame, textvariable=currently_deleting_text)
+            deletion_frame, textvariable=currently_deleting_text)
 
         deletion_progress_bar = ttk.Progressbar(
-            frame, orient='horizontal',
+            deletion_frame, orient='horizontal',
             length=100, mode='determinate')
 
         num_deleted_items_text = tk.StringVar()
         num_deleted_items_text.set('')
         num_deleted_items_label = tk.Label(
-            frame, textvariable=num_deleted_items_text)
+            deletion_frame, textvariable=num_deleted_items_text)
 
         delete_comments_button = tk.Button(
-            frame, text='Delete comments',
+            deletion_frame, text='Delete comments',
             command=lambda: reddit.delete_reddit_items(
                 root, True, currently_deleting_text,
                 deletion_progress_bar, num_deleted_items_text, reddit_state)
         )
 
         delete_submissions_button = tk.Button(
-            frame, text='Delete submissions',
+            deletion_frame, text='Delete submissions',
             command=lambda: reddit.delete_reddit_items(
                 root, False, currently_deleting_text,
                 deletion_progress_bar, num_deleted_items_text, reddit_state)
@@ -409,12 +420,12 @@ class MainApp(tk.Frame):
         test_run_bool.set(1)
         test_run_text = 'TestRun - Checking this will show you what would be deleted, without deleting anything'
         test_run_check_button = tk.Checkbutton(
-            frame, text=test_run_text,
+            deletion_frame, text=test_run_text,
             variable=test_run_bool,
             command=lambda: reddit.set_reddit_test_run(test_run_bool, reddit_state))
 
         # Allows the user to schedule runs
-        scheduler_section_label = tk.Label(frame, text='Scheduler')
+        scheduler_section_label = tk.Label(scheduler_frame, text='Scheduler')
         scheduler_section_label.config(font=('arial', 25))
 
         scheduler_bool = tk.IntVar()
@@ -422,7 +433,7 @@ class MainApp(tk.Frame):
 
         scheduler_text = 'Select to delete reddit comments + submissions daily at'
 
-        scheduler_hours_dropdown = create_dropdown(frame, 2, 24)
+        scheduler_hours_dropdown = create_dropdown(scheduler_frame, 2, 24)
 
         scheduler_currently_set_text = tk.StringVar()
         if 'scheduled_time' in reddit_state:
@@ -431,10 +442,10 @@ class MainApp(tk.Frame):
         else:
             scheduler_currently_set_text.set('Currently set to: No time set')
         scheduler_currently_set_time_label = tk.Label(
-            frame, textvariable=scheduler_currently_set_text)
+            scheduler_frame, textvariable=scheduler_currently_set_text)
 
         scheduler_check_button = tk.Checkbutton(
-            frame, text=scheduler_text,
+            scheduler_frame, text=scheduler_text,
             variable=scheduler_bool,
             command=lambda: reddit.set_reddit_scheduler(
                 root, scheduler_bool,
@@ -442,56 +453,55 @@ class MainApp(tk.Frame):
                 tk.StringVar(), ttk.Progressbar(), scheduler_currently_set_text, reddit_state))
 
         # This part actually builds the reddit tab
-        configuration_label.grid(row=0, columnspan=11,
-                                 sticky=(tk.N, tk.S), pady=5)
-        time_keep_label.grid(row=1, column=0)
-        hours_dropdown.grid(row=1, column=1, sticky=(tk.W,))
-        hours_label.grid(row=1, column=2, sticky=(tk.W,))
-        days_dropdown.grid(row=1, column=3, sticky=(tk.W,))
-        days_label.grid(row=1, column=4, sticky=(tk.W,))
-        weeks_dropdown.grid(row=1, column=5, sticky=(tk.W,))
-        weeks_label.grid(row=1, column=6, sticky=(tk.W,))
-        years_dropdown.grid(row=1, column=7, sticky=(tk.W,))
-        years_label.grid(row=1, column=8, sticky=(tk.W,))
+        configuration_label.grid(row=0, column=0, sticky='w')
+        time_keep_label.grid(row=1, column=0, sticky='w')
+        hours_dropdown.grid(row=1, column=1, sticky='w')
+        hours_label.grid(row=1, column=2, sticky='w')
+        days_dropdown.grid(row=1, column=3, sticky='w')
+        days_label.grid(row=1, column=4, sticky='w')
+        weeks_dropdown.grid(row=1, column=5, sticky='w')
+        weeks_label.grid(row=1, column=6, sticky='w')
+        years_dropdown.grid(row=1, column=7, sticky='w')
+        years_label.grid(row=1, column=8, sticky='w')
         set_time_button.grid(row=1, column=9, columnspan=2)
         time_currently_set_label.grid(row=1, column=11)
 
-        max_score_label.grid(row=2, column=0)
-        max_score_entry_field.grid(
-            row=2, column=1, columnspan=8, sticky=(tk.W))
-        set_max_score_button.grid(row=2, column=9)
-        set_max_score_unlimited_button.grid(row=2, column=10)
-        max_score_currently_set_label.grid(row=2, column=11)
+        max_score_label.grid(row=2, column=0, sticky='w')
+        max_score_entry_field.grid(row=2, column=1, sticky='w')
+        set_max_score_button.grid(row=2, column=9, sticky='w')
+        set_max_score_unlimited_button.grid(row=2, column=10, sticky='w')
+        max_score_currently_set_label.grid(row=2, column=11, sticky='w')
 
-        gilded_skip_label.grid(row=3, column=0)
-        gilded_skip_check_button.grid(row=3, column=1, sticky=(tk.W))
+        gilded_skip_label.grid(row=3, column=0, sticky='w')
+        gilded_skip_check_button.grid(row=3, column=1, sticky='w')
 
-        whitelist_label.grid(row=4, column=0)
-        modify_whitelist_comments_button.grid(row=4, column=1, columnspan=4)
-        modify_whitelist_posts_button.grid(row=4, column=5, columnspan=4)
+        whitelist_label.grid(row=4, column=0, sticky='w')
+        modify_whitelist_comments_button.grid(
+            row=4, column=1, columnspan=4, sticky='w')
+        modify_whitelist_posts_button.grid(
+            row=4, column=5, columnspan=4, sticky='w')
 
-        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=5, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+        ttk.Separator(configuration_frame, orient=tk.HORIZONTAL).grid(
+            row=5, columnspan=13, sticky='ew', pady=5)
 
-        deletion_section_label.grid(
-            row=6, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+        deletion_section_label.grid(row=0, sticky='w')
 
-        delete_comments_button.grid(row=7, column=0, sticky=tk.W)
-        delete_submissions_button.grid(row=7, column=0, sticky=(tk.E,))
-        test_run_check_button.grid(row=7, column=1, columnspan=11)
+        delete_comments_button.grid(row=1, column=0, sticky='w')
+        delete_submissions_button.grid(row=1, column=0, sticky='w')
+        test_run_check_button.grid(row=1, column=1, columnspan=11)
 
-        deletion_progress_label.grid(row=8, column=0)
-        deletion_progress_bar.grid(row=9, column=0, sticky=(tk.W,))
-        num_deleted_items_label.grid(row=9, column=0, sticky=(tk.E,))
+        deletion_progress_label.grid(row=2, column=0)
+        deletion_progress_bar.grid(row=3, column=0, sticky='w')
+        num_deleted_items_label.grid(row=3, column=0, sticky=(tk.E))
 
-        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=10, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+        # ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
+        #     row=10, columnspan=13, sticky=(tk.E, tk.W), pady=5)
 
         scheduler_section_label.grid(
-            row=11, columnspan=11, sticky=(tk.N, tk.S), pady=5)
-        scheduler_check_button.grid(row=12, column=0)
-        scheduler_hours_dropdown.grid(row=12, column=1)
-        scheduler_currently_set_time_label.grid(row=12, column=8)
+            row=0, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+        scheduler_check_button.grid(row=1, column=0)
+        scheduler_hours_dropdown.grid(row=1, column=1)
+        scheduler_currently_set_time_label.grid(row=1, column=8)
 
         return frame
 
@@ -678,27 +688,27 @@ class MainApp(tk.Frame):
         configuration_label.grid(row=0, columnspan=11,
                                  sticky=(tk.N, tk.S), pady=5)
         time_keep_label.grid(row=1, column=0)
-        hours_dropdown.grid(row=1, column=1, sticky=(tk.W,))
-        hours_label.grid(row=1, column=2, sticky=(tk.W,))
-        days_dropdown.grid(row=1, column=3, sticky=(tk.W,))
-        days_label.grid(row=1, column=4, sticky=(tk.W,))
-        weeks_dropdown.grid(row=1, column=5, sticky=(tk.W,))
-        weeks_label.grid(row=1, column=6, sticky=(tk.W,))
-        years_dropdown.grid(row=1, column=7, sticky=(tk.W,))
-        years_label.grid(row=1, column=8, sticky=(tk.W,))
+        hours_dropdown.grid(row=1, column=1, sticky='w')
+        hours_label.grid(row=1, column=2, sticky='w')
+        days_dropdown.grid(row=1, column=3, sticky='w')
+        days_label.grid(row=1, column=4, sticky='w')
+        weeks_dropdown.grid(row=1, column=5, sticky='w')
+        weeks_label.grid(row=1, column=6, sticky='w')
+        years_dropdown.grid(row=1, column=7, sticky='w')
+        years_label.grid(row=1, column=8, sticky='w')
         set_time_button.grid(row=1, column=9, columnspan=2)
         time_currently_set_label.grid(row=1, column=11)
 
         max_favorites_label.grid(row=2, column=0)
         max_favorites_entry_field.grid(
-            row=2, column=1, columnspan=8, sticky=(tk.W,))
+            row=2, column=1, columnspan=8, sticky='w')
         set_max_favorites_button.grid(row=2, column=9)
         set_max_favorites_unlimited_button.grid(row=2, column=10)
         max_favorites_currently_set_label.grid(row=2, column=11)
 
         max_retweets_label.grid(row=3, column=0)
         max_retweets_entry_field.grid(
-            row=3, column=1, columnspan=8, sticky=(tk.W,))
+            row=3, column=1, columnspan=8, sticky='w')
         set_max_retweets_button.grid(row=3, column=9)
         set_max_retweets_unlimited_button.grid(row=3, column=10)
         max_retweets_currently_set_label.grid(row=3, column=11)
@@ -713,12 +723,12 @@ class MainApp(tk.Frame):
         deletion_section_label.grid(
             row=6, columnspan=11, sticky=(tk.N, tk.S), pady=5)
 
-        delete_comments_button.grid(row=7, column=0, sticky=(tk.W))
+        delete_comments_button.grid(row=7, column=0, sticky='w')
         delete_submissions_button.grid(row=7, column=0, sticky=(tk.E))
         test_run_check_button.grid(row=7, column=1, columnspan=11)
 
         deletion_progress_label.grid(row=8, column=0)
-        deletion_progress_bar.grid(row=9, column=0, sticky=(tk.W,))
+        deletion_progress_bar.grid(row=9, column=0, sticky='w')
         num_deleted_items_label.grid(row=9, column=0, sticky=(tk.E,))
 
         ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
