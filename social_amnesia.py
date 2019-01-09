@@ -112,10 +112,10 @@ class MainApp(tk.Frame):
         :return: Login frame
         """
         frame = tk.Frame(self.tabs)
-        
+
         frame.grid()
         frame.columnconfigure(1, pad=20)
-        
+
         self.build_reddit_login(frame)
         self.build_twitter_login(frame)
 
@@ -271,7 +271,6 @@ class MainApp(tk.Frame):
         global reddit_state
 
         frame = tk.Frame(self.tabs)
-        # frame.grid()
 
         configuration_frame = tk.Frame(frame)
         configuration_frame.grid(row=0, column=0, sticky='w')
@@ -484,24 +483,24 @@ class MainApp(tk.Frame):
         ttk.Separator(configuration_frame, orient=tk.HORIZONTAL).grid(
             row=5, columnspan=13, sticky='ew', pady=5)
 
-        deletion_section_label.grid(row=0, sticky='w')
+        deletion_section_label.grid(row=0, column=0, sticky='w')
 
-        delete_comments_button.grid(row=1, column=0, sticky='w')
-        delete_submissions_button.grid(row=1, column=0, sticky='w')
-        test_run_check_button.grid(row=1, column=1, columnspan=11)
+        test_run_check_button.grid(row=1, column=0, sticky='w', columnspan=3)
+        delete_comments_button.grid(row=2, column=0, sticky='w')
+        delete_submissions_button.grid(row=2, column=1, sticky='w')
 
-        deletion_progress_label.grid(row=2, column=0)
         deletion_progress_bar.grid(row=3, column=0, sticky='w')
-        num_deleted_items_label.grid(row=3, column=0, sticky=(tk.E))
+        num_deleted_items_label.grid(row=3, column=1, sticky='w')
+        deletion_progress_label.grid(row=3, column=2, sticky='w')
 
-        # ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-        #     row=10, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+        ttk.Separator(deletion_frame, orient=tk.HORIZONTAL).grid(
+            row=4, columnspan=3, sticky='ew', pady=5)
 
         scheduler_section_label.grid(
-            row=0, columnspan=11, sticky=(tk.N, tk.S), pady=5)
-        scheduler_check_button.grid(row=1, column=0)
-        scheduler_hours_dropdown.grid(row=1, column=1)
-        scheduler_currently_set_time_label.grid(row=1, column=8)
+            row=0, column=0, sticky='w')
+        scheduler_check_button.grid(row=1, column=0, sticky='w')
+        scheduler_hours_dropdown.grid(row=1, column=1, sticky='w')
+        scheduler_currently_set_time_label.grid(row=1, column=2, sticky='w')
 
         return frame
 
@@ -511,10 +510,19 @@ class MainApp(tk.Frame):
         :return: A set up Twitter tab
         """
         frame = tk.Frame(self.tabs)
-        frame.grid()
+
+        configuration_frame = tk.Frame(frame)
+        configuration_frame.grid(row=0, column=0, sticky='w')
+
+        deletion_frame = tk.Frame(frame)
+        deletion_frame.grid(row=1, column=0, sticky='w')
+
+        scheduler_frame = tk.Frame(frame)
+        scheduler_frame.grid(row=2, column=0, sticky='w')
 
         # Configuration section title
-        configuration_label = tk.Label(frame, text='Configuration')
+        configuration_label = tk.Label(
+            configuration_frame, text='Configuration')
         configuration_label.config(font=('arial', 25))
 
         # Configuration to set total time of items to save
@@ -530,22 +538,23 @@ class MainApp(tk.Frame):
                 f'Currently set to save: [{years_text} {weeks_text} {days_text} {hours_text}] of items')
         else:
             current_time_to_save.set('Currently set to save: [nothing]')
-        time_keep_label = tk.Label(frame, text='Keep items younger than: ')
+        time_keep_label = tk.Label(
+            configuration_frame, text='Keep items younger than: ')
 
-        hours_dropdown = create_dropdown(frame, 2, 24)
-        days_dropdown = create_dropdown(frame, 2, 7)
-        weeks_dropdown = create_dropdown(frame, 2, 52)
-        years_dropdown = create_dropdown(frame, 2, 15)
+        hours_dropdown = create_dropdown(configuration_frame, 2, 24)
+        days_dropdown = create_dropdown(configuration_frame, 2, 7)
+        weeks_dropdown = create_dropdown(configuration_frame, 2, 52)
+        years_dropdown = create_dropdown(configuration_frame, 2, 15)
 
-        hours_label = tk.Label(frame, text='hours')
-        days_label = tk.Label(frame, text='days')
-        weeks_label = tk.Label(frame, text='weeks')
-        years_label = tk.Label(frame, text='years')
+        hours_label = tk.Label(configuration_frame, text='hours')
+        days_label = tk.Label(configuration_frame, text='days')
+        weeks_label = tk.Label(configuration_frame, text='weeks')
+        years_label = tk.Label(configuration_frame, text='years')
 
         time_currently_set_label = tk.Label(
-            frame, textvariable=current_time_to_save)
+            configuration_frame, textvariable=current_time_to_save)
         set_time_button = tk.Button(
-            frame, text='Set Total Time To Keep',
+            configuration_frame, text='Set Total Time To Keep',
             command=lambda: twitter.set_twitter_time_to_save(
                 hours_dropdown.get(), days_dropdown.get(),
                 weeks_dropdown.get(), years_dropdown.get(), current_time_to_save, twitter_state)
@@ -563,17 +572,17 @@ class MainApp(tk.Frame):
         else:
             current_max_favorites.set('Currently set to: 0 upvotes')
         max_favorites_label = tk.Label(
-            frame, text='Delete tweets that have fewer favorites than:')
-        max_favorites_entry_field = tk.Entry(frame, width=5)
+            configuration_frame, text='Delete tweets that have fewer favorites than:')
+        max_favorites_entry_field = tk.Entry(configuration_frame, width=5)
         max_favorites_currently_set_label = tk.Label(
-            frame, textvariable=current_max_favorites)
+            configuration_frame, textvariable=current_max_favorites)
         set_max_favorites_button = tk.Button(
-            frame, text='Set Max Favorites',
+            configuration_frame, text='Set Max Favorites',
             command=lambda: twitter.set_twitter_max_favorites(
                 max_favorites_entry_field.get(), current_max_favorites, twitter_state)
         )
         set_max_favorites_unlimited_button = tk.Button(
-            frame, text='Set Unlimited',
+            configuration_frame, text='Set Unlimited',
             command=lambda: twitter.set_twitter_max_favorites(
                 'Unlimited', current_max_favorites, twitter_state)
         )
@@ -590,60 +599,60 @@ class MainApp(tk.Frame):
         else:
             current_max_retweets.set('Currently set to: 0 upvotes')
         max_retweets_label = tk.Label(
-            frame, text='Delete tweets that have fewer retweets than: ')
-        max_retweets_entry_field = tk.Entry(frame, width=5)
+            configuration_frame, text='Delete tweets that have fewer retweets than: ')
+        max_retweets_entry_field = tk.Entry(configuration_frame, width=5)
         max_retweets_currently_set_label = tk.Label(
-            frame, textvariable=current_max_retweets)
+            configuration_frame, textvariable=current_max_retweets)
         set_max_retweets_button = tk.Button(
-            frame, text='Set Max Retweets',
+            configuration_frame, text='Set Max Retweets',
             command=lambda: twitter.set_twitter_max_retweets(
                 max_retweets_entry_field.get(), current_max_retweets, twitter_state)
         )
         set_max_retweets_unlimited_button = tk.Button(
-            frame, text='Set Unlimited',
+            configuration_frame, text='Set Unlimited',
             command=lambda: twitter.set_twitter_max_retweets(
                 'Unlimited', current_max_retweets, twitter_state)
         )
 
         # White listing tweets or favorites
         whitelist_label = tk.Label(
-            frame, text='Whitelist tweets or favorites:')
+            configuration_frame, text='Whitelist tweets or favorites:')
         modify_whitelist_tweets_button = tk.Button(
-            frame, text='Pick tweets to whitelist',
+            configuration_frame, text='Pick tweets to whitelist',
             command=lambda: twitter.set_twitter_whitelist(
                 root, True, twitter_state)
         )
         modify_whitelist_favorites_button = tk.Button(
-            frame, text='Pick favorites to whitelist',
+            configuration_frame, text='Pick favorites to whitelist',
             command=lambda: twitter.set_twitter_whitelist(
                 root, False, twitter_state)
         )
 
         # Allows the user to delete tweets or remove favorites
-        deletion_section_label = tk.Label(frame, text='Deletion')
+        deletion_section_label = tk.Label(deletion_frame, text='Deletion')
         deletion_section_label.config(font=('arial', 25))
 
         currently_deleting_text = tk.StringVar()
         currently_deleting_text.set('')
 
         deletion_progress_label = tk.Label(
-            frame, textvariable=currently_deleting_text)
-        deletion_progress_bar = ttk.Progressbar(frame, orient='horizontal',
+            deletion_frame, textvariable=currently_deleting_text)
+        deletion_progress_bar = ttk.Progressbar(deletion_frame, orient='horizontal',
                                                 length=100, mode='determinate')
 
         num_deleted_items_text = tk.StringVar()
         num_deleted_items_text.set('')
         num_deleted_items_label = tk.Label(
-            frame, textvariable=num_deleted_items_text)
+            deletion_frame, textvariable=num_deleted_items_text)
 
         delete_comments_button = tk.Button(
-            frame, text='Delete tweets',
+            deletion_frame, text='Delete tweets',
             command=lambda: twitter.delete_twitter_tweets(
                 root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state)
         )
 
         delete_submissions_button = tk.Button(
-            frame, text='Remove Favorites',
+            deletion_frame, text='Remove Favorites',
             command=lambda: twitter.delete_twitter_favorites(
                 root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state)
         )
@@ -653,12 +662,12 @@ class MainApp(tk.Frame):
         test_run_text = 'TestRun - Checking this will show you what would ' \
                         'be deleted, without actually deleting anything'
         test_run_check_button = tk.Checkbutton(
-            frame, text=test_run_text,
+            deletion_frame, text=test_run_text,
             variable=test_run_bool,
             command=lambda: twitter.set_twitter_test_run(test_run_bool, twitter_state))
 
         # Allows the user to schedule runs
-        scheduler_section_label = tk.Label(frame, text='Scheduler')
+        scheduler_section_label = tk.Label(scheduler_frame, text='Scheduler')
         scheduler_section_label.config(font=('arial', 25))
 
         scheduler_bool = tk.IntVar()
@@ -666,7 +675,7 @@ class MainApp(tk.Frame):
 
         scheduler_text = 'Select to delete twitter comments + submissions daily at'
 
-        scheduler_hours_dropdown = create_dropdown(frame, 2, 24)
+        scheduler_hours_dropdown = create_dropdown(scheduler_frame, 2, 24)
 
         scheduler_currently_set_text = tk.StringVar()
         if 'scheduled_time' in twitter_state:
@@ -675,19 +684,18 @@ class MainApp(tk.Frame):
         else:
             scheduler_currently_set_text.set('Currently set to: No time set')
         scheduler_currently_set_time_label = tk.Label(
-            frame, textvariable=scheduler_currently_set_text)
+            scheduler_frame, textvariable=scheduler_currently_set_text)
 
         scheduler_check_button = tk.Checkbutton(
-            frame, text=scheduler_text,
+            scheduler_frame, text=scheduler_text,
             variable=scheduler_bool,
             command=lambda: twitter.set_twitter_scheduler(
                 root, scheduler_bool, int(scheduler_hours_dropdown.get()),
                 tk.StringVar(), ttk.Progressbar(), scheduler_currently_set_text, twitter_state))
 
         # Actually build the twitter tab
-        configuration_label.grid(row=0, columnspan=11,
-                                 sticky=(tk.N, tk.S), pady=5)
-        time_keep_label.grid(row=1, column=0)
+        configuration_label.grid(row=0, column=0, sticky='w')
+        time_keep_label.grid(row=1, column=0, sticky='w')
         hours_dropdown.grid(row=1, column=1, sticky='w')
         hours_label.grid(row=1, column=2, sticky='w')
         days_dropdown.grid(row=1, column=3, sticky='w')
@@ -697,48 +705,48 @@ class MainApp(tk.Frame):
         years_dropdown.grid(row=1, column=7, sticky='w')
         years_label.grid(row=1, column=8, sticky='w')
         set_time_button.grid(row=1, column=9, columnspan=2)
-        time_currently_set_label.grid(row=1, column=11)
+        time_currently_set_label.grid(row=1, column=11, sticky='w')
 
-        max_favorites_label.grid(row=2, column=0)
+        max_favorites_label.grid(row=2, column=0, sticky='w')
         max_favorites_entry_field.grid(
-            row=2, column=1, columnspan=8, sticky='w')
-        set_max_favorites_button.grid(row=2, column=9)
-        set_max_favorites_unlimited_button.grid(row=2, column=10)
-        max_favorites_currently_set_label.grid(row=2, column=11)
+            row=2, column=1, sticky='w')
+        set_max_favorites_button.grid(row=2, column=9, sticky='w')
+        set_max_favorites_unlimited_button.grid(row=2, column=10, sticky='w')
+        max_favorites_currently_set_label.grid(row=2, column=11, sticky='w')
 
-        max_retweets_label.grid(row=3, column=0)
-        max_retweets_entry_field.grid(
-            row=3, column=1, columnspan=8, sticky='w')
-        set_max_retweets_button.grid(row=3, column=9)
-        set_max_retweets_unlimited_button.grid(row=3, column=10)
-        max_retweets_currently_set_label.grid(row=3, column=11)
+        max_retweets_label.grid(row=3, column=0, sticky='w')
+        max_retweets_entry_field.grid(row=3, column=1, sticky='w')
+        set_max_retweets_button.grid(row=3, column=9, sticky='w')
+        set_max_retweets_unlimited_button.grid(row=3, column=10, sticky='w')
+        max_retweets_currently_set_label.grid(row=3, column=11, sticky='w')
 
-        whitelist_label.grid(row=4, column=0)
-        modify_whitelist_tweets_button.grid(row=4, column=1, columnspan=4)
-        modify_whitelist_favorites_button.grid(row=4, column=5, columnspan=4)
+        whitelist_label.grid(row=4, column=0, sticky='w')
+        modify_whitelist_tweets_button.grid(
+            row=4, column=1, columnspan=4, sticky='w')
+        modify_whitelist_favorites_button.grid(
+            row=4, column=5, columnspan=4, sticky='w')
 
-        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=5, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+        ttk.Separator(configuration_frame, orient=tk.HORIZONTAL).grid(
+            row=5, columnspan=13, sticky='ew', pady=5)
 
-        deletion_section_label.grid(
-            row=6, columnspan=11, sticky=(tk.N, tk.S), pady=5)
+        deletion_section_label.grid(row=0, sticky='w')
 
-        delete_comments_button.grid(row=7, column=0, sticky='w')
-        delete_submissions_button.grid(row=7, column=0, sticky=(tk.E))
-        test_run_check_button.grid(row=7, column=1, columnspan=11)
+        test_run_check_button.grid(row=1, column=0, sticky='w', columnspan=3)
+        delete_comments_button.grid(row=2, column=0, sticky='w')
+        delete_submissions_button.grid(row=2, column=1, sticky='w')
 
-        deletion_progress_label.grid(row=8, column=0)
-        deletion_progress_bar.grid(row=9, column=0, sticky='w')
-        num_deleted_items_label.grid(row=9, column=0, sticky=(tk.E,))
+        deletion_progress_bar.grid(row=3, column=0, sticky='w')
+        num_deleted_items_label.grid(row=3, column=1, sticky='w')
+        deletion_progress_label.grid(row=3, column=2, sticky='w')
 
-        ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-            row=10, columnspan=13, sticky=(tk.E, tk.W), pady=5)
+        ttk.Separator(deletion_frame, orient=tk.HORIZONTAL).grid(
+            row=10, columnspan=3, sticky='ew', pady=5)
 
         scheduler_section_label.grid(
-            row=11, columnspan=11, sticky=(tk.N, tk.S), pady=5)
-        scheduler_check_button.grid(row=12, column=0)
-        scheduler_hours_dropdown.grid(row=12, column=1)
-        scheduler_currently_set_time_label.grid(row=12, column=8)
+            row=0, column=0, sticky='w')
+        scheduler_check_button.grid(row=1, column=0, sticky='w')
+        scheduler_hours_dropdown.grid(row=1, column=1, sticky='w')
+        scheduler_currently_set_time_label.grid(row=1, column=2, sticky='w')
 
         return frame
 
