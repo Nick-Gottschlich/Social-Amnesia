@@ -46,7 +46,7 @@ def set_twitter_login(consumer_key, consumer_secret, access_token, access_token_
     api = tweepy.API(auth)
 
     twitter_username = api.me().screen_name
-    login_confirm_text.set(f'Logged in to twitter as {twitter_username}')
+    login_confirm_text.set(f'Logged in to Twitter as {twitter_username}')
 
     twitter_api = api
     twitter_state['login_info'] = {

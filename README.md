@@ -54,9 +54,10 @@ Reddit requires accounts to create a "script" in order for Social Amnesia to run
 #### How to set up your twitter account
 Twitter requires you to set up an "app" in order to get Social Amnesia to run.
 
-1. Head to https://apps.twitter.com/ while logged in, and click "Create New App".
+1. Head to https://developer.twitter.com/en/apps while logged in, and click "Create New App".
+2. You may need to apply for a developer account with Twitter. With any luck, you can just fill in some bullshit and they'll approve you right away once you verify your email.
 2. Fill in a Name, Description, and Website.
-3. Once the app is created, click the "Keys and Access Tokens" tab which will give you the consumer key and consumer secret for Social Amnesia.
+3. Once the app is created, click "Details" on the app and then the "Keys and Access Tokens" tab which will give you the consumer key and consumer secret for Social Amnesia.
 4. Click "Create my Access Token" at the bottom of the page to get the access token and access token secret that Social Amnesia needs.
 
 That's it, you have everything needed to get Social Amnesia running with twitter!
