@@ -20,6 +20,40 @@ praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 alreadyRanBool = False
 
 
+def closeWindow(window):
+    window.destroy()
+
+
+def build_window(root, window, title_text):
+    def onFrameConfigure(canvas):
+        '''Reset the scroll region to encompass the inner frame'''
+        canvas.configure(scrollregion=canvas.bbox('all'))
+
+    canvas = tk.Canvas(window, width=750, height=1000)
+    frame = tk.Frame(canvas)
+
+    scrollbar = tk.Scrollbar(window, command=canvas.yview)
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    canvas.create_window((4, 4), window=frame, anchor="nw")
+
+    title_label = tk.Label(
+        frame, text=title_text, font=('arial', 30))
+
+    frame.bind("<Configure>", lambda event,
+               canvas=canvas: onFrameConfigure(canvas))
+
+    title_label.grid(
+        row=0, column=0, columnspan=2, sticky='nsew')
+
+    ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
+        row=2, columnspan=2, sticky='ew', pady=5)
+
+    return frame
+
+
 def check_for_existence(string, reddit_state, value):
     """
     Initialize a key/value pair if it doesn't already exist.
@@ -159,6 +193,13 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     :param reddit_state: dictionary holding reddit settings
     :return: none
     """
+
+    confirmation_window = tk.Toplevel(root)
+    confirmation_window.protocol(
+        'WM_DELETE_WINDOW', lambda: closeWindow(confirmation_window))
+
+    frame = build_window(root, confirmation_window, f"The following {'comments' if comment_bool else 'posts'} will be deleted")
+
     if comment_bool:
         total_items = sum(
             1 for _ in reddit_state['user'].comments.new(limit=None))
@@ -170,57 +211,64 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
 
     num_deleted_items_text.set(f'0/{str(total_items)} items processed so far')
 
-    count = 1
+    proceed_button = tk.Button(frame, text='Proceed')
+    cancel_button = tk.Button(frame, text='Cancel',
+                              command=lambda: closeWindow(confirmation_window))
 
-    for item in item_array:
-        if comment_bool:
-            identifying_text = 'comments'
-            item_string = 'Comment'
-            item_snippet = helpers.format_snippet(item.body, 50)
-        else:
-            identifying_text = 'posts'
-            item_string = 'Submission'
-            item_snippet = helpers.format_snippet(item.title, 50)
+    proceed_button.grid(row=1, column=0, sticky='ew')
+    cancel_button.grid(row=1, column=1, sticky='ew')
 
-        time_created = arrow.get(item.created_utc)
+    # count = 1
 
-        if time_created > reddit_state['time_to_save']:
-            currently_deleting_text.set(
-                f'{item_string} `{item_snippet}` more recent than cutoff, skipping.')
-        elif item.score > reddit_state['max_score']:
-            currently_deleting_text.set(
-                f'{item_string} `{item_snippet}` is higher than max score, skipping.')
-        elif item.gilded and reddit_state['gilded_skip']:
-            currently_deleting_text.set(
-                f'{item_string} `{item_snippet}` is gilded, skipping.')
-        elif reddit_state[f'whitelisted_{identifying_text}'][item.id]:
-            currently_deleting_text.set(
-                f'{item_string} `{item_snippet}` is whitelisted, skipping.`'
-            )
-        else:
-            if reddit_state['test_run'] == 0:
-                # Need the try/except here as it will crash on
-                #  link submissions otherwise
-                try:
-                    item.edit(EDIT_OVERWRITE)
-                except:
-                    pass
+    # for item in item_array:
+    #     if comment_bool:
+    #         identifying_text = 'comments'
+    #         item_string = 'Comment'
+    #         item_snippet = helpers.format_snippet(item.body, 50)
+    #     else:
+    #         identifying_text = 'posts'
+    #         item_string = 'Submission'
+    #         item_snippet = helpers.format_snippet(item.title, 50)
 
-                item.delete()
+    #     time_created = arrow.get(item.created_utc)
 
-                currently_deleting_text.set(
-                    f'Deleting {item_string} `{item_snippet}`')
-            else:
-                currently_deleting_text.set(
-                    f'TEST RUN: Would delete {item_string} `{item_snippet}`')
+    #     if time_created > reddit_state['time_to_save']:
+    #         currently_deleting_text.set(
+    #             f'{item_string} `{item_snippet}` more recent than cutoff, skipping.')
+    #     elif item.score > reddit_state['max_score']:
+    #         currently_deleting_text.set(
+    #             f'{item_string} `{item_snippet}` is higher than max score, skipping.')
+    #     elif item.gilded and reddit_state['gilded_skip']:
+    #         currently_deleting_text.set(
+    #             f'{item_string} `{item_snippet}` is gilded, skipping.')
+    #     elif reddit_state[f'whitelisted_{identifying_text}'][item.id]:
+    #         currently_deleting_text.set(
+    #             f'{item_string} `{item_snippet}` is whitelisted, skipping.`'
+    #         )
+    #     else:
+    #         if reddit_state['test_run'] == 0:
+    #             # Need the try/except here as it will crash on
+    #             #  link submissions otherwise
+    #             try:
+    #                 item.edit(EDIT_OVERWRITE)
+    #             except:
+    #                 pass
 
-        num_deleted_items_text.set(
-            f'{str(count)}/{str(total_items)} items processed.')
-        deletion_progress_bar['value'] = round(
-            (count / total_items) * 100, 1)
+    #             item.delete()
 
-        root.update()
-        count += 1
+    #             currently_deleting_text.set(
+    #                 f'Deleting {item_string} `{item_snippet}`')
+    #         else:
+    #             currently_deleting_text.set(
+    #                 f'TEST RUN: Would delete {item_string} `{item_snippet}`')
+
+    #     num_deleted_items_text.set(
+    #         f'{str(count)}/{str(total_items)} items processed.')
+    #     deletion_progress_bar['value'] = round(
+    #         (count / total_items) * 100, 1)
+
+    #     root.update()
+    #     count += 1
 
 
 def set_reddit_test_run(test_run_bool, reddit_state):
@@ -297,7 +345,7 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
 
     def onFrameConfigure(canvas):
         '''Reset the scroll region to encompass the inner frame'''
-        canvas.configure(scrollregion=canvas.bbox("all"))
+        canvas.configure(scrollregion=canvas.bbox('all'))
 
     def closeWindow(whitelist_window):
         reddit_state['whitelist_window_open'] = 0
@@ -336,9 +384,9 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
                canvas=canvas: onFrameConfigure(canvas))
 
     whitelist_title_label.grid(
-        row=0, column=0, columnspan=2, sticky=(tk.N, tk.E, tk.W, tk.S))
+        row=0, column=0, columnspan=2, sticky='nsew')
     ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-        row=1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
+        row=1, columnspan=2, sticky='ew', pady=5)
 
     counter = 2
     for item in item_array:
