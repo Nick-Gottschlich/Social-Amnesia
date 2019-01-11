@@ -20,7 +20,9 @@ praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 alreadyRanBool = False
 
 
-def closeWindow(window):
+def close_window(window, reddit_state, window_key):
+    reddit_state[window_key] = 0
+    reddit_state.sync
     window.destroy()
 
 
@@ -83,6 +85,7 @@ def initialize_state(reddit_state):
     reddit_state['scheduler_bool'] = 0
     reddit_state['test_run'] = 1
     reddit_state['whitelist_window_open'] = 0
+    reddit_state['confirmation_window_open'] = 0
     reddit_state.sync
 
 
@@ -193,9 +196,15 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     :param reddit_state: dictionary holding reddit settings
     :return: none
     """
+    if reddit_state['confirmation_window_open'] == 1:
+        return
+
     confirmation_window = tk.Toplevel(root)
+    reddit_state['confirmation_window_open'] = 1
+    reddit_state.sync
+
     confirmation_window.protocol(
-        'WM_DELETE_WINDOW', lambda: closeWindow(confirmation_window))
+        'WM_DELETE_WINDOW', lambda: close_window(confirmation_window, reddit_state, 'confirmation_window_open'))
 
     frame = build_window(root, confirmation_window,
                          f"The following {'comments' if comment_bool else 'posts'} will be deleted")
@@ -217,7 +226,8 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     button_frame.grid(row=1, column=0, sticky='w')
 
     def delete_items():
-        closeWindow(confirmation_window)
+        close_window(confirmation_window, reddit_state,
+                     'confirmation_window_open')
 
         count = 1
 
@@ -279,7 +289,7 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     proceed_button = tk.Button(
         button_frame, text='Proceed', command=lambda: delete_items())
     cancel_button = tk.Button(button_frame, text='Cancel',
-                              command=lambda: closeWindow(confirmation_window))
+                              command=lambda: close_window(confirmation_window, reddit_state, 'confirmation_window_open'))
 
     proceed_button.grid(row=1, column=0, sticky='nsew')
     cancel_button.grid(row=1, column=1, sticky='nsew')
@@ -380,10 +390,6 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
         '''Reset the scroll region to encompass the inner frame'''
         canvas.configure(scrollregion=canvas.bbox('all'))
 
-    def closeWindow(whitelist_window):
-        reddit_state['whitelist_window_open'] = 0
-        whitelist_window.destroy()
-
     if reddit_state['whitelist_window_open'] == 1:
         return
 
@@ -396,9 +402,10 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
 
     whitelist_window = tk.Toplevel(root)
     reddit_state['whitelist_window_open'] = 1
+    reddit_state.sync
 
     whitelist_window.protocol(
-        'WM_DELETE_WINDOW', lambda: closeWindow(whitelist_window))
+        'WM_DELETE_WINDOW', lambda: close_window(whitelist_window, reddit_state, 'whitelist_window_open'))
 
     canvas = tk.Canvas(whitelist_window, width=750, height=1000)
     frame = tk.Frame(canvas)
