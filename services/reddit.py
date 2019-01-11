@@ -83,7 +83,6 @@ def initialize_state(reddit_state):
     check_for_existence('scheduled_time', reddit_state, 0)
 
     reddit_state['scheduler_bool'] = 0
-    reddit_state['test_run'] = 1
     reddit_state['whitelist_window_open'] = 0
     reddit_state['confirmation_window_open'] = 0
     reddit_state.sync
@@ -308,17 +307,6 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
             ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
                 row=counter+1, columnspan=2, sticky='ew', pady=5)
         counter = counter + 2
-
-
-def set_reddit_test_run(test_run_bool, reddit_state):
-    """
-    Set whether to run a test run or not (stored in state)
-    :param test_run_bool: 0 for real run, 1 for test run
-    :param reddit_state: dictionary holding reddit settings
-    :return: none
-    """
-    reddit_state['test_run'] = test_run_bool.get()
-    reddit_state.sync
 
 
 def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var, current_time_text, reddit_state):
