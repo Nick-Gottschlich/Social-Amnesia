@@ -415,14 +415,6 @@ class MainApp(tk.Frame):
                 deletion_progress_bar, num_deleted_items_text, reddit_state)
         )
 
-        test_run_bool = tk.IntVar()
-        test_run_bool.set(1)
-        test_run_text = 'TestRun - Checking this will show you what would be deleted, without deleting anything'
-        test_run_check_button = tk.Checkbutton(
-            deletion_frame, text=test_run_text,
-            variable=test_run_bool,
-            command=lambda: reddit.set_reddit_test_run(test_run_bool, reddit_state))
-
         # Allows the user to schedule runs
         scheduler_section_label = tk.Label(scheduler_frame, text='Scheduler')
         scheduler_section_label.config(font=('arial', 25))
@@ -485,16 +477,15 @@ class MainApp(tk.Frame):
 
         deletion_section_label.grid(row=0, column=0, sticky='w')
 
-        test_run_check_button.grid(row=1, column=0, sticky='w', columnspan=3)
-        delete_comments_button.grid(row=2, column=0, sticky='w')
-        delete_submissions_button.grid(row=2, column=1, sticky='w')
+        delete_comments_button.grid(row=1, column=0, sticky='w')
+        delete_submissions_button.grid(row=1, column=1, sticky='w')
 
-        deletion_progress_bar.grid(row=3, column=0, sticky='w')
-        num_deleted_items_label.grid(row=3, column=1, sticky='w')
-        deletion_progress_label.grid(row=3, column=2, sticky='w')
+        deletion_progress_bar.grid(row=2, column=0, sticky='w')
+        num_deleted_items_label.grid(row=2, column=1, sticky='w')
+        deletion_progress_label.grid(row=2, column=2, sticky='w')
 
         ttk.Separator(deletion_frame, orient=tk.HORIZONTAL).grid(
-            row=4, columnspan=3, sticky='ew', pady=5)
+            row=3, columnspan=3, sticky='ew', pady=5)
 
         scheduler_section_label.grid(
             row=0, column=0, sticky='w')

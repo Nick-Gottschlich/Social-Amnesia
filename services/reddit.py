@@ -239,7 +239,6 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
             item_array = reddit_state['user'].submissions.new(limit=None)
 
         for item in item_array:
-            print('in for loop')
             if comment_bool:
                 item_string = 'Comment'
                 item_snippet = helpers.format_snippet(item.body, 50)
@@ -274,9 +273,6 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
 
                 currently_deleting_text.set(
                     f'Deleting {item_string} `{item_snippet}`')
-            # else:
-            #     currently_deleting_text.set(
-            #         f'TEST RUN: Would delete {item_string} `{item_snippet}`')
 
             num_deleted_items_text.set(
                 f'{str(count)}/{str(total_items)} items processed.')
@@ -299,13 +295,13 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     for item in item_array:
         time_created = arrow.get(item.created_utc)
         if time_created > reddit_state['time_to_save']:
-            do = 'nothing'
+            pass
         elif item.score > reddit_state['max_score']:
-            do = 'nothing'
+            pass
         elif item.gilded and reddit_state['gilded_skip']:
-            do = 'nothing'
+            pass
         elif reddit_state[f'whitelisted_{identifying_text}'][item.id]:
-            do = 'nothing'
+            pass
         else:
             tk.Label(frame,
                      text=helpers.format_snippet(item.body if comment_bool else item.title, 100)).grid(row=counter, column=0)
@@ -386,10 +382,6 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
         reddit_state[f'whitelisted_{identifying_text}'] = whitelist_dict
         reddit_state.sync
 
-    def onFrameConfigure(canvas):
-        '''Reset the scroll region to encompass the inner frame'''
-        canvas.configure(scrollregion=canvas.bbox('all'))
-
     if reddit_state['whitelist_window_open'] == 1:
         return
 
@@ -406,7 +398,7 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
 
     whitelist_window.protocol(
         'WM_DELETE_WINDOW', lambda: close_window(whitelist_window, reddit_state, 'whitelist_window_open'))
-    
+
     frame = build_window(root, whitelist_window,
                          f'Pick {identifying_text} to save')
 
