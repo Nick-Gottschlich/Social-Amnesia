@@ -406,29 +406,11 @@ def set_reddit_whitelist(root, comment_bool, reddit_state):
 
     whitelist_window.protocol(
         'WM_DELETE_WINDOW', lambda: close_window(whitelist_window, reddit_state, 'whitelist_window_open'))
+    
+    frame = build_window(root, whitelist_window,
+                         f'Pick {identifying_text} to save')
 
-    canvas = tk.Canvas(whitelist_window, width=750, height=1000)
-    frame = tk.Frame(canvas)
-
-    scrollbar = tk.Scrollbar(whitelist_window, command=canvas.yview)
-    canvas.configure(yscrollcommand=scrollbar.set)
-
-    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-    canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-    canvas.create_window((4, 4), window=frame, anchor="nw")
-
-    whitelist_title_label = tk.Label(
-        frame, text=f'Pick {identifying_text} to save', font=('arial', 30))
-
-    frame.bind("<Configure>", lambda event,
-               canvas=canvas: onFrameConfigure(canvas))
-
-    whitelist_title_label.grid(
-        row=0, column=0, columnspan=2, sticky='nsew')
-    ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-        row=1, columnspan=2, sticky='ew', pady=5)
-
-    counter = 2
+    counter = 3
     for item in item_array:
         if (item.id not in reddit_state[f'whitelisted_{identifying_text}']):
             # I wish I could tell you why I need to copy the dictionary of whitelisted items, and then modify it, and then
