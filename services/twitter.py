@@ -191,7 +191,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
     button_frame = tk.Frame(frame)
     button_frame.grid(row=1, column=0, sticky='w')
 
-    def delete_items():
+    def delete_tweets():
         close_window(confirmation_window, twitter_state,
                      'confirmation_window_open')
 
@@ -228,7 +228,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
             count += 1
 
     proceed_button = tk.Button(
-        button_frame, text='Proceed', command=lambda: delete_items())
+        button_frame, text='Proceed', command=lambda: delete_tweets())
     cancel_button = tk.Button(button_frame, text='Cancel',
                               command=lambda: close_window(confirmation_window, twitter_state, 'confirmation_window_open'))
 
@@ -238,7 +238,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
     counter = 3
 
     for tweet in user_tweets:
-        time_created = arrow.get(tweet.created_utc)
+        time_created = arrow.Arrow.fromdatetime(tweet.created_at)
 
         if time_created > twitter_state['time_to_save']:
             pass
@@ -246,11 +246,11 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
             pass
         elif tweet.retweet_count >= twitter_state['max_retweets'] and not tweet.retweeted:
             pass
-        elif tweet.id in twitter_state['whitelisted_tweets']:
+        elif tweet.id in twitter_state['whitelisted_tweets'] and twitter_state['whitelisted_tweets'][tweet.id]:
             pass
         else:
             tk.Label(frame, text=helpers.format_snippet(
-                tweet.text, 100).grid(row=counter, column=0))
+                tweet.text, 100)).grid(row=counter, column=0)
             ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
                 row=counter+1, columnspan=2, sticky='ew', pady=5)
 
@@ -267,7 +267,20 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
     :param twitter_state: dictionary holding twitter settings
     :return: none
     """
+    if twitter_state['confirmation_window_open'] == 1:
+        return
+
     global twitter_api
+
+    confirmation_window = tk.Toplevel(root)
+    twitter_state['confirmation_window_open'] = 1
+    twitter_state.sync
+
+    confirmation_window.protocol(
+        'WM_DELETE_WINDOW', lambda: close_window(confirmation_window, twitter_state, 'confirmation_window_open'))
+
+    frame = build_window(root, confirmation_window,
+                         f"The following favorites will be removed")
 
     user_favorites = gather_items(twitter_api.favorites)
     total_favorites = len(user_favorites)
@@ -275,37 +288,66 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
     num_deleted_items_text.set(
         f'0/{str(total_favorites)} items processed so far')
 
-    count = 1
-    for favorite in user_favorites:
-        favorite_snippet = helpers.format_snippet(favorite.text, 50)
+    button_frame = tk.Frame(frame)
+    button_frame.grid(row=1, column=0, sticky='w')
 
-        currently_deleting_text.set(f'Deleting favorite: `{favorite_snippet}`')
+    def delete_favorites():
+        close_window(confirmation_window, twitter_state,
+                     'confirmation_window_open')
 
-        time_created = arrow.Arrow.fromdatetime(favorite.created_at)
+        count = 1
+        for favorite in user_favorites:
+            favorite_snippet = helpers.format_snippet(favorite.text, 50)
 
-        if time_created > twitter_state['time_to_save']:
             currently_deleting_text.set(
-                f'Favorite: `{favorite_snippet}` is more recent than cutoff, skipping.')
-        elif favorite.id in twitter_state['whitelisted_favorites'] and twitter_state['whitelisted_favorites'][favorite.id]:
-            currently_deleting_text.set(
-                f'Favorite: `{favorite_snippet}` is whitelisted, skipping.')
-        else:
-            if twitter_state['test_run'] == 0:
+                f'Deleting favorite: `{favorite_snippet}`')
+
+            time_created = arrow.Arrow.fromdatetime(favorite.created_at)
+
+            if time_created > twitter_state['time_to_save']:
+                currently_deleting_text.set(
+                    f'Favorite: `{favorite_snippet}` is more recent than cutoff, skipping.')
+            elif favorite.id in twitter_state['whitelisted_favorites'] and twitter_state['whitelisted_favorites'][favorite.id]:
+                currently_deleting_text.set(
+                    f'Favorite: `{favorite_snippet}` is whitelisted, skipping.')
+            else:
                 currently_deleting_text.set(
                     f'Deleting favorite: `{favorite_snippet}`')
                 twitter_api.destroy_favorite(favorite.id)
-            else:
-                currently_deleting_text.set(
-                    f'-TEST RUN- Would remove favorite: `{favorite_snippet}`')
 
-        num_deleted_items_text.set(
-            f'{str(count)}/{str(total_favorites)} items processed.')
-        deletion_progress_bar['value'] = round(
-            (count / total_favorites) * 100, 1)
+            num_deleted_items_text.set(
+                f'{str(count)}/{str(total_favorites)} items processed.')
+            deletion_progress_bar['value'] = round(
+                (count / total_favorites) * 100, 1)
 
-        root.update()
+            root.update()
 
-        count += 1
+            count += 1
+
+    proceed_button = tk.Button(
+        button_frame, text='Proceed', command=lambda: delete_favorites())
+    cancel_button = tk.Button(button_frame, text='Cancel',
+                              command=lambda: close_window(confirmation_window, twitter_state, 'confirmation_window_open'))
+
+    proceed_button.grid(row=1, column=0, sticky='nsew')
+    cancel_button.grid(row=1, column=1, sticky='nsew')
+
+    counter = 3
+
+    for favorite in user_favorites:
+        time_created = arrow.Arrow.fromdatetime(favorite.created_at)
+
+        if time_created > twitter_state['time_to_save']:
+            pass
+        elif favorite.id in twitter_state['whitelisted_favorites'] and twitter_state['whitelisted_favorites'][favorite.id]:
+            pass
+        else:
+            tk.Label(frame, text=helpers.format_snippet(
+                favorite.text, 100)).grid(row=counter, column=0)
+            ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
+                row=counter+1, columnspan=2, sticky='ew', pady=5)
+
+        counter = counter + 2
 
 
 def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progress_var, current_time_text, twitter_state):
