@@ -405,14 +405,14 @@ class MainApp(tk.Frame):
             deletion_frame, text='Delete comments',
             command=lambda: reddit.delete_reddit_items(
                 root, True, currently_deleting_text,
-                deletion_progress_bar, num_deleted_items_text, reddit_state)
+                deletion_progress_bar, num_deleted_items_text, reddit_state, False)
         )
 
         delete_submissions_button = tk.Button(
             deletion_frame, text='Delete submissions',
             command=lambda: reddit.delete_reddit_items(
                 root, False, currently_deleting_text,
-                deletion_progress_bar, num_deleted_items_text, reddit_state)
+                deletion_progress_bar, num_deleted_items_text, reddit_state, False)
         )
 
         # Allows the user to schedule runs
@@ -639,13 +639,13 @@ class MainApp(tk.Frame):
         delete_comments_button = tk.Button(
             deletion_frame, text='Delete tweets',
             command=lambda: twitter.delete_twitter_tweets(
-                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state)
+                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state, False)
         )
 
         delete_submissions_button = tk.Button(
             deletion_frame, text='Remove Favorites',
             command=lambda: twitter.delete_twitter_favorites(
-                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state)
+                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state, False)
         )
 
         # Allows the user to schedule runs

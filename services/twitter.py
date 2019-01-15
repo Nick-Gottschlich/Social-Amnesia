@@ -158,7 +158,7 @@ def gather_items(item_getter):
     return user_items
 
 
-def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state):
+def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state, scheduled_bool):
     """
     Deletes user's tweets according to user configurations.
     :param root: the reference to the actual tkinter GUI window
@@ -168,7 +168,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
     :param twitter_state: dictionary holding twitter settings
     :return: none
     """
-    if twitter_state['confirmation_window_open'] == 1:
+    if twitter_state['confirmation_window_open'] == 1 and not scheduled_bool:
         return
 
     global twitter_api
@@ -257,7 +257,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
         counter = counter + 2
 
 
-def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state):
+def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state, scheduled_bool):
     """
     Deletes users's favorites according to user configurations.
     :param root: the reference to the actual tkinter GUI window
@@ -267,7 +267,7 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
     :param twitter_state: dictionary holding twitter settings
     :return: none
     """
-    if twitter_state['confirmation_window_open'] == 1:
+    if twitter_state['confirmation_window_open'] == 1 and not scheduled_bool:
         return
 
     global twitter_api
@@ -382,9 +382,9 @@ def set_twitter_scheduler(root, scheduler_bool, hour_of_day, string_var, progres
             'Scheduler', 'Social Amnesia is now erasing your past on twitter.')
 
         delete_twitter_tweets(
-            root, string_var, progress_var, string_var, twitter_state)
+            root, string_var, progress_var, string_var, twitter_state, True)
         delete_twitter_favorites(
-            root, string_var, progress_var, string_var, twitter_state)
+            root, string_var, progress_var, string_var, twitter_state, True)
 
         already_ran_bool = True
     if current_time < 23 and current_time == hour_of_day + 1:
@@ -435,28 +435,9 @@ def set_twitter_whitelist(root, tweet_bool, twitter_state):
     whitelist_window.protocol(
         'WM_DELETE_WINDOW', lambda: closeWindow(whitelist_window))
 
-    canvas = tk.Canvas(whitelist_window, width=750, height=1000)
-    frame = tk.Frame(canvas)
+    frame = build_window(root, whitelist_window, f'Pick {identifying_text} to save')
 
-    scrollbar = tk.Scrollbar(whitelist_window, command=canvas.yview)
-    canvas.configure(yscrollcommand=scrollbar.set)
-
-    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-    canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-    canvas.create_window((4, 4), window=frame, anchor="nw")
-
-    whitelist_title_label = tk.Label(
-        frame, text=f'Pick {identifying_text} to save', font=('arial', 30))
-
-    frame.bind("<Configure>", lambda event,
-               canvas=canvas: onFrameConfigure(canvas))
-
-    whitelist_title_label.grid(
-        row=0, column=0, columnspan=2, sticky=(tk.N, tk.E, tk.W, tk.S))
-    ttk.Separator(frame, orient=tk.HORIZONTAL).grid(
-        row=1, columnspan=2, sticky=(tk.E, tk.W), pady=5)
-
-    counter = 2
+    counter = 3
     for item in item_array:
         if (item.id not in twitter_state[f'whitelisted_{identifying_text}']):
             # I wish I could tell you why I need to copy the dictionary of whitelisted items, and then modify it, and then

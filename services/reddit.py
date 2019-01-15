@@ -184,7 +184,7 @@ def set_reddit_gilded_skip(gilded_skip_bool, reddit_state):
     reddit_state.sync
 
 
-def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, reddit_state):
+def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, reddit_state, scheduled_bool):
     """
     Deletes the items according to user configurations.
     :param root: the reference to the actual tkinter GUI window
@@ -195,7 +195,7 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     :param reddit_state: dictionary holding reddit settings
     :return: none
     """
-    if reddit_state['confirmation_window_open'] == 1:
+    if reddit_state['confirmation_window_open'] == 1 and not scheduled_bool:
         return
 
     confirmation_window = tk.Toplevel(root)
@@ -340,9 +340,9 @@ def set_reddit_scheduler(root, scheduler_bool, hour_of_day, string_var, progress
             'Scheduler', 'Social Amnesia is now erasing your past on reddit.')
 
         delete_reddit_items(root, True, string_var,
-                            progress_var, string_var, reddit_state)
+                            progress_var, string_var, reddit_state, True)
         delete_reddit_items(root, False, string_var,
-                            progress_var, string_var, reddit_state)
+                            progress_var, string_var, reddit_state, True)
 
         alreadyRanBool = True
     if current_time < 23 and current_time == hour_of_day + 1:
