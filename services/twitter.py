@@ -166,6 +166,7 @@ def delete_twitter_tweets(root, currently_deleting_text, deletion_progress_bar, 
     :param deletion_progress_bar: updates as the items are looped through
     :param num_deleted_items_text: updates as X out of Y comments are looped through
     :param twitter_state: dictionary holding twitter settings
+    :param scheduled_bool: True if a scheduled run, False if triggered manually
     :return: none
     """
     if twitter_state['confirmation_window_open'] == 1 and not scheduled_bool:
@@ -265,6 +266,7 @@ def delete_twitter_favorites(root, currently_deleting_text, deletion_progress_ba
     :param deletion_progress_bar: updates as the items are looped through
     :param num_deleted_items_text: updates as X out of Y comments are looped through
     :param twitter_state: dictionary holding twitter settings
+    :param scheduled_bool: True if a scheduled run, False if triggered manually
     :return: none
     """
     if twitter_state['confirmation_window_open'] == 1 and not scheduled_bool:
@@ -435,7 +437,8 @@ def set_twitter_whitelist(root, tweet_bool, twitter_state):
     whitelist_window.protocol(
         'WM_DELETE_WINDOW', lambda: closeWindow(whitelist_window))
 
-    frame = build_window(root, whitelist_window, f'Pick {identifying_text} to save')
+    frame = build_window(root, whitelist_window,
+                         f'Pick {identifying_text} to save')
 
     counter = 3
     for item in item_array:

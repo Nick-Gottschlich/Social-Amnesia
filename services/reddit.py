@@ -193,6 +193,7 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
     :param deletion_progress_bar: updates as the items are looped through
     :param num_deleted_items_text: updates as X out of Y comments are looped through
     :param reddit_state: dictionary holding reddit settings
+    :param scheduled_bool: True if a scheduled run, False if triggered manually
     :return: none
     """
     if reddit_state['confirmation_window_open'] == 1 and not scheduled_bool:
