@@ -405,23 +405,15 @@ class MainApp(tk.Frame):
             deletion_frame, text='Delete comments',
             command=lambda: reddit.delete_reddit_items(
                 root, True, currently_deleting_text,
-                deletion_progress_bar, num_deleted_items_text, reddit_state)
+                deletion_progress_bar, num_deleted_items_text, reddit_state, False)
         )
 
         delete_submissions_button = tk.Button(
             deletion_frame, text='Delete submissions',
             command=lambda: reddit.delete_reddit_items(
                 root, False, currently_deleting_text,
-                deletion_progress_bar, num_deleted_items_text, reddit_state)
+                deletion_progress_bar, num_deleted_items_text, reddit_state, False)
         )
-
-        test_run_bool = tk.IntVar()
-        test_run_bool.set(1)
-        test_run_text = 'TestRun - Checking this will show you what would be deleted, without deleting anything'
-        test_run_check_button = tk.Checkbutton(
-            deletion_frame, text=test_run_text,
-            variable=test_run_bool,
-            command=lambda: reddit.set_reddit_test_run(test_run_bool, reddit_state))
 
         # Allows the user to schedule runs
         scheduler_section_label = tk.Label(scheduler_frame, text='Scheduler')
@@ -485,16 +477,15 @@ class MainApp(tk.Frame):
 
         deletion_section_label.grid(row=0, column=0, sticky='w')
 
-        test_run_check_button.grid(row=1, column=0, sticky='w', columnspan=3)
-        delete_comments_button.grid(row=2, column=0, sticky='w')
-        delete_submissions_button.grid(row=2, column=1, sticky='w')
+        delete_comments_button.grid(row=1, column=0, sticky='w')
+        delete_submissions_button.grid(row=1, column=1, sticky='w')
 
-        deletion_progress_bar.grid(row=3, column=0, sticky='w')
-        num_deleted_items_label.grid(row=3, column=1, sticky='w')
-        deletion_progress_label.grid(row=3, column=2, sticky='w')
+        deletion_progress_bar.grid(row=2, column=0, sticky='w')
+        num_deleted_items_label.grid(row=2, column=1, sticky='w')
+        deletion_progress_label.grid(row=2, column=2, sticky='w')
 
         ttk.Separator(deletion_frame, orient=tk.HORIZONTAL).grid(
-            row=4, columnspan=3, sticky='ew', pady=5)
+            row=3, columnspan=3, sticky='ew', pady=5)
 
         scheduler_section_label.grid(
             row=0, column=0, sticky='w')
@@ -648,23 +639,14 @@ class MainApp(tk.Frame):
         delete_comments_button = tk.Button(
             deletion_frame, text='Delete tweets',
             command=lambda: twitter.delete_twitter_tweets(
-                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state)
+                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state, False)
         )
 
         delete_submissions_button = tk.Button(
             deletion_frame, text='Remove Favorites',
             command=lambda: twitter.delete_twitter_favorites(
-                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state)
+                root, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, twitter_state, False)
         )
-
-        test_run_bool = tk.IntVar()
-        test_run_bool.set(1)
-        test_run_text = 'TestRun - Checking this will show you what would ' \
-                        'be deleted, without actually deleting anything'
-        test_run_check_button = tk.Checkbutton(
-            deletion_frame, text=test_run_text,
-            variable=test_run_bool,
-            command=lambda: twitter.set_twitter_test_run(test_run_bool, twitter_state))
 
         # Allows the user to schedule runs
         scheduler_section_label = tk.Label(scheduler_frame, text='Scheduler')
@@ -731,16 +713,15 @@ class MainApp(tk.Frame):
 
         deletion_section_label.grid(row=0, sticky='w')
 
-        test_run_check_button.grid(row=1, column=0, sticky='w', columnspan=3)
-        delete_comments_button.grid(row=2, column=0, sticky='w')
-        delete_submissions_button.grid(row=2, column=1, sticky='w')
+        delete_comments_button.grid(row=1, column=0, sticky='w')
+        delete_submissions_button.grid(row=1, column=1, sticky='w')
 
-        deletion_progress_bar.grid(row=3, column=0, sticky='w')
-        num_deleted_items_label.grid(row=3, column=1, sticky='w')
-        deletion_progress_label.grid(row=3, column=2, sticky='w')
+        deletion_progress_bar.grid(row=2, column=0, sticky='w')
+        num_deleted_items_label.grid(row=2, column=1, sticky='w')
+        deletion_progress_label.grid(row=2, column=2, sticky='w')
 
         ttk.Separator(deletion_frame, orient=tk.HORIZONTAL).grid(
-            row=10, columnspan=3, sticky='ew', pady=5)
+            row=3, columnspan=3, sticky='ew', pady=5)
 
         scheduler_section_label.grid(
             row=0, column=0, sticky='w')
