@@ -35,25 +35,23 @@ Note: On windows you may have to copy `tcl86t.dll` and `tk86t.dll` from your `Py
 ## Sites and Features
 
 ### Reddit
-* Delete comments and submissions.
+* Delete comments and submissions, showing you every item that will be deleted and asking you to confirm their deletion before running.
 * Edits your posts before deleting them. According to [the reddit admins](https://www.reddit.com/r/blog/comments/1dhw2j/reddits_privacy_policy_has_been_rewritten_from/c9qgbbb/) this is an effective way to remove content from reddit.
 * Keep a time range of comments and submissions (in hours)
 * Keep comments or submissions that are above a certain amount of upvotes.
 * Skip gilded comments/submissions.
 * Whitelist specific posts and comments you want to save.
-* Perform a 'Trial run' showing what would be deleted, without actually deleting it.
 
 #### How to set up your reddit account
 Reddit requires accounts to create a "script" in order for Social Amnesia to run. Don't worry, this is actually quite simple to do. You can see reddit's docs on how to do this [here](https://github.com/reddit-archive/reddit/wiki/OAuth2-Quick-Start-Example#first-steps). Doing this provides you with the reddit "Client ID" and "Client Secret" you will need to log in within the Social Amnesia app.
 
 ### Twitter
-* Delete tweets, retweets, replies and remove "favorites" (aka ❤️'s).
+* Delete tweets, retweets, replies and remove "favorites" (aka ❤️'s), showing you every item that will be deleted/removed and asking you to confirm their deletion before running.
 * Keep a time range of tweets, retweets, replies and favorites.
   * In the case of favorites, this is done by the time the favorited item was created, NOT the time it was favorited at.
 * Keep tweets that have a certain amount of retweets or favorites.
   * This option ignores retweets, these will be removed no matter what if they are out of the time range.
 * Whitelist specific tweets and favorites you want to save.
-* Perform a 'Trial run' showing what would be deleted, without actually deleting it.
 
 #### How to set up your twitter account
 Twitter requires you to set up an "app" in order to get Social Amnesia to run.
@@ -76,7 +74,6 @@ Contributions are not only welcomed but greatly appreciated. If you have any ide
 
 Don't feel comfortable coding? That's okay! There are plenty of other ways to contribute to this project: 
 - The easiest is to just share it. Post it (ironically?) on your social media. Tell your friends and family. Launch t-shirts at bewildered pedestrians. Drop pamphlets out of air planes. Get creative!
-- Graphic designers are needed to make logos.
 - UX people are needed to help make mockups to improve the design of the application.
 - Do you have a social media account with lots of posts you would like to donate to the cause? Accounts like these can be used to help us bug hunt. Open an issue or tweet [@NickGottschlich](https://twitter.com/NickGottschlich).
 - Be a user tester! Just record your experience using this the first time using screen recording software and upload it as [an issue](https://github.com/Nick-Gottschlich/Social-Amnesia/issues/new). Better yet if you can record yourself talking through your thoughts as you try out the software for the first time!
