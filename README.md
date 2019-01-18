@@ -1,3 +1,7 @@
+![Social Amnesia Logo](/images/FullLogo.png)
+![Social Amnesia Main Window](/images/MainWindow.png)
+![Social Amnesia Deletion Window](/images/DeletionWindow.png)
+
 # Social Amnesia
 Social Amnesia aims to make your social media only exist within a time period that you choose. For many people, there is no reason they want to have years old tweets or reddit comments existing and making it easier for online marketers and jilted ex-lovers to profile you. With Social Amnesia, set the time period you want to keep, whitelist posts and items you want to preserve indefinitely, and let Social Amnesia wipe the rest out of existence.
 
@@ -15,7 +19,7 @@ This is the simplest option. Bundled and easily usable files for Mac and Windows
 3. Run:
 ```
 pip3 install -r requirements.txt
-python3 social_amnesia.py
+python3 SocialAmnesia.py
 ```
 4. Have fun!
 
