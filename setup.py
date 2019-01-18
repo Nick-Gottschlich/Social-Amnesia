@@ -23,10 +23,9 @@ if sys.platform == 'win32':
 
 build_exe_options = {'packages': ['os', 'idna', 'multiprocessing', 'dbm']}
 bdist_mac_options = {'iconfile': find_data_file('icon.icns')}
-executables = [Executable('SocialAmnesia.py', base=base, icon='icon.png')]
+executables = [Executable('SocialAmnesia.py', base=base, icon=find_data_file('icon.ico'))]
 
 setup(name=app_name,
-      version='1.0.0',
       description=app_description,
       options={'build_exe': build_exe_options, 'bdist_mac': bdist_mac_options},
       executables=executables)
