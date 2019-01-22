@@ -12,8 +12,6 @@ Social Amnesia aims to make your social media only exist within a time period th
 This is the simplest option. Bundled and easily usable files for Mac and Windows are available in the zip files on the [releases](https://github.com/Nick-Gottschlich/Social-Amnesia/releases) page.
 
 ### How to run Social Amnesia from the command line
-*NOTE:* As of 7.07.18 the project is not compatible with Python 3.7 yet - [related tweepy issue](https://github.com/tweepy/tweepy/pull/1042).
-
 1. Clone the repo
 2. Set up a new [virtualenv](https://virtualenv.pypa.io/en/stable/) and activate it
 3. Run:
