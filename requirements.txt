@@ -1,4 +1,4 @@
 arrow==0.12.1
 cx-Freeze==5.1.1
-praw==5.4.0
+praw==6.1.1
 tweepy==3.7.0
