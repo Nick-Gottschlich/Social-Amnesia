@@ -146,41 +146,40 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
         client.send('HTTP/1.1 200 OK\r\n\r\n{}'.format(message).encode('utf-8'))
         client.close()
 
-    # reddit = praw.Reddit(
-    #     client_id=client_id,
-    #     client_secret=client_secret,
-    #     user_agent=USER_AGENT,
-    #     username=username,
-    #     password=password,
-    #     redirect_uri='http://localhost:8080',
-    # )
+    reddit = praw.Reddit(
+        client_id=client_id,
+        client_secret=client_secret,
+        user_agent=USER_AGENT,
+        username=username,
+        password=password,
+        redirect_uri='http://localhost:8080',
+    )
 
+    try:
+        reddit.user.me()
+    except:
+        state = str(random.randint(0, 65000))
+        url = reddit.auth.url(
+            ['identity', 'history', 'read', 'edit'], state, 'permanent')
+        print('Now open this url in your browser: '+url)
+        sys.stdout.flush()
 
-    state = str(random.randint(0, 65000))
-    url = reddit.auth.url(['identity', 'history', 'read', 'edit'], state, 'permanent')
-    print('Now open this url in your browser: '+url)
-    sys.stdout.flush()
+        client = receive_connection()
+        data = client.recv(1024).decode('utf-8')
+        param_tokens = data.split(' ', 2)[1].split('?', 1)[1].split('&')
+        params = {key: value for (key, value) in [token.split('=')
+                                                for token in param_tokens]}
 
-    client = receive_connection()
-    data = client.recv(1024).decode('utf-8')
-    param_tokens = data.split(' ', 2)[1].split('?', 1)[1].split('&')
-    params = {key: value for (key, value) in [token.split('=')
-                                              for token in param_tokens]}
+        if state != params['state']:
+            send_message(client, 'State mismatch. Expected: {} Received: {}'
+                        .format(state, params['state']))
+            return 1
+        elif 'error' in params:
+            send_message(client, params['error'])
+            return 1
 
-    if state != params['state']:
-        send_message(client, 'State mismatch. Expected: {} Received: {}'
-                     .format(state, params['state']))
-        return 1
-    elif 'error' in params:
-        send_message(client, params['error'])
-        return 1
-
-    refresh_token = reddit.auth.authorize(params['code'])
-    send_message(client, 'Refresh token: {}'.format(refresh_token))
-
-
-    # print(reddit.auth.url(['identity'], '...', 'permanent'))
-    # reddit.auth.authorize(code)
+        refresh_token = reddit.auth.authorize(params['code'])
+        send_message(client, 'Refresh token: {}'.format(refresh_token))
 
     if praw_config_file_path.is_file():
         os.remove(praw_config_file_path)
