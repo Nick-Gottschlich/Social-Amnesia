@@ -83,6 +83,7 @@ def initialize_state(reddit_state):
     check_for_existence('whitelisted_comments', reddit_state, {})
     check_for_existence('whitelisted_posts', reddit_state, {})
     check_for_existence('scheduled_time', reddit_state, 0)
+    check_for_existence('refresh_token', reddit_state, 0)
 
     reddit_state['scheduler_bool'] = 0
     reddit_state['whitelist_window_open'] = 0
@@ -98,8 +99,11 @@ def initialize_reddit_user(login_confirm_text, reddit_state):
     :param reddit_state: dictionary holding reddit settings
     :return: none
     """
+    # this block is failing with the 2FA refresh token :()
     try:
-        reddit = praw.Reddit('user', user_agent=USER_AGENT)
+        print(reddit_state['refresh_token'])
+        reddit = praw.Reddit('user', user_agent=USER_AGENT,
+                             refresh_token=reddit_state['refresh_token'])
         reddit.user.me()
 
         reddit_username = str(reddit.user.me())
@@ -142,7 +146,6 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
         """
         Send message to client and close the connection.
         """
-        print(message)
         client.send('HTTP/1.1 200 OK\r\n\r\n{}'.format(message).encode('utf-8'))
         client.close()
 
@@ -168,11 +171,11 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
         data = client.recv(1024).decode('utf-8')
         param_tokens = data.split(' ', 2)[1].split('?', 1)[1].split('&')
         params = {key: value for (key, value) in [token.split('=')
-                                                for token in param_tokens]}
+                                                  for token in param_tokens]}
 
         if state != params['state']:
             send_message(client, 'State mismatch. Expected: {} Received: {}'
-                        .format(state, params['state']))
+                         .format(state, params['state']))
             return 1
         elif 'error' in params:
             send_message(client, params['error'])
@@ -180,6 +183,8 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
 
         refresh_token = reddit.auth.authorize(params['code'])
         send_message(client, 'Refresh token: {}'.format(refresh_token))
+
+        reddit_state['refresh_token'] = refresh_token
 
     if praw_config_file_path.is_file():
         os.remove(praw_config_file_path)
