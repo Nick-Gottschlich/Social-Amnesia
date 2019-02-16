@@ -7,6 +7,7 @@ import praw
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
+import webbrowser
 import shelve
 import sys
 import random
@@ -176,8 +177,9 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
         state = str(random.randint(0, 65000))
         url = reddit.auth.url(
             ['identity', 'history', 'read', 'edit'], state, 'permanent')
-        print('Now open this url in your browser: '+url)
-        sys.stdout.flush()
+        message = 'We will now open a window in your browser to complete the login process to reddit. Please ensure you are logged into reddit before clicking okay in this box.'
+        messagebox.showinfo('Additional Login Step', message)
+        webbrowser.open(url)
 
         client = receive_connection()
         data = client.recv(1024).decode('utf-8')
