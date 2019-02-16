@@ -16,8 +16,6 @@ sys.path.insert(0, "../utils")
 USER_AGENT = 'Social Amnesia (by /u/JavaOffScript)'
 EDIT_OVERWRITE = 'Wiped by Social Amnesia'
 
-praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
-
 # neccesary global bool for the scheduler
 alreadyRanBool = False
 
@@ -83,7 +81,11 @@ def initialize_state(reddit_state):
     check_for_existence('whitelisted_comments', reddit_state, {})
     check_for_existence('whitelisted_posts', reddit_state, {})
     check_for_existence('scheduled_time', reddit_state, 0)
-    check_for_existence('refresh_token', reddit_state, 0)
+    check_for_existence('refresh_token', reddit_state, '')
+    check_for_existence('reddit_username', reddit_state, '')
+    check_for_existence('reddit_password', reddit_state, '')
+    check_for_existence('reddit_client_id', reddit_state, '')
+    check_for_existence('reddit_client_secret', reddit_state, '')
 
     reddit_state['scheduler_bool'] = 0
     reddit_state['whitelist_window_open'] = 0
@@ -94,16 +96,26 @@ def initialize_state(reddit_state):
 def initialize_reddit_user(login_confirm_text, reddit_state):
     """
     Looks for if a praw reddit user already exists, and if so logs in with it
-    On error it will assume the praw.ini file is broken and remove it
     :param login_confirm_text: The UI text saying "logged in as USER"
     :param reddit_state: dictionary holding reddit settings
     :return: none
     """
-    # this block is failing with the 2FA refresh token :()
     try:
-        print(reddit_state['refresh_token'])
-        reddit = praw.Reddit('user', user_agent=USER_AGENT,
-                             refresh_token=reddit_state['refresh_token'])
+        if (reddit_state['refresh_token']):
+            reddit = praw.Reddit(
+                client_id=reddit_state['reddit_client_id'],
+                client_secret=reddit_state['reddit_client_secret'],
+                user_agent=USER_AGENT,
+                refresh_token=reddit_state['refresh_token']
+            )
+        else:
+            reddit = praw.Reddit(
+                client_id=reddit_state['reddit_client_id'],
+                client_secret=reddit_state['reddit_client_secret'],
+                user_agent=USER_AGENT,
+                username=reddit_state['reddit_username'],
+                password=reddit_state['reddit_password'],
+            )
         reddit.user.me()
 
         reddit_username = str(reddit.user.me())
@@ -113,8 +125,7 @@ def initialize_reddit_user(login_confirm_text, reddit_state):
 
         initialize_state(reddit_state)
     except:
-        # praw.ini is broken, delete it
-        os.remove(praw_config_file_path)
+        pass
 
 
 def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, reddit_state):
@@ -160,6 +171,7 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
 
     try:
         reddit.user.me()
+        reddit_state['refresh_token'] = ''
     except:
         state = str(random.randint(0, 65000))
         url = reddit.auth.url(
@@ -186,17 +198,10 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
 
         reddit_state['refresh_token'] = refresh_token
 
-    if praw_config_file_path.is_file():
-        os.remove(praw_config_file_path)
-
-    praw_config_string = f'''[user]
-client_id={client_id}
-client_secret={client_secret}
-password={password}
-username={username}'''
-
-    with open(praw_config_file_path, 'a') as out:
-        out.write(praw_config_string)
+    reddit_state['reddit_username'] = username
+    reddit_state['reddit_password'] = password
+    reddit_state['reddit_client_id'] = client_id
+    reddit_state['reddit_client_secret'] = client_secret
 
     reddit_username = str(reddit.user.me())
     reddit_state['user'] = reddit.redditor(reddit_username)

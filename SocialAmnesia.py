@@ -257,11 +257,7 @@ class MainApp(tk.Frame):
         login_button.grid(row=5, column=0, sticky='W')
         login_confirmed_label.grid(row=5, column=1, sticky='W')
 
-        # If a praw.ini file exists, init reddit user
-        praw_config_file = Path(os.path.join(
-            USER_HOME_PATH, '.config/praw.ini'))
-        if praw_config_file.is_file():
-            reddit.initialize_reddit_user(login_confirm_text, reddit_state)
+        reddit.initialize_reddit_user(login_confirm_text, reddit_state)
 
     def build_reddit_tab(self):
         """
