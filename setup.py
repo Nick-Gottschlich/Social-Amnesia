@@ -29,7 +29,7 @@ executables = [Executable('SocialAmnesia.py', base=base,
                           icon=find_data_file('icon.ico'))]
 
 setup(name=app_name,
-      version='1.0.0',
+      version='1.1.0',
       description=app_description,
       options={'build_exe': build_exe_options, 'bdist_mac': bdist_mac_options},
       executables=executables)
