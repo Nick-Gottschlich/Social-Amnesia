@@ -7,14 +7,15 @@ import praw
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
+import webbrowser
 import shelve
 import sys
+import random
+import socket
 sys.path.insert(0, "../utils")
 
 USER_AGENT = 'Social Amnesia (by /u/JavaOffScript)'
 EDIT_OVERWRITE = 'Wiped by Social Amnesia'
-
-praw_config_file_path = Path(f'{os.path.expanduser("~")}/.config/praw.ini')
 
 # neccesary global bool for the scheduler
 alreadyRanBool = False
@@ -81,6 +82,11 @@ def initialize_state(reddit_state):
     check_for_existence('whitelisted_comments', reddit_state, {})
     check_for_existence('whitelisted_posts', reddit_state, {})
     check_for_existence('scheduled_time', reddit_state, 0)
+    check_for_existence('refresh_token', reddit_state, '')
+    check_for_existence('reddit_username', reddit_state, '')
+    check_for_existence('reddit_password', reddit_state, '')
+    check_for_existence('reddit_client_id', reddit_state, '')
+    check_for_existence('reddit_client_secret', reddit_state, '')
 
     reddit_state['scheduler_bool'] = 0
     reddit_state['whitelist_window_open'] = 0
@@ -91,13 +97,26 @@ def initialize_state(reddit_state):
 def initialize_reddit_user(login_confirm_text, reddit_state):
     """
     Looks for if a praw reddit user already exists, and if so logs in with it
-    On error it will assume the praw.ini file is broken and remove it
     :param login_confirm_text: The UI text saying "logged in as USER"
     :param reddit_state: dictionary holding reddit settings
     :return: none
     """
     try:
-        reddit = praw.Reddit('user', user_agent=USER_AGENT)
+        if (reddit_state['refresh_token']):
+            reddit = praw.Reddit(
+                client_id=reddit_state['reddit_client_id'],
+                client_secret=reddit_state['reddit_client_secret'],
+                user_agent=USER_AGENT,
+                refresh_token=reddit_state['refresh_token']
+            )
+        else:
+            reddit = praw.Reddit(
+                client_id=reddit_state['reddit_client_id'],
+                client_secret=reddit_state['reddit_client_secret'],
+                user_agent=USER_AGENT,
+                username=reddit_state['reddit_username'],
+                password=reddit_state['reddit_password'],
+            )
         reddit.user.me()
 
         reddit_username = str(reddit.user.me())
@@ -107,8 +126,7 @@ def initialize_reddit_user(login_confirm_text, reddit_state):
 
         initialize_state(reddit_state)
     except:
-        # praw.ini is broken, delete it
-        os.remove(praw_config_file_path)
+        pass
 
 
 def set_reddit_login(username, password, client_id, client_secret, login_confirm_text, reddit_state):
@@ -122,25 +140,70 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
     :param reddit_state: dictionary holding reddit settings
     :return: none
     """
+
+    def receive_connection():
+        """
+        Wait for and then return a connected socket..
+        Opens a TCP connection on port 8080, and waits for a single client.
+        """
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server.bind(('localhost', 8080))
+        server.listen(1)
+        client = server.accept()[0]
+        server.close()
+        return client
+
+    def send_message(client, message):
+        """
+        Send message to client and close the connection.
+        """
+        client.send('HTTP/1.1 200 OK\r\n\r\n{}'.format(message).encode('utf-8'))
+        client.close()
+
     reddit = praw.Reddit(
         client_id=client_id,
         client_secret=client_secret,
         user_agent=USER_AGENT,
         username=username,
-        password=password
+        password=password,
+        redirect_uri='http://localhost:8080',
     )
 
-    if praw_config_file_path.is_file():
-        os.remove(praw_config_file_path)
+    try:
+        reddit.user.me()
+        reddit_state['refresh_token'] = ''
+    except:
+        state = str(random.randint(0, 65000))
+        url = reddit.auth.url(
+            ['identity', 'history', 'read', 'edit'], state, 'permanent')
+        message = 'We will now open a window in your browser to complete the login process to reddit. Please ensure you are logged into reddit before clicking okay in this box.'
+        messagebox.showinfo('Additional Login Step', message)
+        webbrowser.open(url)
 
-    praw_config_string = f'''[user]
-client_id={client_id}
-client_secret={client_secret}
-password={password}
-username={username}'''
+        client = receive_connection()
+        data = client.recv(1024).decode('utf-8')
+        param_tokens = data.split(' ', 2)[1].split('?', 1)[1].split('&')
+        params = {key: value for (key, value) in [token.split('=')
+                                                  for token in param_tokens]}
 
-    with open(praw_config_file_path, 'a') as out:
-        out.write(praw_config_string)
+        if state != params['state']:
+            send_message(client, 'State mismatch. Expected: {} Received: {}'
+                         .format(state, params['state']))
+            return 1
+        elif 'error' in params:
+            send_message(client, params['error'])
+            return 1
+
+        refresh_token = reddit.auth.authorize(params['code'])
+        send_message(client, 'Refresh token: {}'.format(refresh_token))
+
+        reddit_state['refresh_token'] = refresh_token
+
+    reddit_state['reddit_username'] = username
+    reddit_state['reddit_password'] = password
+    reddit_state['reddit_client_id'] = client_id
+    reddit_state['reddit_client_secret'] = client_secret
 
     reddit_username = str(reddit.user.me())
     reddit_state['user'] = reddit.redditor(reddit_username)
