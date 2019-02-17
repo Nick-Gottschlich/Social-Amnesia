@@ -121,13 +121,17 @@ class MainApp(tk.Frame):
 
         helpUrl = r'https://github.com/Nick-Gottschlich/Social-Amnesia#how-to-set-up-your-reddit-account'
 
-        def callback(event):
+        def openHelpUrl(event):
             webbrowser.open_new(helpUrl)
 
         howToLink = tk.Label(
             frame, text='Where do I find these values?', fg="blue", cursor="hand2")
-        howToLink.bind("<Button-1>", callback)
+        howToLink.bind("<Button-1>", openHelpUrl)
         howToLink.grid(row=6, column=0, sticky='W')
+
+        limitationsText = 'Due to API constraints, Social Amnesia can only index 1,000 items back on reddit, and 3,200 items back on twitter.'
+        tk.Label(frame, text=limitationsText).grid(
+            row=7, column=0, columnspan=4, sticky='W')
 
         return frame
 
