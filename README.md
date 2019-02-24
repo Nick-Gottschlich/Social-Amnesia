@@ -43,6 +43,8 @@ Note: On windows you may have to copy `tcl86t.dll` and `tk86t.dll` from your `Py
 #### How to set up your reddit account
 Reddit requires accounts to create a "script" in order for Social Amnesia to run. Don't worry, this is actually quite simple to do. You can see reddit's docs on how to do this [here](https://github.com/reddit-archive/reddit/wiki/OAuth2-Quick-Start-Example#first-steps). Doing this provides you with the reddit "Client ID" and "Client Secret" you will need to log in within the Social Amnesia app.
 
+NOTE: If you are using 2FA on reddit, when you set up the script, you will need to make sure the "redirect url" is set to http://localhost:8080.
+
 ### Twitter
 * Delete tweets, retweets, replies and remove "favorites" (aka ❤️'s), showing you every item that will be deleted/removed and asking you to confirm their deletion before running.
 * Keep a time range of tweets, retweets, replies and favorites.
