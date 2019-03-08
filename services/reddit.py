@@ -170,48 +170,59 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
         redirect_uri='http://localhost:8080',
     )
 
+    login_failure = False
+
     try:
         reddit.user.me()
         reddit_state['refresh_token'] = ''
-    except:
-        state = str(random.randint(0, 65000))
-        url = reddit.auth.url(
-            ['identity', 'history', 'read', 'edit'], state, 'permanent')
-        message = 'We will now open a window in your browser to complete the login process to reddit. Please ensure you are logged into reddit before clicking okay in this box.'
-        messagebox.showinfo('Additional Login Step', message)
-        webbrowser.open(url)
+    except Exception as err:
+        if (str(err) != 'invalid_grant error processing request'):
+            login_failure = True
+        else:
+            state = str(random.randint(0, 65000))
+            url = reddit.auth.url(
+                ['identity', 'history', 'read', 'edit'], state, 'permanent')
+            message = 'We will now open a window in your browser to complete the login process to reddit. Please ensure you are logged into reddit before clicking okay in this box.'
+            messagebox.showinfo('Additional Login Step', message)
+            webbrowser.open(url)
 
-        client = receive_connection()
-        data = client.recv(1024).decode('utf-8')
-        param_tokens = data.split(' ', 2)[1].split('?', 1)[1].split('&')
-        params = {key: value for (key, value) in [token.split('=')
-                                                  for token in param_tokens]}
+            client = receive_connection()
+            data = client.recv(1024).decode('utf-8')
+            param_tokens = data.split(' ', 2)[1].split('?', 1)[1].split('&')
+            params = {key: value for (key, value) in [token.split('=')
+                                                    for token in param_tokens]}
 
-        if state != params['state']:
-            send_message(client, 'State mismatch. Expected: {} Received: {}'
-                         .format(state, params['state']))
-            return 1
-        elif 'error' in params:
-            send_message(client, params['error'])
-            return 1
+            if state != params['state']:
+                send_message(client, 'State mismatch. Expected: {} Received: {}'
+                            .format(state, params['state']))
+                return 1
+            elif 'error' in params:
+                send_message(client, params['error'])
+                return 1
 
-        refresh_token = reddit.auth.authorize(params['code'])
-        send_message(client, 'Refresh token: {}'.format(refresh_token))
+            refresh_token = reddit.auth.authorize(params['code'])
+            send_message(client, 'Refresh token: {}'.format(refresh_token))
 
-        reddit_state['refresh_token'] = refresh_token
-
-    reddit_state['reddit_username'] = username
-    reddit_state['reddit_password'] = password
-    reddit_state['reddit_client_id'] = client_id
-    reddit_state['reddit_client_secret'] = client_secret
+            reddit_state['refresh_token'] = refresh_token
 
     reddit_username = str(reddit.user.me())
-    reddit_state['user'] = reddit.redditor(reddit_username)
-    login_confirm_text.set(f'Logged in to Reddit as {reddit_username}')
 
-    initialize_state(reddit_state)
-    reddit_state.sync
+    if not login_failure:
+        if reddit_username == 'None':
+            login_confirm_text.set(f'Failed to login!')
+        else:
+            reddit_state['reddit_username'] = username
+            reddit_state['reddit_password'] = password
+            reddit_state['reddit_client_id'] = client_id
+            reddit_state['reddit_client_secret'] = client_secret
 
+            reddit_state['user'] = reddit.redditor(reddit_username)
+            login_confirm_text.set(f'Logged in to Reddit as {reddit_username}')
+
+            initialize_state(reddit_state)
+            reddit_state.sync
+    else:
+        login_confirm_text.set(f'Failed to login!')
 
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save, reddit_state):
     """

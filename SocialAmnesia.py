@@ -103,7 +103,11 @@ class MainApp(tk.Frame):
             "<class 'IndexError'>": 'No tweets/favorites found!',
             "<class 'AttributeError'>": 'You are not logged in!'
         }
-        messagebox.showerror('Error', errors.get(
+        if (received_error.find("KeyError: '") > 0 and received_error != "<class 'KeyError'>"):
+            keyErrorString = 'Corrupted database. To fix this, search your machine for the file "reddit_state.db" and delete it, then restart Social Amnesia and log in to reddit again.'
+            messagebox.showerror('Error', keyErrorString)
+        else:
+            messagebox.showerror('Error', errors.get(
             received_error, received_error))
 
     def build_login_tab(self):
