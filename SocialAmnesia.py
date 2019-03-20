@@ -108,7 +108,7 @@ class MainApp(tk.Frame):
             messagebox.showerror('Error', keyErrorString)
         else:
             messagebox.showerror('Error', errors.get(
-            received_error, received_error))
+                received_error, received_error))
 
     def build_login_tab(self):
         """
@@ -373,6 +373,18 @@ class MainApp(tk.Frame):
             configuration_frame, variable=gilded_skip_bool,
             command=lambda: reddit.set_reddit_gilded_skip(gilded_skip_bool, reddit_state))
 
+        # Multiple edits
+        multi_edit_bool = tk.IntVar()
+        if 'multi_edit' in reddit_state:
+            if reddit_state['multi_edit'] == 0:
+                multi_edit_bool.set(0)
+            else:
+                multi_edit_bool.set(1)
+        multi_edit_label = tk.Label(
+            configuration_frame, text='Edit item multiple times before deleting (runs slightly slower):')
+        multi_edit_check_button = tk.Checkbutton(
+            configuration_frame, variable=multi_edit_bool, command=lambda: reddit.set_multi_edit(multi_edit_bool, reddit_state))
+
         # White listing
         whitelist_label = tk.Label(
             configuration_frame, text='Whitelist comments or submissions:')
@@ -470,14 +482,17 @@ class MainApp(tk.Frame):
         gilded_skip_label.grid(row=3, column=0, sticky='w')
         gilded_skip_check_button.grid(row=3, column=1, sticky='w')
 
-        whitelist_label.grid(row=4, column=0, sticky='w')
+        multi_edit_label.grid(row=4, column=0, sticky='w')
+        multi_edit_check_button.grid(row=4, column=1, sticky='w')
+
+        whitelist_label.grid(row=5, column=0, sticky='w')
         modify_whitelist_comments_button.grid(
-            row=4, column=1, columnspan=4, sticky='w')
+            row=5, column=1, columnspan=4, sticky='w')
         modify_whitelist_posts_button.grid(
-            row=4, column=5, columnspan=4, sticky='w')
+            row=5, column=5, columnspan=4, sticky='w')
 
         ttk.Separator(configuration_frame, orient=tk.HORIZONTAL).grid(
-            row=5, columnspan=13, sticky='ew', pady=5)
+            row=6, columnspan=13, sticky='ew', pady=5)
 
         deletion_section_label.grid(row=0, column=0, sticky='w')
 

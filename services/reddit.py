@@ -12,6 +12,7 @@ import shelve
 import sys
 import random
 import socket
+import string
 sys.path.insert(0, "../utils")
 
 USER_AGENT = 'Social Amnesia (by /u/JavaOffScript)'
@@ -79,6 +80,7 @@ def initialize_state(reddit_state):
                         arrow.now().replace(hours=0))
     check_for_existence('max_score', reddit_state, 0)
     check_for_existence('gilded_skip', reddit_state, 0)
+    check_for_existence('multi_edit', reddit_state, 0)
     check_for_existence('whitelisted_comments', reddit_state, {})
     check_for_existence('whitelisted_posts', reddit_state, {})
     check_for_existence('scheduled_time', reddit_state, 0)
@@ -190,11 +192,11 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
             data = client.recv(1024).decode('utf-8')
             param_tokens = data.split(' ', 2)[1].split('?', 1)[1].split('&')
             params = {key: value for (key, value) in [token.split('=')
-                                                    for token in param_tokens]}
+                                                      for token in param_tokens]}
 
             if state != params['state']:
                 send_message(client, 'State mismatch. Expected: {} Received: {}'
-                            .format(state, params['state']))
+                             .format(state, params['state']))
                 return 1
             elif 'error' in params:
                 send_message(client, params['error'])
@@ -224,6 +226,7 @@ def set_reddit_login(username, password, client_id, client_secret, login_confirm
     else:
         login_confirm_text.set(f'Failed to login!')
 
+
 def set_reddit_time_to_save(hours_to_save, days_to_save, weeks_to_save, years_to_save, current_time_to_save, reddit_state):
     """
     See set_time_to_save function in utils/helpers.py
@@ -250,11 +253,22 @@ def set_reddit_max_score(max_score, current_max_score, reddit_state):
 def set_reddit_gilded_skip(gilded_skip_bool, reddit_state):
     """
     Set whether to skip gilded comments or not
-    :param gildedSkipBool: false to delete gilded comments, true to skip gilded comments
+    :param gilded_skip_bool: false to delete gilded comments, true to skip gilded comments
     :param reddit_state: dictionary holding reddit settings
     :return: none
     """
     reddit_state['gilded_skip'] = gilded_skip_bool.get()
+    reddit_state.sync
+
+
+def set_multi_edit(multi_edit_bool, reddit_state):
+    """
+    Set whether to overwrite a comment with an edit multiple times
+    :param multi_edit_bool: false to only overwrite once, true to overwrite multiple times
+    :param reddit_state: dict holding reddit settings
+    :return: none
+    """
+    reddit_state['multi_edit'] = multi_edit_bool.get()
     reddit_state.sync
 
 
@@ -339,7 +353,17 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
                 # Need the try/except here as it will crash on
                 #  link submissions otherwise
                 try:
-                    item.edit(EDIT_OVERWRITE)
+                    if reddit_state['multi_edit']:
+                        times = random.randint(5, 10)
+
+                        for i in range(0, times):
+                            allchar = string.ascii_letters + string.punctuation + string.digits
+                            gibberish = "".join(random.choice(allchar)
+                                                for x in range(random.randint(50, 200)))
+
+                            item.edit(gibberish)
+                    else:
+                        item.edit(EDIT_OVERWRITE)
                 except:
                     pass
 
