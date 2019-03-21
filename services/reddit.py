@@ -81,6 +81,7 @@ def initialize_state(reddit_state):
     check_for_existence('max_score', reddit_state, 0)
     check_for_existence('gilded_skip', reddit_state, 0)
     check_for_existence('multi_edit', reddit_state, 0)
+    check_for_existence('only_edit', reddit_state, 0)
     check_for_existence('whitelisted_comments', reddit_state, {})
     check_for_existence('whitelisted_posts', reddit_state, {})
     check_for_existence('scheduled_time', reddit_state, 0)
@@ -272,6 +273,17 @@ def set_multi_edit(multi_edit_bool, reddit_state):
     reddit_state.sync
 
 
+def set_only_edit(only_edit_bool, reddit_state):
+    """
+    Set whether to only edit a comment instead of deleting it
+    :param only_edit_bool: true to only edit, false to edit and delete
+    :param reddit_state: dict holding reddit settings
+    :return: none
+    """
+    reddit_state['only_edit'] = only_edit_bool.get()
+    reddit_state.sync
+
+
 def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_progress_bar, num_deleted_items_text, reddit_state, scheduled_bool):
     """
     Deletes the items according to user configurations.
@@ -295,7 +307,7 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
         'WM_DELETE_WINDOW', lambda: close_window(confirmation_window, reddit_state, 'confirmation_window_open'))
 
     frame = build_window(root, confirmation_window,
-                         f"The following {'comments' if comment_bool else 'posts'} will be deleted")
+                         f"The following {'comments' if comment_bool else 'posts'} will be deleted/edited")
 
     if comment_bool:
         total_items = sum(
@@ -367,10 +379,11 @@ def delete_reddit_items(root, comment_bool, currently_deleting_text, deletion_pr
                 except:
                     pass
 
-                item.delete()
+                if not reddit_state['only_edit']:
+                    item.delete()
 
                 currently_deleting_text.set(
-                    f'Deleting {item_string} `{item_snippet}`')
+                    f'Editing/Deleting {item_string} `{item_snippet}`')
 
             num_deleted_items_text.set(
                 f'{str(count)}/{str(total_items)} items processed.')
