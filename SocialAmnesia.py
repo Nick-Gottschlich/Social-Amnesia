@@ -381,7 +381,7 @@ class MainApp(tk.Frame):
             else:
                 multi_edit_bool.set(1)
         multi_edit_label = tk.Label(
-            configuration_frame, text='Edit comments multiple times before deleting (runs slightly slower):')
+            configuration_frame, text='Edit items multiple times before deleting (runs slightly slower):')
         multi_edit_check_button = tk.Checkbutton(
             configuration_frame, variable=multi_edit_bool, command=lambda: reddit.set_multi_edit(multi_edit_bool, reddit_state))
 
@@ -393,7 +393,7 @@ class MainApp(tk.Frame):
             else:
                 only_edit_bool.set(1)
         only_edit_label = tk.Label(
-            configuration_frame, text='Only edit comments, do not delete:')
+            configuration_frame, text='Only edit items, do not delete:')
         only_edit_check_button = tk.Checkbutton(
             configuration_frame, variable=only_edit_bool, command=lambda: reddit.set_only_edit(only_edit_bool, reddit_state))
 
