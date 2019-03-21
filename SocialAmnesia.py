@@ -381,7 +381,7 @@ class MainApp(tk.Frame):
             else:
                 multi_edit_bool.set(1)
         multi_edit_label = tk.Label(
-            configuration_frame, text='Edit items multiple times before deleting (runs slightly slower):')
+            configuration_frame, text='Edit item multiple times before deleting (runs slightly slower):')
         multi_edit_check_button = tk.Checkbutton(
             configuration_frame, variable=multi_edit_bool, command=lambda: reddit.set_multi_edit(multi_edit_bool, reddit_state))
 

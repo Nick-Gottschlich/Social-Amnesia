@@ -275,7 +275,7 @@ def set_multi_edit(multi_edit_bool, reddit_state):
 
 def set_only_edit(only_edit_bool, reddit_state):
     """
-    Set whether to only edit a comment instead of deleting it
+    Set whether to only edit an item instead of deleting it
     :param only_edit_bool: true to only edit, false to edit and delete
     :param reddit_state: dict holding reddit settings
     :return: none
