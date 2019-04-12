@@ -85,6 +85,14 @@ Don't feel comfortable coding? That's okay! There are plenty of other ways to co
 - Twitter
   - twitter API currently only indexes ~3200 tweets and favorites back
 
+## Tech talks!
+
+[@NickGottschlich](https://twitter.com/NickGottschlich) spoke about Social Amnesia at the Austin Python Monthly Meetup on April 10th, 2019.
+
+Youtube link: https://www.youtube.com/watch?v=wPv_pLofedU
+
+Link to slides: https://nickpgott.com/files/AbusingSocialMediaAPIs.pdf 
+
 ## Links
 
 - [Official Website](https://socialamnesia.com) - currently redirects to this github repo.
