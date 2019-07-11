@@ -39,6 +39,9 @@
       open(link) {
         this.$electron.shell.openExternal(link);
       },
+      test() {
+        console.log('ayy');
+      },
     },
   };
 </script>
