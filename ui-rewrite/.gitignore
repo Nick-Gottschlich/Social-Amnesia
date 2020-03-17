@@ -25,3 +25,6 @@ yarn-error.log*
 
 #Electron-builder output
 /dist_electron
+
+# API keys
+secrets.ts
