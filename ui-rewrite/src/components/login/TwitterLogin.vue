@@ -8,8 +8,10 @@
 <script>
 /* eslint-disable @typescript-eslint/camelcase */
 import { Component, Vue } from "vue-property-decorator";
-// import axios from "axios";
 import Twitter from "twitter-lite";
+import electron from "electron";
+// import { BrowserWindow } from "electron";
+
 import twitterApi from "../../secrets";
 
 @Component
@@ -20,27 +22,34 @@ export default class TwitterLogin extends Vue {
 
   handleTwitterLogin = () => {
     const client = new Twitter({
-      // subdomain: "cors-anywhere.herokuapp.com/https://api",
       consumer_key: twitterApi.consumer_key,
       consumer_secret: twitterApi.consumer_secret
     });
 
+    // const twitterApiWindow = new BrowserWindow({show: false});
+    const { BrowserWindow } = electron.remote;
+    let twitterApiWindow;
+
     client
-      .getRequestToken("https://localhost")
+      .getRequestToken("https://google.com")
       .then(res => {
         console.log({
           reqTkn: res.oauth_token,
           reqTknSecret: res.oauth_token_secret
         });
 
-        window.open(
-          `https://api.twitter.com/oauth/authenticate?oauth_token=${res.oauth_token}`,
-          "_blank",
+        twitterApiWindow = new BrowserWindow({});
+        // twitterApiWindow = new BrowserWindow({});
+        twitterApiWindow.loadURL(
+          `https://api.twitter.com/oauth/authenticate?oauth_token=${res.oauth_token}`
         );
 
-        this.loginMessage = "Logged in as _______";
+        // window.open(
+        //   `https://api.twitter.com/oauth/authenticate?oauth_token=${res.oauth_token}`,
+        //   "_blank",
+        // );
 
-        
+        this.loginMessage = "Logged in as _______";
       })
       .catch(console.error);
   };
