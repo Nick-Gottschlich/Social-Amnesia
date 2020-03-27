@@ -30,6 +30,7 @@ export default class TwitterLogin extends Vue {
     const { BrowserWindow } = electron.remote;
     let twitterApiWindow;
     let oauth_verifier;
+    let userClient;
 
     client
       .getRequestToken("https://google.com")
@@ -50,7 +51,35 @@ export default class TwitterLogin extends Vue {
           if (url.indexOf("google") >= 0) {
             const searchParams = new URLSearchParams(url.slice(23));
             oauth_verifier = searchParams.get("oauth_verifier");
-            debugger;
+
+            client
+              .getAccessToken({
+                key: res.oauth_token,
+                secret: res.oauth_token_secret,
+                verifier: oauth_verifier
+              })
+              .then(response => {
+                console.log({
+                  accTkn: response.oauth_token,
+                  accTknSecret: response.oauth_token_secret,
+                  userId: response.user_id,
+                  screenName: response.screen_name
+                });
+
+                userClient = new Twitter({
+                  consumer_key: twitterApi.consumer_key,
+                  consumer_secret: twitterApi.consumer_secret,
+                  access_token_key: response.oauth_token,
+                  access_token_secret: response.oauth_token_secret
+                });
+
+                const userTweets = userClient.get('statuses/user_timeline', {
+                  user_id: response.user_id
+                })
+
+                console.log('userTweets', userTweets)
+              })
+              .catch(console.error);
           }
         });
 
