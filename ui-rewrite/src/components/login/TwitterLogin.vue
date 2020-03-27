@@ -7,6 +7,7 @@
 
 <script>
 /* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable no-debugger */
 import { Component, Vue } from "vue-property-decorator";
 import Twitter from "twitter-lite";
 import electron from "electron";
@@ -26,9 +27,9 @@ export default class TwitterLogin extends Vue {
       consumer_secret: twitterApi.consumer_secret
     });
 
-    // const twitterApiWindow = new BrowserWindow({show: false});
     const { BrowserWindow } = electron.remote;
     let twitterApiWindow;
+    let oauth_verifier;
 
     client
       .getRequestToken("https://google.com")
@@ -43,11 +44,17 @@ export default class TwitterLogin extends Vue {
         twitterApiWindow.loadURL(
           `https://api.twitter.com/oauth/authenticate?oauth_token=${res.oauth_token}`
         );
+        console.log(twitterApiWindow.webContents);
+        twitterApiWindow.webContents.on("did-navigate", (event, url) => {
+          console.log("navigated to", url);
+          if (url.indexOf("google") >= 0) {
+            const searchParams = new URLSearchParams(url.slice(23));
+            oauth_verifier = searchParams.get("oauth_verifier");
+            debugger;
+          }
+        });
 
-        // window.open(
-        //   `https://api.twitter.com/oauth/authenticate?oauth_token=${res.oauth_token}`,
-        //   "_blank",
-        // );
+        // debugger;
 
         this.loginMessage = "Logged in as _______";
       })
