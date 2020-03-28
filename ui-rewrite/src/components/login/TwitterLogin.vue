@@ -73,11 +73,11 @@ export default class TwitterLogin extends Vue {
                   access_token_secret: response.oauth_token_secret
                 });
 
-                const userTweets = userClient.get('statuses/user_timeline', {
+                userClient.get('statuses/user_timeline', {
                   user_id: response.user_id
+                }).then((userTweets) => {
+                  console.log('userTweets', userTweets)
                 })
-
-                console.log('userTweets', userTweets)
               })
               .catch(console.error);
           }

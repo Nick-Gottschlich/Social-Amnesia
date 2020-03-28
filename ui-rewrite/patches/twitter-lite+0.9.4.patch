@@ -1,0 +1,22 @@
+diff --git a/node_modules/twitter-lite/twitter.js b/node_modules/twitter-lite/twitter.js
+index 23096f0..ff7e8b6 100644
+--- a/node_modules/twitter-lite/twitter.js
++++ b/node_modules/twitter-lite/twitter.js
+@@ -82,7 +82,7 @@ class Twitter {
+    * @private
+    */
+   static _handleResponse(response) {
+-    const headers = response.headers.raw(); // TODO: see #44
++    const headers = response.headers; // TODO: see #44
+     // Return empty response on 204 "No content"
+     if (response.status === 204)
+       return {
+@@ -292,7 +292,7 @@ class Twitter {
+         if (response.ok) {
+           stream.emit('start', response);
+         } else {
+-          response._headers = response.headers.raw();  // TODO: see #44 - could omit the line
++          response._headers = response.headers;  // TODO: see #44 - could omit the line
+           stream.emit('error', response);
+         }
+ 
