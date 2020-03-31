@@ -56,7 +56,13 @@ export default class TwitterComponent extends Vue {
                 secret: initialResponse.oauth_token_secret,
                 verifier: oauth_verifier
               })
-              .then(verificationResponse => {
+              .then((verificationResponse, error) => {
+                if (!verificationResponse.oauth_token || !verificationResponse.oauth_token_secret) {
+                  // login has failed, abort
+                  this.loginMessage = "Failed to login to twitter!"
+                  throw Error(verificationResponse);
+                }
+
                 userClient = new Twitter({
                   consumer_key: twitterApi.consumer_key,
                   consumer_secret: twitterApi.consumer_secret,
@@ -75,14 +81,14 @@ export default class TwitterComponent extends Vue {
                   });
               })
               .catch(error => {
-                console.error(error);
+                console.error(`Failed to login to twitter with error ${error}`);
                 twitterApiWindow.close();
               });
           }
         });
       })
       .catch(error => {
-        console.error("Failed to load twitter api window with error:", error);
+        console.error(`Failed to load twitter api window with error: ${error}s`);
       });
   }
 }
