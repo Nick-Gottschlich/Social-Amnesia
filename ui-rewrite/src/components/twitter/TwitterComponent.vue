@@ -17,7 +17,7 @@ import electron from "electron";
 import twitterApi from "../../secrets";
 
 @Component
-export default class TwitterLogin extends Vue {
+export default class TwitterComponent extends Vue {
   userTweets = [];
 
   loginMessage = "Not logged in!";
@@ -84,6 +84,6 @@ export default class TwitterLogin extends Vue {
       .catch(error => {
         console.error("Failed to load twitter api window with error:", error);
       });
-  };
+  }
 }
 </script>
