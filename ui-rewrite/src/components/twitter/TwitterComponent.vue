@@ -2,6 +2,7 @@
   <div>
     <button v-on:click="handleTwitterLogin()">Login to twitter</button>
     <span>{{ loginMessage }}</span>
+    <button v-if="loggedIn" v-on:click="handleDeleteTweets()">Delete your tweets</button>
     <ul>
       <li v-for="tweet in userTweets" :key="tweet.id">{{tweet.text}}</li>
     </ul>
@@ -20,7 +21,13 @@ import twitterApi from "../../secrets";
 export default class TwitterComponent extends Vue {
   userTweets = [];
 
+  loggedIn = false;
+
   loginMessage = "Not logged in!";
+
+  handleDeleteTweets() {
+    console.log("delete tweets clicked", this.loggedIn);
+  }
 
   handleTwitterLogin() {
     const client = new Twitter({
@@ -57,9 +64,12 @@ export default class TwitterComponent extends Vue {
                 verifier: oauth_verifier
               })
               .then((verificationResponse, error) => {
-                if (!verificationResponse.oauth_token || !verificationResponse.oauth_token_secret) {
+                if (
+                  !verificationResponse.oauth_token ||
+                  !verificationResponse.oauth_token_secret
+                ) {
                   // login has failed, abort
-                  this.loginMessage = "Failed to login to twitter!"
+                  this.loginMessage = "Failed to login to twitter!";
                   throw Error(verificationResponse);
                 }
 
@@ -72,10 +82,14 @@ export default class TwitterComponent extends Vue {
 
                 userClient
                   .get("statuses/user_timeline", {
-                    user_id: verificationResponse.user_id
+                    user_id: verificationResponse.user_id,
+                    // can only do 200 per request, so this is where we need to continually make requests until we run out of tweets
+                    count: 200
                   })
                   .then(userTweets => {
                     this.userTweets = userTweets;
+                    console.log('user tweets', userTweets)
+                    this.loggedIn = true;
                     this.loginMessage = `Logged in to twitter as ${verificationResponse.screen_name}`;
                     twitterApiWindow.close();
                   });
@@ -88,7 +102,9 @@ export default class TwitterComponent extends Vue {
         });
       })
       .catch(error => {
-        console.error(`Failed to load twitter api window with error: ${error}s`);
+        console.error(
+          `Failed to load twitter api window with error: ${error}s`
+        );
       });
   }
 }

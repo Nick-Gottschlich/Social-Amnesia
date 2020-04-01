@@ -6,11 +6,11 @@ import tweepy
 from datetime import datetime
 
 # TODO: Use `os.env`?
-from secrets import twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterAccessTokenSecret
+from secrets import twitter_consumer_key, twitter_consumer_secret, twitter_access_token, twitter_access_token_secret
 import random
 
-auth = tweepy.OAuthHandler(twitterConsumerKey, twitterConsumerSecret)
-auth.set_access_token(twitterAccessToken, twitterAccessTokenSecret)
+auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret)
+auth.set_access_token(twitter_access_token, twitter_access_token_secret)
 
 api = tweepy.API(auth, wait_on_rate_limit=True)
 
