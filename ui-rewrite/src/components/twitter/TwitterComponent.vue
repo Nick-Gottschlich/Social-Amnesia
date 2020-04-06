@@ -4,7 +4,7 @@
     <span>{{ loginMessage }}</span>
     <button v-if="loggedIn" v-on:click="handleDeleteTweets()">Delete your tweets</button>
     <ul>
-      <li v-for="tweet in userTweets" :key="tweet.id">{{tweet.text}}</li>
+      <li v-for="tweet in userTweetsToDisplay" :key="tweet.id">{{tweet.text}}</li>
     </ul>
   </div>
 </template>
@@ -19,7 +19,7 @@ import twitterApi from "../../secrets";
 
 @Component
 export default class TwitterComponent extends Vue {
-  userTweets = [];
+  userTweetsToDisplay = [];
 
   loggedIn = false;
 
@@ -42,6 +42,8 @@ export default class TwitterComponent extends Vue {
       parent: mainWindow
       // modal: true
     });
+    let userTweets = [];
+    let oldest;
 
     const gatherTweets = (verificationResponse, maxId) => {
       const data = {
@@ -50,20 +52,16 @@ export default class TwitterComponent extends Vue {
         count: 200
       };
       if (maxId) {
-        data.maxId = String(maxId);
+        data.max_id = String(maxId);
       }
-      userClient.get("statuses/user_timeline", { data }).then(tweets => {
-        if (tweets.length === 0) {
+      userClient.get("statuses/user_timeline", data).then(tweets => {
+        if (tweets.length === 1 && tweets[0].id === oldest) {
+          this.userTweetsToDisplay = userTweets;
           return;
         }
 
-        this.userTweets.push(tweets);
-        // console.log("usertweets", this.userTweets);
-        // console.log('-1', this.userTweets[0].slice(-1)[0].id)
-        const oldest = this.userTweets[0].slice(-1)[0].id;
-        console.log("oldest", oldest);
-        // for some reason maxId isn't working, oldes stays the same each time
-        debugger;
+        userTweets = userTweets.concat(tweets);
+        oldest = userTweets.slice(-1)[0].id;
         gatherTweets(verificationResponse, oldest);
       });
     };
@@ -93,7 +91,7 @@ export default class TwitterComponent extends Vue {
           });
 
           gatherTweets(verificationResponse);
-
+          
           this.loggedIn = true;
           this.loginMessage = `Logged in to twitter as ${verificationResponse.screen_name}`;
           twitterApiWindow.close();
