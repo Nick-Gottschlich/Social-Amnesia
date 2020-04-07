@@ -25,8 +25,14 @@ export default class TwitterComponent extends Vue {
 
   loginMessage = "Not logged in!";
 
+  userClient;
+
   handleDeleteTweets() {
-    console.log("delete tweets clicked", this.loggedIn);
+    this.userTweetsToDisplay.forEach((tweet) => {
+      this.userClient.post("statuses/destroy", {
+        id: tweet.id_str
+      });
+    })
   }
 
   handleTwitterLogin() {
@@ -35,7 +41,6 @@ export default class TwitterComponent extends Vue {
       consumer_secret: twitterApi.consumer_secret
     });
     let oauth_verifier;
-    let userClient;
     const { BrowserWindow } = electron.remote;
     const mainWindow = electron.remote.getCurrentWindow();
     const twitterApiWindow = new BrowserWindow({
@@ -54,7 +59,7 @@ export default class TwitterComponent extends Vue {
       if (maxId) {
         data.max_id = String(maxId);
       }
-      userClient.get("statuses/user_timeline", data).then(tweets => {
+      this.userClient.get("statuses/user_timeline", data).then(tweets => {
         if (tweets.length === 1 && tweets[0].id === oldest) {
           this.userTweetsToDisplay = userTweets;
           return;
@@ -83,7 +88,7 @@ export default class TwitterComponent extends Vue {
             throw Error(verificationResponse);
           }
 
-          userClient = new Twitter({
+          this.userClient = new Twitter({
             consumer_key: twitterApi.consumer_key,
             consumer_secret: twitterApi.consumer_secret,
             access_token_key: verificationResponse.oauth_token,
@@ -91,7 +96,7 @@ export default class TwitterComponent extends Vue {
           });
 
           gatherTweets(verificationResponse);
-          
+
           this.loggedIn = true;
           this.loginMessage = `Logged in to twitter as ${verificationResponse.screen_name}`;
           twitterApiWindow.close();
