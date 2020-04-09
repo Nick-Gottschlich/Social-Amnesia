@@ -1,8 +1,27 @@
 <template>
   <div>
-    <button v-on:click="handleTwitterLogin()">Login to twitter</button>
-    <span>{{ loginMessage }}</span>
-    <button v-if="loggedIn" v-on:click="handleDeleteTweets()">Delete your tweets</button>
+    <div class="controls">
+      <div class="loginContainer">
+        <h1>Log in to Twitter</h1>
+        <b-button
+          class="loginButton"
+          variant="success"
+          v-on:click="handleTwitterLogin()"
+        >Click to login</b-button>
+        <span class="loginMessage" v-bind:class="{ loginError, loginSuccess }">{{ loginMessage }}</span>
+      </div>
+      <div class="deletionContainer" v-if="loginSuccess">
+        <h1>Clean Twitter</h1>
+        <div class="deletionButtonContainer">
+          <b-button
+            class="deletionButton"
+            variant="danger"
+            v-on:click="handleDeleteTweets()"
+          >Click to delete tweets</b-button>
+          <b-button variant="danger" v-on:click="handleDeleteTweets()">Click to delete ❤️'s</b-button>
+        </div>
+      </div>
+    </div>
     <ul>
       <li v-for="tweet in userTweetsToDisplay" :key="tweet.id">{{tweet.text}}</li>
     </ul>
@@ -21,18 +40,20 @@ import twitterApi from "../../secrets";
 export default class TwitterComponent extends Vue {
   userTweetsToDisplay = [];
 
-  loggedIn = false;
+  loginSuccess = false;
+
+  loginError = false;
 
   loginMessage = "Not logged in!";
 
   userClient;
 
   handleDeleteTweets() {
-    this.userTweetsToDisplay.forEach((tweet) => {
+    this.userTweetsToDisplay.forEach(tweet => {
       this.userClient.post("statuses/destroy", {
         id: tweet.id_str
       });
-    })
+    });
   }
 
   handleTwitterLogin() {
@@ -85,6 +106,7 @@ export default class TwitterComponent extends Vue {
           ) {
             // login has failed, abort
             this.loginMessage = "Failed to login to twitter!";
+            this.loginError = true;
             throw Error(verificationResponse);
           }
 
@@ -97,7 +119,7 @@ export default class TwitterComponent extends Vue {
 
           gatherTweets(verificationResponse);
 
-          this.loggedIn = true;
+          this.loginSuccess = true;
           this.loginMessage = `Logged in to twitter as ${verificationResponse.screen_name}`;
           twitterApiWindow.close();
         })
@@ -132,3 +154,51 @@ export default class TwitterComponent extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+.controls {
+  display: flex;
+  justify-content: space-around;
+}
+
+.loginContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border: 4mm ridge #218838;
+  padding: 20px;
+  margin-top: 10px;
+
+  .loginButton {
+    width: 150px;
+  }
+
+  .loginMessage {
+    padding-top: 10px;
+  }
+
+  .loginError {
+    color: #dc3545;
+  }
+
+  .loginSuccess {
+    color: #218838;
+  }
+}
+
+.deletionContainer {
+  border: 4mm ridge #dc3545;
+  padding: 20px;
+  margin-top: 10px;
+
+  .deletionButtonContainer {
+    display: flex;
+    flex-direction: column;
+
+    .deletionButton {
+      margin-bottom: 5px;
+    }
+  }
+}
+</style>

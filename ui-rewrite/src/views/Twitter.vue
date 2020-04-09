@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>Login here!</h1>
     <TwitterComponent />
   </div>
 </template>
