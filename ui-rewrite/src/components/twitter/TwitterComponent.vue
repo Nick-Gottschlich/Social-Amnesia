@@ -25,9 +25,7 @@
     </div>
     <div class="tweetsAndFavoritesContainer" v-if="loginSuccess">
       <div class="tweetsContainer">
-        <h1>
-          Your tweets
-        </h1>
+        <h1>Your tweets</h1>
         <ul>
           <li class="tweet" v-for="tweet in userTweetsToDisplay" :key="tweet.id">
             <div class="tweetHeader">
@@ -39,7 +37,16 @@
             </div>
             <div class="tweetBody">
               <span class="tweetText">{{tweet.text}}</span>
+              <div class="tweetMedia" v-if="tweet.entities.media">
+                <li v-for="media in tweet.entities.media" :key="media.media_url_https">
+                  <img class="tweetImage" :src="media.media_url_https">
+                </li>
+              </div>
               <span class="tweetCreatedAt">{{new Date(tweet.created_at).toLocaleString()}}</span>
+            </div>
+            <div class="tweetFooter">
+              <div class="favorites">❤️{{tweet.favorite_count}}</div>
+              <div class="retweets">🔁{{tweet.retweet_count}}</div>
             </div>
           </li>
         </ul>
@@ -247,6 +254,10 @@ export default class TwitterComponent extends Vue {
       border: 1px solid #e1e8ed;
       border-radius: 5px;
 
+      &:hover {
+        background-color: #dddddd;
+      }
+
       .tweetHeader {
         display: flex;
         justify-content: flex-start;
@@ -278,6 +289,21 @@ export default class TwitterComponent extends Vue {
 
         .tweetCreatedAt {
           color: #697882;
+        }
+
+        .tweetImage {
+          border: 1px solid #e1e8ed;
+          border-radius: 5px;
+          width: 100%;
+        }
+      }
+
+      .tweetFooter {
+        display: flex;
+        justify-content: flex-start;
+
+        .retweets {
+          padding-left: 20px;
         }
       }
     }
