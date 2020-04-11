@@ -1,5 +1,6 @@
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <template>
-  <div>
+  <div class="allContainer">
     <div class="controls">
       <div class="loginContainer">
         <h1>Log in to Twitter</h1>
@@ -22,9 +23,29 @@
         </div>
       </div>
     </div>
-    <ul>
-      <li v-for="tweet in userTweetsToDisplay" :key="tweet.id">{{tweet.text}}</li>
-    </ul>
+    <div class="tweetsAndFavoritesContainer" v-if="loginSuccess">
+      <div class="tweetsContainer">
+        <h1>
+          Your tweets
+        </h1>
+        <ul>
+          <li class="tweet" v-for="tweet in userTweetsToDisplay" :key="tweet.id">
+            <div class="tweetHeader">
+              <img :src="tweet.user.profile_image_url_https" />
+              <div class="tweetUsernames">
+                <span class="tweetName">{{tweet.user.name}}</span>
+                <span class="tweetUsername">@{{tweet.user.screen_name}}</span>
+              </div>
+            </div>
+            <div class="tweetBody">
+              <span class="tweetText">{{tweet.text}}</span>
+              <span class="tweetCreatedAt">{{new Date(tweet.created_at).toLocaleString()}}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="favoritesContainer">Favorites</div>
+    </div>
   </div>
 </template>
 
@@ -83,6 +104,7 @@ export default class TwitterComponent extends Vue {
       this.userClient.get("statuses/user_timeline", data).then(tweets => {
         if (tweets.length === 1 && tweets[0].id === oldest) {
           this.userTweetsToDisplay = userTweets;
+          console.log(this.userTweetsToDisplay);
           return;
         }
 
@@ -156,6 +178,11 @@ export default class TwitterComponent extends Vue {
 </script>
 
 <style lang="scss">
+.allContainer {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Ubuntu, "Helvetica Neue", sans-serif;
+}
+
 .controls {
   display: flex;
   justify-content: space-around;
@@ -200,5 +227,71 @@ export default class TwitterComponent extends Vue {
       margin-bottom: 5px;
     }
   }
+}
+
+.tweetsAndFavoritesContainer {
+  display: flex;
+  justify-content: space-between;
+
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  .tweetsContainer {
+    width: 48%;
+    border: 4mm ridge #1da1f2;
+
+    .tweet {
+      padding: 15px;
+      margin: 10px;
+      border: 1px solid #e1e8ed;
+      border-radius: 5px;
+
+      .tweetHeader {
+        display: flex;
+        justify-content: flex-start;
+
+        .tweetUsernames {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          padding-left: 5px;
+
+          .tweetName {
+            line-height: 1.3125;
+            font-weight: bold;
+          }
+          .tweetUsername {
+            color: #697882;
+          }
+        }
+      }
+
+      .tweetBody {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .tweetText {
+          font-size: 24px;
+        }
+
+        .tweetCreatedAt {
+          color: #697882;
+        }
+      }
+    }
+  }
+
+  .favoritesContainer {
+    border: 4mm ridge #1da1f2;
+    width: 48%;
+  }
+}
+.cls-1 {
+  fill: none;
+}
+.cls-2 {
+  fill: #1da1f2;
 }
 </style>
