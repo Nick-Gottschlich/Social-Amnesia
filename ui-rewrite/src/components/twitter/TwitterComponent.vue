@@ -26,7 +26,7 @@
     <div class="tweetsAndFavoritesContainer" v-if="loginSuccess">
       <div class="tweetsContainer">
         <h1>Your tweets</h1>
-        <ul>
+        <ul class="tweetList">
           <li class="tweet" v-for="tweet in userTweetsToDisplay" :key="tweet.id">
             <div class="tweetHeader">
               <img :src="tweet.user.profile_image_url_https" />
@@ -36,10 +36,13 @@
               </div>
             </div>
             <div class="tweetBody">
-              <span class="tweetText">{{tweet.text}}</span>
-              <div class="tweetMedia" v-if="tweet.entities.media">
-                <li v-for="media in tweet.entities.media" :key="media.media_url_https">
-                  <img class="tweetImage" :src="media.media_url_https">
+              <span class="tweetText">{{tweet.full_text}}</span>
+              <div
+                class="tweetMedia"
+                v-if="tweet.extended_entities && tweet.extended_entities.media"
+              >
+                <li v-for="media in tweet.extended_entities.media" :key="media.media_url_https">
+                  <img class="tweetImage" :src="media.media_url_https" />
                 </li>
               </div>
               <span class="tweetCreatedAt">{{new Date(tweet.created_at).toLocaleString()}}</span>
@@ -101,6 +104,7 @@ export default class TwitterComponent extends Vue {
 
     const gatherTweets = (verificationResponse, maxId) => {
       const data = {
+        tweet_mode: "extended",
         user_id: verificationResponse.user_id,
         // can only do 200 per request, so we need to continually make requests until we run out of tweets
         count: 200
@@ -248,11 +252,16 @@ export default class TwitterComponent extends Vue {
     width: 48%;
     border: 4mm ridge #1da1f2;
 
+    .tweetList {
+      padding-left: 0;
+    }
+
     .tweet {
       padding: 15px;
       margin: 10px;
       border: 1px solid #e1e8ed;
       border-radius: 5px;
+      list-style: none;
 
       &:hover {
         background-color: #dddddd;
@@ -291,10 +300,15 @@ export default class TwitterComponent extends Vue {
           color: #697882;
         }
 
-        .tweetImage {
-          border: 1px solid #e1e8ed;
-          border-radius: 5px;
-          width: 100%;
+        .tweetMedia {
+          display: grid;
+          grid-template-columns: auto auto;
+
+          .tweetImage {
+            border: 1px solid #e1e8ed;
+            border-radius: 5px;
+            width: 100%;
+          }
         }
       }
 
