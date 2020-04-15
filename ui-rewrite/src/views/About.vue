@@ -1,5 +1,5 @@
 <template>
   <div>
-    <h1>Social Amnesia 2.0 by @nickpgott</h1>
+    <h1>Social Amnesia 2.0 by @NickGottschlich</h1>
   </div>
 </template>

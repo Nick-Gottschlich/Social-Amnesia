@@ -1,4 +1,3 @@
-<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <template>
   <div class="allContainer">
     <div class="controls">
@@ -23,7 +22,7 @@
         </div>
       </div>
     </div>
-    <div class="tweetsAndFavoritesContainer" v-if="loginSuccess">
+    <!-- <div class="tweetsAndFavoritesContainer" v-if="loginSuccess">
       <div class="tweetsContainer">
         <h1>Your tweets</h1>
         <ul class="tweetList">
@@ -55,7 +54,7 @@
         </ul>
       </div>
       <div class="favoritesContainer">Favorites</div>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -64,6 +63,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import Twitter from "twitter-lite";
 import electron from "electron";
+import store from '@/store/index';
 
 import twitterApi from "../../secrets";
 
@@ -153,6 +153,7 @@ export default class TwitterComponent extends Vue {
           gatherTweets(verificationResponse);
 
           this.loginSuccess = true;
+          store.commit("logInToTwitter");
           this.loginMessage = `Logged in to twitter as ${verificationResponse.screen_name}`;
           twitterApiWindow.close();
         })
@@ -240,98 +241,92 @@ export default class TwitterComponent extends Vue {
   }
 }
 
-.tweetsAndFavoritesContainer {
-  display: flex;
-  justify-content: space-between;
+// .tweetsAndFavoritesContainer {
+//   display: flex;
+//   justify-content: space-between;
 
-  padding-top: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
+//   padding-top: 20px;
+//   padding-left: 20px;
+//   padding-right: 20px;
 
-  .tweetsContainer {
-    width: 48%;
-    border: 4mm ridge #1da1f2;
+//   .tweetsContainer {
+//     width: 48%;
+//     border: 4mm ridge #1da1f2;
 
-    .tweetList {
-      padding-left: 0;
-    }
+//     .tweetList {
+//       padding-left: 0;
+//     }
 
-    .tweet {
-      padding: 15px;
-      margin: 10px;
-      border: 1px solid #e1e8ed;
-      border-radius: 5px;
-      list-style: none;
+//     .tweet {
+//       padding: 15px;
+//       margin: 10px;
+//       border: 1px solid #e1e8ed;
+//       border-radius: 5px;
+//       list-style: none;
 
-      &:hover {
-        background-color: #dddddd;
-      }
+//       &:hover {
+//         background-color: #dddddd;
+//       }
 
-      .tweetHeader {
-        display: flex;
-        justify-content: flex-start;
+//       .tweetHeader {
+//         display: flex;
+//         justify-content: flex-start;
 
-        .tweetUsernames {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          padding-left: 5px;
+//         .tweetUsernames {
+//           display: flex;
+//           flex-direction: column;
+//           align-items: flex-start;
+//           padding-left: 5px;
 
-          .tweetName {
-            line-height: 1.3125;
-            font-weight: bold;
-          }
-          .tweetUsername {
-            color: #697882;
-          }
-        }
-      }
+//           .tweetName {
+//             line-height: 1.3125;
+//             font-weight: bold;
+//           }
+//           .tweetUsername {
+//             color: #697882;
+//           }
+//         }
+//       }
 
-      .tweetBody {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+//       .tweetBody {
+//         display: flex;
+//         flex-direction: column;
+//         align-items: flex-start;
 
-        .tweetText {
-          font-size: 24px;
-        }
+//         .tweetText {
+//           font-size: 24px;
+//         }
 
-        .tweetCreatedAt {
-          color: #697882;
-        }
+//         .tweetCreatedAt {
+//           color: #697882;
+//         }
 
-        .tweetMedia {
-          display: grid;
-          grid-template-columns: auto auto;
+//         .tweetMedia {
+//           display: grid;
+//           grid-template-columns: auto auto;
 
-          .tweetImage {
-            border: 1px solid #e1e8ed;
-            border-radius: 5px;
-            width: 100%;
-          }
-        }
-      }
+//           .tweetImage {
+//             border: 1px solid #e1e8ed;
+//             border-radius: 5px;
+//             width: 100%;
+//           }
+//         }
+//       }
 
-      .tweetFooter {
-        display: flex;
-        justify-content: flex-start;
+//       .tweetFooter {
+//         display: flex;
+//         justify-content: flex-start;
 
-        .retweets {
-          padding-left: 20px;
-        }
-      }
-    }
-  }
+//         .retweets {
+//           padding-left: 20px;
+//         }
+//       }
+//     }
+//   }
 
-  .favoritesContainer {
-    border: 4mm ridge #1da1f2;
-    width: 48%;
-  }
-}
-.cls-1 {
-  fill: none;
-}
-.cls-2 {
-  fill: #1da1f2;
-}
+//   .favoritesContainer {
+//     border: 4mm ridge #1da1f2;
+//     width: 48%;
+//   }
+// }
 </style>
