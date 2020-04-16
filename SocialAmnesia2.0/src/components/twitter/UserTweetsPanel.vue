@@ -40,7 +40,6 @@ export default class UserTweetsPanel extends Vue {
   }
 
   get userTweets() {
-    console.log('userTweets', store.state.userTweets)
     return store.state.userTweets;
   }
 }
