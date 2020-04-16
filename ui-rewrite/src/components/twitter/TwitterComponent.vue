@@ -22,39 +22,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="tweetsAndFavoritesContainer" v-if="loginSuccess">
-      <div class="tweetsContainer">
-        <h1>Your tweets</h1>
-        <ul class="tweetList">
-          <li class="tweet" v-for="tweet in userTweetsToDisplay" :key="tweet.id">
-            <div class="tweetHeader">
-              <img :src="tweet.user.profile_image_url_https" />
-              <div class="tweetUsernames">
-                <span class="tweetName">{{tweet.user.name}}</span>
-                <span class="tweetUsername">@{{tweet.user.screen_name}}</span>
-              </div>
-            </div>
-            <div class="tweetBody">
-              <span class="tweetText">{{tweet.full_text}}</span>
-              <div
-                class="tweetMedia"
-                v-if="tweet.extended_entities && tweet.extended_entities.media"
-              >
-                <li v-for="media in tweet.extended_entities.media" :key="media.media_url_https">
-                  <img class="tweetImage" :src="media.media_url_https" />
-                </li>
-              </div>
-              <span class="tweetCreatedAt">{{new Date(tweet.created_at).toLocaleString()}}</span>
-            </div>
-            <div class="tweetFooter">
-              <div class="favorites">❤️{{tweet.favorite_count}}</div>
-              <div class="retweets">🔁{{tweet.retweet_count}}</div>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div class="favoritesContainer">Favorites</div>
-    </div>-->
   </div>
 </template>
 
@@ -69,8 +36,6 @@ import twitterApi from "../../secrets";
 
 @Component
 export default class TwitterComponent extends Vue {
-  userTweetsToDisplay = [];
-
   loginSuccess = false;
 
   loginError = false;
@@ -80,7 +45,7 @@ export default class TwitterComponent extends Vue {
   userClient;
 
   handleDeleteTweets() {
-    this.userTweetsToDisplay.forEach(tweet => {
+    store.state.userTweets.forEach(tweet => {
       this.userClient.post("statuses/destroy", {
         id: tweet.id_str
       });
@@ -114,8 +79,7 @@ export default class TwitterComponent extends Vue {
       }
       this.userClient.get("statuses/user_timeline", data).then(tweets => {
         if (tweets.length === 1 && tweets[0].id === oldest) {
-          this.userTweetsToDisplay = userTweets;
-          console.log(this.userTweetsToDisplay);
+          store.commit('updateUserTweets', userTweets)
           return;
         }
 
@@ -240,93 +204,4 @@ export default class TwitterComponent extends Vue {
     }
   }
 }
-
-// .tweetsAndFavoritesContainer {
-//   display: flex;
-//   justify-content: space-between;
-
-//   padding-top: 20px;
-//   padding-left: 20px;
-//   padding-right: 20px;
-
-//   .tweetsContainer {
-//     width: 48%;
-//     border: 4mm ridge #1da1f2;
-
-//     .tweetList {
-//       padding-left: 0;
-//     }
-
-//     .tweet {
-//       padding: 15px;
-//       margin: 10px;
-//       border: 1px solid #e1e8ed;
-//       border-radius: 5px;
-//       list-style: none;
-
-//       &:hover {
-//         background-color: #dddddd;
-//       }
-
-//       .tweetHeader {
-//         display: flex;
-//         justify-content: flex-start;
-
-//         .tweetUsernames {
-//           display: flex;
-//           flex-direction: column;
-//           align-items: flex-start;
-//           padding-left: 5px;
-
-//           .tweetName {
-//             line-height: 1.3125;
-//             font-weight: bold;
-//           }
-//           .tweetUsername {
-//             color: #697882;
-//           }
-//         }
-//       }
-
-//       .tweetBody {
-//         display: flex;
-//         flex-direction: column;
-//         align-items: flex-start;
-
-//         .tweetText {
-//           font-size: 24px;
-//         }
-
-//         .tweetCreatedAt {
-//           color: #697882;
-//         }
-
-//         .tweetMedia {
-//           display: grid;
-//           grid-template-columns: auto auto;
-
-//           .tweetImage {
-//             border: 1px solid #e1e8ed;
-//             border-radius: 5px;
-//             width: 100%;
-//           }
-//         }
-//       }
-
-//       .tweetFooter {
-//         display: flex;
-//         justify-content: flex-start;
-
-//         .retweets {
-//           padding-left: 20px;
-//         }
-//       }
-//     }
-//   }
-
-//   .favoritesContainer {
-//     border: 4mm ridge #1da1f2;
-//     width: 48%;
-//   }
-// }
 </style>

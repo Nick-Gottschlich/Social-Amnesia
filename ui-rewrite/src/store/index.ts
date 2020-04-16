@@ -5,12 +5,15 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    twitterLoggedIn: false
+    twitterLoggedIn: false,
+    userTweets: []
   },
   mutations: {
     logInToTwitter(state) {
-      console.log('loggin in to twitter!')
       state.twitterLoggedIn = true;
+    },
+    updateUserTweets(state, tweets) {
+      state.userTweets = tweets;
     }
   },
   actions: {

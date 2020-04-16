@@ -1,8 +1,8 @@
 <template>
   <div class="tweetsContainer" v-if="loggedIn">
     <h1>Your tweets</h1>
-    <!-- <ul class="tweetList">
-      <li class="tweet" v-for="tweet in userTweetsToDisplay" :key="tweet.id">
+    <ul class="tweetList">
+      <li class="tweet" v-for="tweet in userTweets" :key="tweet.id">
         <div class="tweetHeader">
           <img :src="tweet.user.profile_image_url_https" />
           <div class="tweetUsernames">
@@ -13,7 +13,7 @@
         <div class="tweetBody">
           <span class="tweetText">{{tweet.full_text}}</span>
           <div class="tweetMedia" v-if="tweet.extended_entities && tweet.extended_entities.media">
-            <li v-for="media in tweet.extended_entities.media" :key="media.media_url_https">
+            <li v-for="media in tweet.extended_entities.media" :key="media.id">
               <img class="tweetImage" :src="media.media_url_https" />
             </li>
           </div>
@@ -24,32 +24,24 @@
           <div class="retweets">🔁{{tweet.retweet_count}}</div>
         </div>
       </li>
-    </ul> -->
+    </ul>
   </div>
 </template>
 
 <script>
+/* eslint-disable class-methods-use-this */
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
 
 @Component
 export default class UserTweetsPanel extends Vue {
-  // loggedIn = false;
-
-  // created() {
-  //   console.log("component created!")
-  //   this.loggedIn = store.state.twitterLoggedIn;
-  // }
-
-  // computed() {
-  //   loggedIn: {
-  //     return store.state.twitterLoggedIn;
-  //   }
-  // }
-
-  // eslint-disable-next-line class-methods-use-this
   get loggedIn() {
     return store.state.twitterLoggedIn;
+  }
+
+  get userTweets() {
+    console.log('userTweets', store.state.userTweets)
+    return store.state.userTweets;
   }
 }
 </script>
