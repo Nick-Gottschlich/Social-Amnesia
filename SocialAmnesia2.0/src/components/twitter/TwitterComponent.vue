@@ -30,9 +30,12 @@
 import { Component, Vue } from "vue-property-decorator";
 import Twitter from "twitter-lite";
 import electron from "electron";
-import store from '@/store/index';
+import store from "@/store/index";
 
 import twitterApi from "../../secrets";
+
+const TWEETS_ROUTE = "statuses/user_timeline";
+const FAVORITES_ROUTE = "favorites/list";
 
 @Component
 export default class TwitterComponent extends Vue {
@@ -65,9 +68,10 @@ export default class TwitterComponent extends Vue {
       // modal: true
     });
     let userTweets = [];
+    let userFavorites = [];
     let oldest;
 
-    const gatherTweets = (verificationResponse, maxId) => {
+    const gatherItems = ({ verificationResponse, maxId, apiRoute }) => {
       const data = {
         tweet_mode: "extended",
         user_id: verificationResponse.user_id,
@@ -77,15 +81,28 @@ export default class TwitterComponent extends Vue {
       if (maxId) {
         data.max_id = String(maxId);
       }
-      this.userClient.get("statuses/user_timeline", data).then(tweets => {
+      this.userClient.get(apiRoute, data).then(tweets => {
         if (tweets.length === 1 && tweets[0].id === oldest) {
-          store.commit('updateUserTweets', userTweets)
+          if (apiRoute === TWEETS_ROUTE) {
+            store.commit("updateUserTweets", userTweets);
+          }
+          if (apiRoute === FAVORITES_ROUTE) {
+            store.commit("updateUserFavorites", userFavorites);
+          }
           return;
         }
 
-        userTweets = userTweets.concat(tweets);
-        oldest = userTweets.slice(-1)[0].id;
-        gatherTweets(verificationResponse, oldest);
+        if (apiRoute === TWEETS_ROUTE) {
+          userTweets = userTweets.concat(tweets);
+          oldest = userTweets.slice(-1)[0].id;
+        }
+
+        if (apiRoute === FAVORITES_ROUTE) {
+          userFavorites = userFavorites.concat(tweets);
+          oldest = userFavorites.slice(-1)[0].id;
+        }
+
+        gatherItems({ verificationResponse, maxId: oldest, apiRoute });
       });
     };
 
@@ -114,7 +131,11 @@ export default class TwitterComponent extends Vue {
             access_token_secret: verificationResponse.oauth_token_secret
           });
 
-          gatherTweets(verificationResponse);
+          gatherItems({
+            verificationResponse,
+            apiRoute: "statuses/user_timeline"
+          });
+          gatherItems({ verificationResponse, apiRoute: "favorites/list" });
 
           this.loginSuccess = true;
           store.commit("logInToTwitter");

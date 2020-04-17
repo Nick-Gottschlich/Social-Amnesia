@@ -1,19 +1,28 @@
 <template>
   <div>
     <TwitterComponent />
-    <UserTweetsPanel />
+    <div class="userItemsContainer">
+      <UserItemsPanel itemType="tweets" />
+      <UserItemsPanel itemType="favorites" />
+    </div>
   </div>
 </template>
 
 <script>
 import TwitterComponent from "@/components/twitter/TwitterComponent.vue";
-import UserTweetsPanel from "@/components/twitter/UserTweetsPanel.vue";
+import UserItemsPanel from "@/components/twitter/UserItemsPanel.vue";
 
 export default {
   name: "Twitter",
   components: {
     TwitterComponent,
-    UserTweetsPanel,
+    UserItemsPanel
   }
 };
 </script>
+
+<style lang="scss">
+.userItemsContainer {
+  display: flex;
+}
+</style>

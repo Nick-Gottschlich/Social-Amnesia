@@ -2,7 +2,7 @@
   <div class="tweetsContainer" v-if="loggedIn">
     <h1>Your tweets</h1>
     <ul class="tweetList">
-      <li class="tweet" v-for="tweet in userTweets" :key="tweet.id">
+      <li class="tweet" v-for="tweet in userItems" :key="tweet.id">
         <div class="tweetHeader">
           <img :src="tweet.user.profile_image_url_https" />
           <div class="tweetUsernames">
@@ -33,14 +33,26 @@
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
 
+const UserItemsPanelProps = Vue.extend({
+  props: {
+    itemType: String
+  }
+});
+
 @Component
-export default class UserTweetsPanel extends Vue {
+export default class UserItemsPanel extends UserItemsPanelProps {
   get loggedIn() {
     return store.state.twitterLoggedIn;
   }
 
-  get userTweets() {
-    return store.state.userTweets;
+  get userItems() {
+    if (this.itemType === "tweets") {
+      return store.state.userTweets;
+    }
+    if (this.itemType === "favorites") {
+      return store.state.userFavorites;
+    }
+    return [];
   }
 }
 </script>

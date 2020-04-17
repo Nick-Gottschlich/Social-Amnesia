@@ -6,7 +6,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     twitterLoggedIn: false,
-    userTweets: []
+    userTweets: [],
+    userFavorites: []
   },
   mutations: {
     logInToTwitter(state) {
@@ -14,6 +15,9 @@ export default new Vuex.Store({
     },
     updateUserTweets(state, tweets) {
       state.userTweets = tweets;
+    },
+    updateUserFavorites(state, favorites) {
+      state.userFavorites = favorites;
     }
   },
   actions: {
