@@ -1,6 +1,6 @@
 <template>
   <div class="tweetsContainer" v-if="loggedIn">
-    <h1>Your tweets</h1>
+    <h1>{{this.itemType === "tweets" ? "Your tweets" : "Your favorites"}}</h1>
     <ul class="tweetList">
       <li class="tweet" v-for="tweet in userItems" :key="tweet.id">
         <div class="tweetHeader">
