@@ -7,10 +7,11 @@ export default new Vuex.Store({
   state: {
     twitterLoggedIn: false,
     userTweets: [],
-    userFavorites: []
+    userFavorites: [],
+    twitterUserClient: {},
   },
   mutations: {
-    logInToTwitter(state) {
+    logIntoTwitter(state) {
       state.twitterLoggedIn = true;
     },
     updateUserTweets(state, tweets) {
@@ -18,6 +19,9 @@ export default new Vuex.Store({
     },
     updateUserFavorites(state, favorites) {
       state.userFavorites = favorites;
+    },
+    updateUserClient(state, client) {
+      state.twitterUserClient = client;
     }
   },
   actions: {

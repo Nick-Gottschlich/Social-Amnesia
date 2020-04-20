@@ -8,18 +8,7 @@
           variant="success"
           v-on:click="handleTwitterLogin()"
         >Click to login</b-button>
-        <span class="loginMessage" v-bind:class="{ loginError, loginSuccess }">{{ loginMessage }}</span>
-      </div>
-      <div class="deletionContainer" v-if="loginSuccess">
-        <h1>Clean Twitter</h1>
-        <div class="deletionButtonContainer">
-          <b-button
-            class="deletionButton"
-            variant="danger"
-            v-on:click="handleDeleteTweets()"
-          >Click to delete tweets</b-button>
-          <b-button variant="danger" v-on:click="handleDeleteTweets()">Click to delete ❤️'s</b-button>
-        </div>
+        <span class="loginMessage" v-bind:class="{ loginError, loggedIn }">{{ loginMessage }}</span>
       </div>
     </div>
   </div>
@@ -31,6 +20,12 @@ import { Component, Vue } from "vue-property-decorator";
 import Twitter from "twitter-lite";
 import electron from "electron";
 import store from "@/store/index";
+import {
+  UPDATE_USER_TWEETS,
+  UPDATE_USER_FAVORITES,
+  UPDATE_USER_CLIENT,
+  LOGIN_TO_TWITTER
+} from "@/store/consts";
 
 import twitterApi from "../../secrets";
 
@@ -38,21 +33,13 @@ const TWEETS_ROUTE = "statuses/user_timeline";
 const FAVORITES_ROUTE = "favorites/list";
 
 @Component
-export default class TwitterComponent extends Vue {
-  loginSuccess = false;
-
+export default class LoginPanel extends Vue {
   loginError = false;
 
   loginMessage = "Not logged in!";
 
-  userClient;
-
-  handleDeleteTweets() {
-    store.state.userTweets.forEach(tweet => {
-      this.userClient.post("statuses/destroy", {
-        id: tweet.id_str
-      });
-    });
+  get loggedIn() {
+    return store.state.twitterLoggedIn;
   }
 
   handleTwitterLogin() {
@@ -65,7 +52,6 @@ export default class TwitterComponent extends Vue {
     const mainWindow = electron.remote.getCurrentWindow();
     const twitterApiWindow = new BrowserWindow({
       parent: mainWindow
-      // modal: true
     });
     let userTweets = [];
     let userFavorites = [];
@@ -81,13 +67,16 @@ export default class TwitterComponent extends Vue {
       if (maxId) {
         data.max_id = String(maxId);
       }
-      this.userClient.get(apiRoute, data).then(tweets => {
-        if (tweets.length === 1 && tweets[0].id === oldest) {
+      store.state.twitterUserClient.get(apiRoute, data).then(tweets => {
+        if (
+          tweets.length === 0 ||
+          (tweets.length === 1 && tweets[0].id === oldest)
+        ) {
           if (apiRoute === TWEETS_ROUTE) {
-            store.commit("updateUserTweets", userTweets);
+            store.commit(UPDATE_USER_TWEETS, userTweets);
           }
           if (apiRoute === FAVORITES_ROUTE) {
-            store.commit("updateUserFavorites", userFavorites);
+            store.commit(UPDATE_USER_FAVORITES, userFavorites);
           }
           return;
         }
@@ -124,12 +113,15 @@ export default class TwitterComponent extends Vue {
             throw Error(verificationResponse);
           }
 
-          this.userClient = new Twitter({
-            consumer_key: twitterApi.consumer_key,
-            consumer_secret: twitterApi.consumer_secret,
-            access_token_key: verificationResponse.oauth_token,
-            access_token_secret: verificationResponse.oauth_token_secret
-          });
+          store.commit(
+            UPDATE_USER_CLIENT,
+            new Twitter({
+              consumer_key: twitterApi.consumer_key,
+              consumer_secret: twitterApi.consumer_secret,
+              access_token_key: verificationResponse.oauth_token,
+              access_token_secret: verificationResponse.oauth_token_secret
+            })
+          );
 
           gatherItems({
             verificationResponse,
@@ -137,9 +129,8 @@ export default class TwitterComponent extends Vue {
           });
           gatherItems({ verificationResponse, apiRoute: "favorites/list" });
 
-          this.loginSuccess = true;
-          store.commit("logInToTwitter");
-          this.loginMessage = `Logged in to twitter as ${verificationResponse.screen_name}`;
+          store.commit(LOGIN_TO_TWITTER);
+          this.loginMessage = `Logged in to twitter as @${verificationResponse.screen_name}`;
           twitterApiWindow.close();
         })
         .catch(error => {
@@ -206,23 +197,8 @@ export default class TwitterComponent extends Vue {
     color: #dc3545;
   }
 
-  .loginSuccess {
+  .loggedIn {
     color: #218838;
-  }
-}
-
-.deletionContainer {
-  border: 4mm ridge #dc3545;
-  padding: 20px;
-  margin-top: 10px;
-
-  .deletionButtonContainer {
-    display: flex;
-    flex-direction: column;
-
-    .deletionButton {
-      margin-bottom: 5px;
-    }
   }
 }
 </style>

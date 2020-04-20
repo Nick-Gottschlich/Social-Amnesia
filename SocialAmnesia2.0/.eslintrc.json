@@ -13,7 +13,8 @@
     "ecmaVersion": 2020
   },
   "rules": {
-    "no-debugger": "warn"
+    "no-debugger": "warn",
+    "class-methods-use-this": "off"
   },
   "overrides": [
     {

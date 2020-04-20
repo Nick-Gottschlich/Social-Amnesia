@@ -1,7 +1,10 @@
 <template>
   <div>
-    <TwitterComponent />
-    <div class="userItemsContainer">
+    <div class="twitterContainer">
+      <LoginPanel />
+      <DeletionPanel />
+    </div>
+    <div class="twitterContainer paddingTop">
       <UserItemsPanel itemType="tweets" />
       <UserItemsPanel itemType="favorites" />
     </div>
@@ -9,20 +12,27 @@
 </template>
 
 <script>
-import TwitterComponent from "@/components/twitter/TwitterComponent.vue";
+import LoginPanel from "@/components/twitter/LoginPanel.vue";
 import UserItemsPanel from "@/components/twitter/UserItemsPanel.vue";
+import DeletionPanel from '@/components/twitter/DeletionPanel.vue'
 
 export default {
   name: "Twitter",
   components: {
-    TwitterComponent,
-    UserItemsPanel
+    LoginPanel,
+    UserItemsPanel,
+    DeletionPanel
   }
 };
 </script>
 
 <style lang="scss">
-.userItemsContainer {
+.twitterContainer {
   display: flex;
+  justify-content: space-around;
+}
+
+.paddingTop {
+  padding-top: 20px;
 }
 </style>
