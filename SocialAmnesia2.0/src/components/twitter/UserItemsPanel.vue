@@ -14,7 +14,17 @@
           <span class="tweetText">{{tweet.full_text}}</span>
           <div class="tweetMedia" v-if="tweet.extended_entities && tweet.extended_entities.media">
             <li v-for="media in tweet.extended_entities.media" :key="media.id">
-              <img class="tweetImage" :src="media.media_url_https" />
+              <img v-if="media.type === 'photo'" class="tweetContent" :src="media.media_url_https" />
+              <video
+                v-if="media.type === 'video' || media.type === 'animated_gif'"
+                controls
+                class="tweetContent"
+              >
+                <source
+                  :src="media.video_info && media.video_info.variants[0].url"
+                  type="video/mp4"
+                />
+              </video>
             </li>
           </div>
           <span class="tweetCreatedAt">{{new Date(tweet.created_at).toLocaleString()}}</span>
@@ -114,7 +124,7 @@ export default class UserItemsPanel extends UserItemsPanelProps {
         display: grid;
         grid-template-columns: auto auto;
 
-        .tweetImage {
+        .tweetContent {
           border: 1px solid #e1e8ed;
           border-radius: 5px;
           width: 100%;
