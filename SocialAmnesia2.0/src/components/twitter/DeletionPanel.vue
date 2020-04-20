@@ -7,31 +7,39 @@
         variant="danger"
         v-on:click="handleDeleteTweets()"
       >Click to delete tweets</b-button>
-      <b-button variant="danger" v-on:click="handleDeleteFavorites()">Click to delete ❤️'s (favorites)</b-button>
+      <b-button
+        variant="danger"
+        v-on:click="handleDeleteFavorites()"
+      >Click to delete ❤️'s (favorites)</b-button>
     </div>
   </div>
 </template>
 
 <script>
+/* eslint-disable no-alert */
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
 
 @Component
 export default class DeletionPanel extends Vue {
   handleDeleteTweets() {
-    store.state.userTweets.forEach(tweet => {
-      store.state.twitterUserClient.post("statuses/destroy", {
-        id: tweet.id_str
+    if (window.confirm("Are you sure you want to delete your tweets?")) {
+      store.state.userTweets.forEach(tweet => {
+        store.state.twitterUserClient.post("statuses/destroy", {
+          id: tweet.id_str
+        });
       });
-    });
+    }
   }
 
   handleDeleteFavorites() {
-    store.state.userFavorites.forEach(tweet => {
-      store.state.twitterUserClient.post("favorites/destroy", {
-        id: tweet.id_str
+    if (window.confirm("Are you sure you want to delete your favorites?")) {
+      store.state.userFavorites.forEach(tweet => {
+        store.state.twitterUserClient.post("favorites/destroy", {
+          id: tweet.id_str
+        });
       });
-    });
+    }
   }
 
   get loggedIn() {
