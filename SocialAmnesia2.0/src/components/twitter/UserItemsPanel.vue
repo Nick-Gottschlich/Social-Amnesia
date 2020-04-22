@@ -1,7 +1,14 @@
 <template>
   <div class="tweetsContainer" v-if="loggedIn">
     <h1>{{this.itemType === "tweets" ? "Your tweets" : "Your favorites"}}</h1>
-    <ul class="tweetList">
+    <b-pagination
+      v-model="currentPage"
+      :total-rows="rows"
+      :per-page="perPage"
+      aria-controls="itemList"
+      align="center"
+    ></b-pagination>
+    <ul id="itemList" class="tweetList">
       <li class="tweet" v-for="tweet in userItems" :key="tweet.id">
         <div class="tweetHeader">
           <img :src="tweet.user.profile_image_url_https" />
@@ -51,18 +58,38 @@ const UserItemsPanelProps = Vue.extend({
 
 @Component
 export default class UserItemsPanel extends UserItemsPanelProps {
+  currentPage = 1;
+
+  perPage = 5;
+
   get loggedIn() {
     return store.state.twitterLoggedIn;
   }
 
   get userItems() {
     if (this.itemType === "tweets") {
-      return store.state.userTweets;
+      return store.state.userTweets.slice(
+        (this.currentPage - 1) * this.perPage,
+        this.currentPage * this.perPage
+      )
     }
     if (this.itemType === "favorites") {
-      return store.state.userFavorites;
+      return store.state.userFavorites.slice(
+        (this.currentPage - 1) * this.perPage,
+        this.currentPage * this.perPage
+      )
     }
     return [];
+  }
+
+  get rows() {
+    if (this.itemType === "tweets") {
+      return store.state.userTweets.length;
+    }
+    if (this.itemType === "favorites") {
+      return store.state.userFavorites.length;
+    }
+    return 0;
   }
 }
 </script>
