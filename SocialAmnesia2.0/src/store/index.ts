@@ -9,6 +9,8 @@ export default new Vuex.Store({
     userTweets: [],
     userFavorites: [],
     twitterUserClient: {},
+    whitelistedTweets: new Set(),
+    whitelistedFavorites: new Set(),
   },
   mutations: {
     logIntoTwitter(state) {

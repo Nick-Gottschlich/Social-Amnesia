@@ -12,7 +12,11 @@
       <li class="itemsList" v-for="tweet in userItems" :key="tweet.id">
         <div class="tweetAndOptionsContainer">
           <div class="tweetOptions">
-            <b-form-checkbox switch :id="`checklist-${tweet.id}`" />
+            <b-form-checkbox
+              switch
+              :id="`checklist-${tweet.id}`"
+              v-on:change="handleChanged(tweet)"
+            />
             <span>Whitelist</span>
           </div>
           <div class="tweet">
@@ -76,6 +80,24 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   currentPage = 1;
 
   perPage = 5;
+
+  handleChanged(item) {
+    const addOrRemoveItem = (set, itemId) => {
+      if (set.has(itemId)) {
+        set.delete(itemId);
+      } else {
+        set.add(itemId);
+      }
+    }
+
+    if (this.itemType === "tweets") {
+      addOrRemoveItem(store.state.whitelistedTweets, item.id)
+      console.log('t', store.state.whitelistedTweets);
+    } else if (this.itemType === "favorites") {
+      addOrRemoveItem(store.state.whitelistedFavorites, item.id)
+      console.log('f', store.state.whitelistedTweets);
+    }
+  }
 
   get loggedIn() {
     return store.state.twitterLoggedIn;
