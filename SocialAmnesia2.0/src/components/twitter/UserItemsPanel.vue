@@ -7,38 +7,53 @@
       :per-page="perPage"
       aria-controls="itemList"
       align="center"
-    ></b-pagination>
+    />
     <ul id="itemList" class="tweetList">
-      <li class="tweet" v-for="tweet in userItems" :key="tweet.id">
-        <div class="tweetHeader">
-          <img :src="tweet.user.profile_image_url_https" />
-          <div class="tweetUsernames">
-            <span class="tweetName">{{tweet.user.name}}</span>
-            <span class="tweetUsername">@{{tweet.user.screen_name}}</span>
+      <li class="itemsList" v-for="tweet in userItems" :key="tweet.id">
+        <div class="tweetAndOptionsContainer">
+          <div class="tweetOptions">
+            <b-form-checkbox switch :id="`checklist-${tweet.id}`" />
+            <span>Whitelist</span>
           </div>
-        </div>
-        <div class="tweetBody">
-          <span class="tweetText">{{tweet.full_text}}</span>
-          <div class="tweetMedia" v-if="tweet.extended_entities && tweet.extended_entities.media">
-            <li v-for="media in tweet.extended_entities.media" :key="media.id">
-              <img v-if="media.type === 'photo'" class="tweetContent" :src="media.media_url_https" />
-              <video
-                v-if="media.type === 'video' || media.type === 'animated_gif'"
-                controls
-                class="tweetContent"
+          <div class="tweet">
+            <div class="tweetHeader">
+              <img :src="tweet.user.profile_image_url_https" />
+              <div class="tweetUsernames">
+                <span class="tweetName">{{tweet.user.name}}</span>
+                <span class="tweetUsername">@{{tweet.user.screen_name}}</span>
+              </div>
+            </div>
+            <div class="tweetBody">
+              <span class="tweetText">{{tweet.full_text}}</span>
+              <div
+                class="tweetMedia"
+                v-if="tweet.extended_entities && tweet.extended_entities.media"
               >
-                <source
-                  :src="media.video_info && media.video_info.variants[0].url"
-                  type="video/mp4"
-                />
-              </video>
-            </li>
+                <li v-for="media in tweet.extended_entities.media" :key="media.id">
+                  <img
+                    v-if="media.type === 'photo'"
+                    class="tweetContent"
+                    :src="media.media_url_https"
+                  />
+                  <video
+                    v-if="media.type === 'video' || media.type === 'animated_gif'"
+                    controls
+                    class="tweetContent"
+                  >
+                    <source
+                      :src="media.video_info && media.video_info.variants[0].url"
+                      type="video/mp4"
+                    />
+                  </video>
+                </li>
+              </div>
+              <span class="tweetCreatedAt">{{new Date(tweet.created_at).toLocaleString()}}</span>
+            </div>
+            <div class="tweetFooter">
+              <div class="favorites">❤️{{tweet.favorite_count}}</div>
+              <div class="retweets">🔁{{tweet.retweet_count}}</div>
+            </div>
           </div>
-          <span class="tweetCreatedAt">{{new Date(tweet.created_at).toLocaleString()}}</span>
-        </div>
-        <div class="tweetFooter">
-          <div class="favorites">❤️{{tweet.favorite_count}}</div>
-          <div class="retweets">🔁{{tweet.retweet_count}}</div>
         </div>
       </li>
     </ul>
@@ -71,13 +86,13 @@ export default class UserItemsPanel extends UserItemsPanelProps {
       return store.state.userTweets.slice(
         (this.currentPage - 1) * this.perPage,
         this.currentPage * this.perPage
-      )
+      );
     }
     if (this.itemType === "favorites") {
       return store.state.userFavorites.slice(
         (this.currentPage - 1) * this.perPage,
         this.currentPage * this.perPage
-      )
+      );
     }
     return [];
   }
@@ -97,74 +112,87 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 <style lang="scss">
 .tweetsContainer {
   width: 48%;
+  height: 99%;
   border: 4mm ridge #1da1f2;
+  margin-bottom: 10px;
 
   .tweetList {
     padding-left: 0;
+    list-style: none;
   }
 
-  .tweet {
-    padding: 15px;
-    margin: 10px;
-    border: 1px solid #e1e8ed;
-    border-radius: 5px;
-    list-style: none;
+  .tweetAndOptionsContainer {
+    display: flex;
+    align-items: center;
 
-    &:hover {
-      background-color: #dddddd;
+    .tweetOptions {
+      display: flex;
+      padding-left: 5px;
     }
 
-    .tweetHeader {
-      display: flex;
-      justify-content: flex-start;
+    .tweet {
+      padding: 15px;
+      margin: 10px;
+      border: 1px solid #e1e8ed;
+      border-radius: 5px;
+      flex-grow: 1;
 
-      .tweetUsernames {
+      &:hover {
+        background-color: #dddddd;
+      }
+
+      .tweetHeader {
+        display: flex;
+        justify-content: flex-start;
+
+        .tweetUsernames {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          padding-left: 5px;
+
+          .tweetName {
+            line-height: 1.3125;
+            font-weight: bold;
+          }
+          .tweetUsername {
+            color: #697882;
+          }
+        }
+      }
+
+      .tweetBody {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        padding-left: 5px;
 
-        .tweetName {
-          line-height: 1.3125;
-          font-weight: bold;
+        .tweetText {
+          font-size: 24px;
         }
-        .tweetUsername {
+
+        .tweetCreatedAt {
           color: #697882;
         }
-      }
-    }
 
-    .tweetBody {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+        .tweetMedia {
+          display: grid;
+          grid-template-columns: auto auto;
 
-      .tweetText {
-        font-size: 24px;
-      }
-
-      .tweetCreatedAt {
-        color: #697882;
-      }
-
-      .tweetMedia {
-        display: grid;
-        grid-template-columns: auto auto;
-
-        .tweetContent {
-          border: 1px solid #e1e8ed;
-          border-radius: 5px;
-          width: 100%;
+          .tweetContent {
+            border: 1px solid #e1e8ed;
+            border-radius: 5px;
+            width: 100%;
+          }
         }
       }
-    }
 
-    .tweetFooter {
-      display: flex;
-      justify-content: flex-start;
+      .tweetFooter {
+        display: flex;
+        justify-content: flex-start;
 
-      .retweets {
-        padding-left: 20px;
+        .retweets {
+          padding-left: 20px;
+        }
       }
     }
   }
