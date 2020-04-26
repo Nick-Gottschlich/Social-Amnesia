@@ -16,6 +16,7 @@
               switch
               :id="`checklist-${tweet.id}`"
               v-on:change="handleChanged(tweet)"
+              :checked="checkIfSelected(tweet)"
             />
             <span>Whitelist</span>
           </div>
@@ -81,6 +82,12 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 
   perPage = 5;
 
+  checkIfSelected(tweet) {
+    return this.itemType === "tweets"
+      ? store.state.whitelistedTweets.has(tweet.id)
+      : store.state.whitelistedFavorites.has(tweet.id);
+  }
+
   handleChanged(item) {
     const addOrRemoveItem = (set, itemId) => {
       if (set.has(itemId)) {
@@ -88,14 +95,12 @@ export default class UserItemsPanel extends UserItemsPanelProps {
       } else {
         set.add(itemId);
       }
-    }
+    };
 
     if (this.itemType === "tweets") {
-      addOrRemoveItem(store.state.whitelistedTweets, item.id)
-      console.log('t', store.state.whitelistedTweets);
+      addOrRemoveItem(store.state.whitelistedTweets, item.id);
     } else if (this.itemType === "favorites") {
-      addOrRemoveItem(store.state.whitelistedFavorites, item.id)
-      console.log('f', store.state.whitelistedTweets);
+      addOrRemoveItem(store.state.whitelistedFavorites, item.id);
     }
   }
 
