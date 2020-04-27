@@ -22,24 +22,35 @@ import store from "@/store/index";
 
 @Component
 export default class DeletionPanel extends Vue {
-  handleDeleteTweets() {
-    if (window.confirm("Are you sure you want to delete your tweets?")) {
-      store.state.userTweets.forEach(tweet => {
-        store.state.twitterUserClient.post("statuses/destroy", {
-          id: tweet.id_str
-        });
+  deleteItems(items, itemString, whitelistedItems) {
+    if (window.confirm(`Are you sure you want to delete your ${itemString}?`)) {
+      items.forEach(tweet => {
+        if (!whitelistedItems.has(`${itemString}-${tweet.id}`)) {
+          store.state.twitterUserClient.post(
+            itemString === "tweets" ? "statuses/destroy" : "favorites/destroy",
+            {
+              id: tweet.id_str
+            }
+          );
+        }
       });
     }
   }
 
+  handleDeleteTweets() {
+    this.deleteItems(
+      store.state.userTweets,
+      "tweets",
+      store.state.whitelistedTweets
+    );
+  }
+
   handleDeleteFavorites() {
-    if (window.confirm("Are you sure you want to delete your favorites?")) {
-      store.state.userFavorites.forEach(tweet => {
-        store.state.twitterUserClient.post("favorites/destroy", {
-          id: tweet.id_str
-        });
-      });
-    }
+    this.deleteItems(
+      store.state.userFavorites,
+      "favorites",
+      store.state.whitelistedFavorites
+    );
   }
 
   get loggedIn() {

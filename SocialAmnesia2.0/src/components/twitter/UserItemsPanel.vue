@@ -9,12 +9,12 @@
       align="center"
     />
     <ul id="itemList" class="tweetList">
-      <li class="itemsList" v-for="tweet in userItems" :key="tweet.id">
+      <li class="itemsList" v-for="tweet in userItems" :key="`${itemType}-${tweet.id}`">
         <div class="tweetAndOptionsContainer">
           <div class="tweetOptions">
             <b-form-checkbox
               switch
-              :id="`checklist-${tweet.id}`"
+              :id="`checklist-${itemType}-${tweet.id}`"
               v-on:change="handleChanged(tweet)"
               :checked="checkIfSelected(tweet)"
             />
@@ -82,10 +82,12 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 
   perPage = 5;
 
+  itemType = this.itemType;
+
   checkIfSelected(tweet) {
     return this.itemType === "tweets"
-      ? store.state.whitelistedTweets.has(tweet.id)
-      : store.state.whitelistedFavorites.has(tweet.id);
+      ? store.state.whitelistedTweets.has(`tweets-${tweet.id}`)
+      : store.state.whitelistedFavorites.has(`favorites-${tweet.id}`);
   }
 
   handleChanged(item) {
@@ -98,9 +100,9 @@ export default class UserItemsPanel extends UserItemsPanelProps {
     };
 
     if (this.itemType === "tweets") {
-      addOrRemoveItem(store.state.whitelistedTweets, item.id);
+      addOrRemoveItem(store.state.whitelistedTweets, `tweets-${item.id}`);
     } else if (this.itemType === "favorites") {
-      addOrRemoveItem(store.state.whitelistedFavorites, item.id);
+      addOrRemoveItem(store.state.whitelistedFavorites, `favorites-${item.id}`);
     }
   }
 
