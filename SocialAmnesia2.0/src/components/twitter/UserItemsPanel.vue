@@ -69,6 +69,7 @@
 /* eslint-disable class-methods-use-this */
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
+import { UPDATE_WHITELISTED_TWEETS, UPDATE_WHITELISTED_FAVORITES } from '../../store/consts';
 
 const UserItemsPanelProps = Vue.extend({
   props: {
@@ -91,18 +92,10 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   }
 
   handleChanged(item) {
-    const addOrRemoveItem = (set, itemId) => {
-      if (set.has(itemId)) {
-        set.delete(itemId);
-      } else {
-        set.add(itemId);
-      }
-    };
-
     if (this.itemType === "tweets") {
-      addOrRemoveItem(store.state.whitelistedTweets, `tweets-${item.id}`);
+      store.dispatch(UPDATE_WHITELISTED_TWEETS, `tweets-${item.id}`)
     } else if (this.itemType === "favorites") {
-      addOrRemoveItem(store.state.whitelistedFavorites, `favorites-${item.id}`);
+      store.dispatch(UPDATE_WHITELISTED_FAVORITES, `favorites-${item.id}`)
     }
   }
 
