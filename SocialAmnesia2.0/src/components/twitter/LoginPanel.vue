@@ -73,10 +73,10 @@ export default class LoginPanel extends Vue {
           (tweets.length === 1 && tweets[0].id === oldest)
         ) {
           if (apiRoute === TWEETS_ROUTE) {
-            store.commit(UPDATE_USER_TWEETS, userTweets);
+            store.dispatch(UPDATE_USER_TWEETS, userTweets);
           }
           if (apiRoute === FAVORITES_ROUTE) {
-            store.commit(UPDATE_USER_FAVORITES, userFavorites);
+            store.dispatch(UPDATE_USER_FAVORITES, userFavorites);
           }
           return;
         }
@@ -113,7 +113,7 @@ export default class LoginPanel extends Vue {
             throw Error(verificationResponse);
           }
 
-          store.commit(
+          store.dispatch(
             UPDATE_USER_CLIENT,
             new Twitter({
               consumer_key: twitterApi.consumer_key,
@@ -122,6 +122,8 @@ export default class LoginPanel extends Vue {
               access_token_secret: verificationResponse.oauth_token_secret
             })
           );
+          store.dispatch(UPDATE_USER_TWEETS, []);
+          store.dispatch(UPDATE_USER_FAVORITES, []);
 
           gatherItems({
             verificationResponse,
@@ -129,7 +131,7 @@ export default class LoginPanel extends Vue {
           });
           gatherItems({ verificationResponse, apiRoute: "favorites/list" });
 
-          store.commit(LOGIN_TO_TWITTER);
+          store.dispatch(LOGIN_TO_TWITTER);
           this.loginMessage = `Logged in to twitter as @${verificationResponse.screen_name}`;
           twitterApiWindow.close();
         })
