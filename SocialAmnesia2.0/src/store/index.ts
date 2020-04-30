@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import Vue from 'vue';
 import Vuex from 'vuex';
 import Store from 'electron-store';
@@ -8,11 +9,14 @@ Vue.use(Vuex);
 
 const persistentStore = new Store();
 
-const addOrRemoveItem = (set, itemId) => {
-  if (set.has(itemId)) {
-    set.delete(itemId);
+// uncomment to manually clear persistent store
+// persistentStore.clear()
+
+const addOrRemoveItem = (whitelistedItems, itemId) => {
+  if (whitelistedItems[itemId]) {
+    whitelistedItems[itemId] = false;
   } else {
-    set.add(itemId);
+    whitelistedItems[itemId] = true;
   }
 };
 
@@ -22,8 +26,8 @@ export default new Vuex.Store({
     userTweets: persistentStore.get(USER_TWEETS) || [],
     userFavorites: persistentStore.get(USER_FAVORITES) || [],
     twitterUserClient: persistentStore.get(TWITTER_USER_CLIENT) || {},
-    whitelistedTweets: persistentStore.get(WHITELISTED_TWEETS) || new Set(),
-    whitelistedFavorites: persistentStore.get(WHITELISTED_FAVORITES) || new Set(),
+    whitelistedTweets: persistentStore.get(WHITELISTED_TWEETS) || {},
+    whitelistedFavorites: persistentStore.get(WHITELISTED_FAVORITES) || {},
   },
   mutations: {
     logIntoTwitter(state) {
@@ -44,11 +48,11 @@ export default new Vuex.Store({
     },
     updateWhitelistedTweets(state, tweetId) {
       addOrRemoveItem(state.whitelistedTweets, tweetId)
-      // persistentStore.set(WHITELISTED_TWEETS, state.whitelistedTweets)
+      persistentStore.set(WHITELISTED_TWEETS, state.whitelistedTweets)
     },
     updateWhitelistedFavorites(state, tweetId) {
       addOrRemoveItem(state.whitelistedFavorites, tweetId)
-      // persistentStore.set(WHITELISTED_FAVORITES, state.whitelistedFavorites)
+      persistentStore.set(WHITELISTED_FAVORITES, state.whitelistedFavorites)
     }
   },
   actions: {

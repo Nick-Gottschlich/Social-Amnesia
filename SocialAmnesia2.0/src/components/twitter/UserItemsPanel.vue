@@ -87,8 +87,8 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 
   checkIfSelected(tweet) {
     return this.itemType === "tweets"
-      ? store.state.whitelistedTweets.has(`tweets-${tweet.id}`)
-      : store.state.whitelistedFavorites.has(`favorites-${tweet.id}`);
+      ? store.state.whitelistedTweets[`tweets-${tweet.id}`]
+      : store.state.whitelistedFavorites[`favorites-${tweet.id}`];
   }
 
   handleChanged(item) {
