@@ -69,7 +69,7 @@
 /* eslint-disable class-methods-use-this */
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
-import { UPDATE_WHITELISTED_TWEETS, UPDATE_WHITELISTED_FAVORITES } from '../../store/consts';
+import constants from "@/store/constants";
 
 const UserItemsPanelProps = Vue.extend({
   props: {
@@ -93,9 +93,12 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 
   handleChanged(item) {
     if (this.itemType === "tweets") {
-      store.dispatch(UPDATE_WHITELISTED_TWEETS, `tweets-${item.id}`)
+      store.dispatch(constants.UPDATE_WHITELISTED_TWEETS, `tweets-${item.id}`);
     } else if (this.itemType === "favorites") {
-      store.dispatch(UPDATE_WHITELISTED_FAVORITES, `favorites-${item.id}`)
+      store.dispatch(
+        constants.UPDATE_WHITELISTED_FAVORITES,
+        `favorites-${item.id}`
+      );
     }
   }
 

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Twitter from '../views/Twitter.vue';
-import About from '../views/About.vue';
+import Twitter from '@/views/Twitter.vue';
+import About from '@/views/About.vue';
 
 Vue.use(VueRouter);
 
