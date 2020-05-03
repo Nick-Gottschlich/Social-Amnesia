@@ -28,52 +28,59 @@ const updateStore = (state, marker, value) => {
 
 export default new Vuex.Store({
   state: {
-    twitterLoggedIn: persistentStore.get(constants.TWITTER_LOGGED_IN) || false,
-    userTweets: persistentStore.get(constants.USER_TWEETS) || [],
-    userFavorites: persistentStore.get(constants.USER_FAVORITES) || [],
-    twitterUserClient: persistentStore.get(constants.TWITTER_USER_CLIENT) || {},
-    whitelistedTweets: persistentStore.get(constants.WHITELISTED_TWEETS) || {},
-    whitelistedFavorites: persistentStore.get(constants.WHITELISTED_FAVORITES) || {},
+    [constants.TWITTER_LOGGED_IN]: persistentStore.get(constants.TWITTER_LOGGED_IN) || false,
+    [constants.TWITTER_SCREEN_NAME]: persistentStore.get(constants.TWITTER_SCREEN_NAME) || '',
+    [constants.USER_TWEETS]: persistentStore.get(constants.USER_TWEETS) || [],
+    [constants.USER_FAVORITES]: persistentStore.get(constants.USER_FAVORITES) || [],
+    [constants.TWITTER_USER_CLIENT]: persistentStore.get(constants.TWITTER_USER_CLIENT) || {},
+    [constants.WHITELISTED_TWEETS]: persistentStore.get(constants.WHITELISTED_TWEETS) || {},
+    [constants.WHITELISTED_FAVORITES]: persistentStore.get(constants.WHITELISTED_FAVORITES) || {},
   },
   mutations: {
-    logIntoTwitter(state) {
+    [constants.LOGIN_TO_TWITTER](state) {
       updateStore(state, constants.TWITTER_LOGGED_IN, true);
     },
-    updateUserTweets(state, tweets) {
+    [constants.UPDATE_TWITTER_SCREEN_NAME](state, screenName) {
+      updateStore(state, constants.TWITTER_SCREEN_NAME, screenName);
+    },
+    [constants.UPDATE_USER_TWEETS](state, tweets) {
       updateStore(state, constants.USER_TWEETS, tweets);
     },
-    updateUserFavorites(state, favorites) {
+    [constants.UPDATE_USER_FAVORITES](state, favorites) {
       updateStore(state, constants.USER_FAVORITES, favorites);
     },
-    updateUserClient(state, client) {
+    [constants.UPDATE_USER_CLIENT](state, client) {
       updateStore(state, constants.TWITTER_USER_CLIENT, client);
     },
-    updateWhitelistedTweets(state, tweetId) {
+    [constants.UPDATE_WHITELISTED_TWEETS](state, tweetId) {
       addOrRemoveItem(state.whitelistedTweets, tweetId)
       persistentStore.set(constants.WHITELISTED_TWEETS, state.whitelistedTweets)
     },
-    updateWhitelistedFavorites(state, tweetId) {
+    [constants.UPDATE_WHITELISTED_FAVORITES](state, tweetId) {
       addOrRemoveItem(state.whitelistedFavorites, tweetId)
       persistentStore.set(constants.WHITELISTED_FAVORITES, state.whitelistedFavorites)
     }
   },
   actions: {
-    logIntoTwitter(store) {
+    [constants.LOGIN_TO_TWITTER](store) {
       store.commit(constants.LOGIN_TO_TWITTER);
     },
-    updateUserTweets(store, tweets) {
+    [constants.UPDATE_TWITTER_SCREEN_NAME](store, screenName) {
+      store.commit(constants.UPDATE_TWITTER_SCREEN_NAME, screenName);
+    },
+    [constants.UPDATE_USER_TWEETS](store, tweets) {
       store.commit(constants.UPDATE_USER_TWEETS, tweets)
     },
-    updateUserFavorites(store, favorites) {
+    [constants.UPDATE_USER_FAVORITES](store, favorites) {
       store.commit(constants.UPDATE_USER_FAVORITES, favorites)
     },
-    updateUserClient(store, client) {
+    [constants.UPDATE_USER_CLIENT](store, client) {
       store.commit(constants.UPDATE_USER_CLIENT, client)
     },
-    updateWhitelistedTweets(store, tweetId) {
+    [constants.UPDATE_WHITELISTED_TWEETS](store, tweetId) {
       store.commit(constants.UPDATE_WHITELISTED_TWEETS, tweetId)
     },
-    updateWhitelistedFavorites(store, favoriteId) {
+    [constants.UPDATE_WHITELISTED_FAVORITES](store, favoriteId) {
       store.commit(constants.UPDATE_WHITELISTED_FAVORITES, favoriteId);
     }
   },

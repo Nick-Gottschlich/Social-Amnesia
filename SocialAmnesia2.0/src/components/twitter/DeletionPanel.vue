@@ -19,6 +19,7 @@
 /* eslint-disable no-alert */
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
+import constants from '@/store/constants';
 
 @Component
 export default class DeletionPanel extends Vue {
@@ -26,7 +27,7 @@ export default class DeletionPanel extends Vue {
     if (window.confirm(`Are you sure you want to delete your ${itemString}?`)) {
       items.forEach(tweet => {
         if (!whitelistedItems.has(`${itemString}-${tweet.id}`)) {
-          store.state.twitterUserClient.post(
+          store.state[constants.TWITTER_USER_CLIENT].post(
             itemString === "tweets" ? "statuses/destroy" : "favorites/destroy",
             {
               id: tweet.id_str
@@ -39,22 +40,22 @@ export default class DeletionPanel extends Vue {
 
   handleDeleteTweets() {
     this.deleteItems(
-      store.state.userTweets,
+      store.state[constants.USER_TWEETS],
       "tweets",
-      store.state.whitelistedTweets
+      store.state[constants.WHITELISTED_TWEETS]
     );
   }
 
   handleDeleteFavorites() {
     this.deleteItems(
-      store.state.userFavorites,
+      store.state[constants.USER_FAVORITES],
       "favorites",
-      store.state.whitelistedFavorites
+      store.state[constants.WHITELISTED_FAVORITES]
     );
   }
 
   get loggedIn() {
-    return store.state.twitterLoggedIn;
+    return store.state[constants.TWITTER_LOGGED_IN];
   }
 }
 </script>

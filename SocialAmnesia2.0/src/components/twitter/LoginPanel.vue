@@ -33,7 +33,11 @@ export default class LoginPanel extends Vue {
   loginMessage = "Not logged in!";
 
   get loggedIn() {
-    return store.state.twitterLoggedIn;
+    if (store.state[constants.TWITTER_LOGGED_IN]) {
+      this.loginMessage = `Logged in to twitter as @${store.state[constants.TWITTER_SCREEN_NAME]}`
+    }
+
+    return store.state[constants.TWITTER_LOGGED_IN];
   }
 
   handleTwitterLogin() {
@@ -61,7 +65,7 @@ export default class LoginPanel extends Vue {
       if (maxId) {
         data.max_id = String(maxId);
       }
-      store.state.twitterUserClient.get(apiRoute, data).then(tweets => {
+      store.state[constants.TWITTER_USER_CLIENT].get(apiRoute, data).then(tweets => {
         if (
           tweets.length === 0 ||
           (tweets.length === 1 && tweets[0].id === oldest)
@@ -116,6 +120,8 @@ export default class LoginPanel extends Vue {
               access_token_secret: verificationResponse.oauth_token_secret
             })
           );
+
+          store.dispatch(constants.UPDATE_TWITTER_SCREEN_NAME, verificationResponse.screen_name);
           store.dispatch(constants.UPDATE_USER_TWEETS, []);
           store.dispatch(constants.UPDATE_USER_FAVORITES, []);
 
@@ -126,7 +132,7 @@ export default class LoginPanel extends Vue {
           gatherItems({ verificationResponse, apiRoute: "favorites/list" });
 
           store.dispatch(constants.LOGIN_TO_TWITTER);
-          this.loginMessage = `Logged in to twitter as @${verificationResponse.screen_name}`;
+          this.loginMessage = `Logged in to twitter as @${store.state[constants.TWITTER_SCREEN_NAME]}`;
           twitterApiWindow.close();
         })
         .catch(error => {
