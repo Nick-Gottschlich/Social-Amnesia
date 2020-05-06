@@ -19,20 +19,36 @@
 /* eslint-disable no-alert */
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
-import constants from '@/store/constants';
+import constants from "@/store/constants";
 
 @Component
 export default class DeletionPanel extends Vue {
-  deleteItems(items, itemString, whitelistedItems) {
-    if (window.confirm(`Are you sure you want to delete your ${itemString}?`)) {
+  deleteItems(items, itemString, whitelistedItems) {    
+    if (
+      window.confirm(
+        `Are you sure you want to delete your ${itemString}? THIS ACTION IS PERMANENT!`
+      )
+    ) {
+      store.dispatch(constants.RESET_CURRENTLY_DELETING_TOTAL_ITEMS);
+      store.dispatch(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, items.length)
       items.forEach(tweet => {
-        if (!whitelistedItems.has(`${itemString}-${tweet.id}`)) {
-          store.state[constants.TWITTER_USER_CLIENT].post(
-            itemString === "tweets" ? "statuses/destroy" : "favorites/destroy",
-            {
-              id: tweet.id_str
-            }
-          );
+        if (!whitelistedItems[`${itemString}-${tweet.id}`]) {
+          store.state[constants.TWITTER_USER_CLIENT]
+            .post(
+              itemString === "tweets"
+                ? "statuses/destroy"
+                : "favorites/destroy",
+              {
+                id: tweet.id_str
+              }
+            )
+            .then(() => {
+              store.commit(constants.INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS);
+              console.log(store.state[constants.CURRENTLY_DELETING])
+              debugger;
+            }).catch((error) => {
+              console.log(`Failed to delete item with error: ${error}`);
+            });
         }
       });
     }

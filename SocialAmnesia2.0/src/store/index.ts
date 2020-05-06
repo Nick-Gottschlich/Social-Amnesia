@@ -35,6 +35,10 @@ export default new Vuex.Store({
     [constants.TWITTER_USER_CLIENT]: persistentStore.get(constants.TWITTER_USER_CLIENT) || {},
     [constants.WHITELISTED_TWEETS]: persistentStore.get(constants.WHITELISTED_TWEETS) || {},
     [constants.WHITELISTED_FAVORITES]: persistentStore.get(constants.WHITELISTED_FAVORITES) || {},
+    [constants.CURRENTLY_DELETING]: {
+      totalItems: 0,
+      itemsDeleted: 0,
+    },
   },
   mutations: {
     [constants.LOGIN_TO_TWITTER](state) {
@@ -59,6 +63,15 @@ export default new Vuex.Store({
     [constants.UPDATE_WHITELISTED_FAVORITES](state, tweetId) {
       addOrRemoveItem(state.whitelistedFavorites, tweetId)
       persistentStore.set(constants.WHITELISTED_FAVORITES, state.whitelistedFavorites)
+    },
+    [constants.INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS](state) {
+      state[constants.CURRENTLY_DELETING].itemsDeleted += 1;
+    },
+    [constants.RESET_CURRENTLY_DELETING_TOTAL_ITEMS](state) {
+      state[constants.CURRENTLY_DELETING].itemsDeleted = 0;
+    },
+    [constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS](state, totalItems) {
+      state[constants.CURRENTLY_DELETING].totalItems = totalItems;
     }
   },
   actions: {
@@ -82,6 +95,15 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_WHITELISTED_FAVORITES](store, favoriteId) {
       store.commit(constants.UPDATE_WHITELISTED_FAVORITES, favoriteId);
+    },
+    [constants.INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS](store) {
+      store.commit(constants.INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS);
+    },
+    [constants.RESET_CURRENTLY_DELETING_TOTAL_ITEMS](store) {
+      store.commit(constants.RESET_CURRENTLY_DELETING_TOTAL_ITEMS);
+    },
+    [constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS](store, totalItems) {
+      store.commit(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, totalItems);
     }
   },
   modules: {

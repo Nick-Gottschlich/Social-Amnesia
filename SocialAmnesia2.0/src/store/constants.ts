@@ -6,6 +6,9 @@ const UPDATE_USER_FAVORITES = "updateUserFavorites";
 const UPDATE_USER_CLIENT = "updateUserClient";
 const UPDATE_WHITELISTED_TWEETS = "updateWhitelistedTweets";
 const UPDATE_WHITELISTED_FAVORITES = "updateWhitelistedFavorites";
+const INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS = "incrementCurrentlyDeletingTotalItems";
+const RESET_CURRENTLY_DELETING_TOTAL_ITEMS = "resetCurrentlyDeletingTotalItems";
+const UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS = "updateCurrentlyDeletingTotalTweets";
 
 // ACTUAL VALUES IN STATE
 const TWITTER_LOGGED_IN = 'twitterLoggedIn';
@@ -15,6 +18,7 @@ const USER_FAVORITES = 'userFavorites';
 const TWITTER_USER_CLIENT = 'twitterUserClient';
 const WHITELISTED_TWEETS = 'whitelistedTweets';
 const WHITELISTED_FAVORITES = 'whitelistedFavorites';
+const CURRENTLY_DELETING = 'currentlyDeleting';
 
 const constants = {
   LOGIN_TO_TWITTER,
@@ -24,6 +28,9 @@ const constants = {
   UPDATE_USER_CLIENT,
   UPDATE_WHITELISTED_TWEETS,
   UPDATE_WHITELISTED_FAVORITES,
+  INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS,
+  RESET_CURRENTLY_DELETING_TOTAL_ITEMS,
+  UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS,
   TWITTER_LOGGED_IN,
   UPDATE_TWITTER_SCREEN_NAME,
   USER_TWEETS,
@@ -31,6 +38,7 @@ const constants = {
   TWITTER_USER_CLIENT,
   WHITELISTED_TWEETS,
   WHITELISTED_FAVORITES,
+  CURRENTLY_DELETING,
 };
 
 export default constants;
