@@ -2,6 +2,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import Store from 'electron-store';
+import Twitter from "twitter-lite";
 import constants from './constants';
 
 Vue.use(Vuex);
@@ -32,7 +33,10 @@ export default new Vuex.Store({
     [constants.TWITTER_SCREEN_NAME]: persistentStore.get(constants.TWITTER_SCREEN_NAME) || '',
     [constants.USER_TWEETS]: persistentStore.get(constants.USER_TWEETS) || [],
     [constants.USER_FAVORITES]: persistentStore.get(constants.USER_FAVORITES) || [],
-    [constants.TWITTER_USER_CLIENT]: persistentStore.get(constants.TWITTER_USER_CLIENT) || {},
+    [constants.TWITTER_USER_KEYS]: persistentStore.get(constants.TWITTER_USER_KEYS) || {},
+    [constants.TWITTER_USER_CLIENT]: persistentStore.get(constants.TWITTER_USER_CLIENT) ?
+      new Twitter(persistentStore.get(constants.TWITTER_USER_KEYS))
+      : {},
     [constants.WHITELISTED_TWEETS]: persistentStore.get(constants.WHITELISTED_TWEETS) || {},
     [constants.WHITELISTED_FAVORITES]: persistentStore.get(constants.WHITELISTED_FAVORITES) || {},
     [constants.CURRENTLY_DELETING]: {
@@ -53,16 +57,19 @@ export default new Vuex.Store({
     [constants.UPDATE_USER_FAVORITES](state, favorites) {
       updateStore(state, constants.USER_FAVORITES, favorites);
     },
+    [constants.UPDATE_TWITTER_USER_KEYS](state, keys) {
+      updateStore(state, constants.TWITTER_USER_KEYS, keys);
+    },
     [constants.UPDATE_USER_CLIENT](state, client) {
       updateStore(state, constants.TWITTER_USER_CLIENT, client);
     },
     [constants.UPDATE_WHITELISTED_TWEETS](state, tweetId) {
-      addOrRemoveItem(state.whitelistedTweets, tweetId)
-      persistentStore.set(constants.WHITELISTED_TWEETS, state.whitelistedTweets)
+      addOrRemoveItem(state.whitelistedTweets, tweetId);
+      persistentStore.set(constants.WHITELISTED_TWEETS, state.whitelistedTweets);
     },
     [constants.UPDATE_WHITELISTED_FAVORITES](state, tweetId) {
-      addOrRemoveItem(state.whitelistedFavorites, tweetId)
-      persistentStore.set(constants.WHITELISTED_FAVORITES, state.whitelistedFavorites)
+      addOrRemoveItem(state.whitelistedFavorites, tweetId);
+      persistentStore.set(constants.WHITELISTED_FAVORITES, state.whitelistedFavorites);
     },
     [constants.INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS](state) {
       state[constants.CURRENTLY_DELETING].itemsDeleted += 1;
@@ -82,16 +89,19 @@ export default new Vuex.Store({
       store.commit(constants.UPDATE_TWITTER_SCREEN_NAME, screenName);
     },
     [constants.UPDATE_USER_TWEETS](store, tweets) {
-      store.commit(constants.UPDATE_USER_TWEETS, tweets)
+      store.commit(constants.UPDATE_USER_TWEETS, tweets);
     },
     [constants.UPDATE_USER_FAVORITES](store, favorites) {
-      store.commit(constants.UPDATE_USER_FAVORITES, favorites)
+      store.commit(constants.UPDATE_USER_FAVORITES, favorites);
+    },
+    [constants.UPDATE_TWITTER_USER_KEYS](store, keys) {
+      store.commit(constants.UPDATE_TWITTER_USER_KEYS, keys);
     },
     [constants.UPDATE_USER_CLIENT](store, client) {
-      store.commit(constants.UPDATE_USER_CLIENT, client)
+      store.commit(constants.UPDATE_USER_CLIENT, client);
     },
     [constants.UPDATE_WHITELISTED_TWEETS](store, tweetId) {
-      store.commit(constants.UPDATE_WHITELISTED_TWEETS, tweetId)
+      store.commit(constants.UPDATE_WHITELISTED_TWEETS, tweetId);
     },
     [constants.UPDATE_WHITELISTED_FAVORITES](store, favoriteId) {
       store.commit(constants.UPDATE_WHITELISTED_FAVORITES, favoriteId);

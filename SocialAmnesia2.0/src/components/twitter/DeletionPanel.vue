@@ -44,10 +44,8 @@ export default class DeletionPanel extends Vue {
             )
             .then(() => {
               store.commit(constants.INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS);
-              console.log(store.state[constants.CURRENTLY_DELETING])
-              debugger;
             }).catch((error) => {
-              console.log(`Failed to delete item with error: ${error}`);
+              console.log(`Failed to delete item with error: ${JSON.stringify(error)}`);
             });
         }
       });

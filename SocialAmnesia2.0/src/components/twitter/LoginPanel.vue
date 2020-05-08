@@ -34,7 +34,9 @@ export default class LoginPanel extends Vue {
 
   get loggedIn() {
     if (store.state[constants.TWITTER_LOGGED_IN]) {
-      this.loginMessage = `Logged in to twitter as @${store.state[constants.TWITTER_SCREEN_NAME]}`
+      this.loginMessage = `Logged in to twitter as @${
+        store.state[constants.TWITTER_SCREEN_NAME]
+      }`;
     }
 
     return store.state[constants.TWITTER_LOGGED_IN];
@@ -65,32 +67,34 @@ export default class LoginPanel extends Vue {
       if (maxId) {
         data.max_id = String(maxId);
       }
-      store.state[constants.TWITTER_USER_CLIENT].get(apiRoute, data).then(tweets => {
-        if (
-          tweets.length === 0 ||
-          (tweets.length === 1 && tweets[0].id === oldest)
-        ) {
+      store.state[constants.TWITTER_USER_CLIENT]
+        .get(apiRoute, data)
+        .then(tweets => {
+          if (
+            tweets.length === 0 ||
+            (tweets.length === 1 && tweets[0].id === oldest)
+          ) {
+            if (apiRoute === TWEETS_ROUTE) {
+              store.dispatch(constants.UPDATE_USER_TWEETS, userTweets);
+            }
+            if (apiRoute === FAVORITES_ROUTE) {
+              store.dispatch(constants.UPDATE_USER_FAVORITES, userFavorites);
+            }
+            return;
+          }
+
           if (apiRoute === TWEETS_ROUTE) {
-            store.dispatch(constants.UPDATE_USER_TWEETS, userTweets);
+            userTweets = userTweets.concat(tweets);
+            oldest = userTweets.slice(-1)[0].id;
           }
+
           if (apiRoute === FAVORITES_ROUTE) {
-            store.dispatch(constants.UPDATE_USER_FAVORITES, userFavorites);
+            userFavorites = userFavorites.concat(tweets);
+            oldest = userFavorites.slice(-1)[0].id;
           }
-          return;
-        }
 
-        if (apiRoute === TWEETS_ROUTE) {
-          userTweets = userTweets.concat(tweets);
-          oldest = userTweets.slice(-1)[0].id;
-        }
-
-        if (apiRoute === FAVORITES_ROUTE) {
-          userFavorites = userFavorites.concat(tweets);
-          oldest = userFavorites.slice(-1)[0].id;
-        }
-
-        gatherItems({ verificationResponse, maxId: oldest, apiRoute });
-      });
+          gatherItems({ verificationResponse, maxId: oldest, apiRoute });
+        });
     };
 
     const makeFollowUpRequest = initialResponse => {
@@ -111,17 +115,21 @@ export default class LoginPanel extends Vue {
             throw Error(verificationResponse);
           }
 
+          store.dispatch(constants.UPDATE_TWITTER_USER_KEYS, {
+            consumer_key: twitterApi.consumer_key,
+            consumer_secret: twitterApi.consumer_secret,
+            access_token_key: verificationResponse.oauth_token,
+            access_token_secret: verificationResponse.oauth_token_secret
+          });
           store.dispatch(
             constants.UPDATE_USER_CLIENT,
-            new Twitter({
-              consumer_key: twitterApi.consumer_key,
-              consumer_secret: twitterApi.consumer_secret,
-              access_token_key: verificationResponse.oauth_token,
-              access_token_secret: verificationResponse.oauth_token_secret
-            })
+            new Twitter(store.state[constants.TWITTER_USER_KEYS])
           );
 
-          store.dispatch(constants.UPDATE_TWITTER_SCREEN_NAME, verificationResponse.screen_name);
+          store.dispatch(
+            constants.UPDATE_TWITTER_SCREEN_NAME,
+            verificationResponse.screen_name
+          );
           store.dispatch(constants.UPDATE_USER_TWEETS, []);
           store.dispatch(constants.UPDATE_USER_FAVORITES, []);
 
@@ -132,12 +140,14 @@ export default class LoginPanel extends Vue {
           gatherItems({ verificationResponse, apiRoute: "favorites/list" });
 
           store.dispatch(constants.LOGIN_TO_TWITTER);
-          this.loginMessage = `Logged in to twitter as @${store.state[constants.TWITTER_SCREEN_NAME]}`;
+          this.loginMessage = `Logged in to twitter as @${
+            store.state[constants.TWITTER_SCREEN_NAME]
+          }`;
           twitterApiWindow.close();
         })
         .catch(error => {
           // eslint-disable-next-line no-console
-          console.error(`Failed to login to twitter with error ${error}`);
+          console.error(`Failed to login to twitter with error ${JSON.stringify(error)}`);
           twitterApiWindow.close();
         });
     };
@@ -160,7 +170,7 @@ export default class LoginPanel extends Vue {
       .catch(error => {
         // eslint-disable-next-line no-console
         console.error(
-          `Failed to load twitter api window with error: ${error}s`
+          `Failed to load twitter api window with error: ${JSON.stringify(error)}s`
         );
       });
   }
