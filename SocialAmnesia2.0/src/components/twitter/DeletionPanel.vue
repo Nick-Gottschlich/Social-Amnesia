@@ -29,6 +29,8 @@ export default class DeletionPanel extends Vue {
         `Are you sure you want to delete your ${itemString}? THIS ACTION IS PERMANENT!`
       )
     ) {
+      const promiseArray = [];
+
       const totalItemsLength = items.filter(item => {
         return !whitelistedItems[`${itemString}-${item.id}`];
       }).length;
@@ -41,29 +43,37 @@ export default class DeletionPanel extends Vue {
 
       items.forEach(item => {
         if (!whitelistedItems[`${itemString}-${item.id}`]) {
-          store.state[constants.TWITTER_USER_CLIENT]
-            .post(
-              itemString === "tweets"
-                ? "statuses/destroy"
-                : "favorites/destroy",
-              {
-                id: item.id_str
-              }
-            )
-            .then(() => {
-              store.commit(
-                constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED
-              );
-            })
-            .catch(error => {
-              console.log(
-                `Failed to delete item with error: ${JSON.stringify(error)}`
-              );
-            });
+          promiseArray.push(
+            store.state[constants.TWITTER_USER_CLIENT]
+              .post(
+                itemString === "tweets"
+                  ? "statuses/destroy"
+                  : "favorites/destroy",
+                {
+                  id: item.id_str
+                }
+              )
+              .then(() => {
+                store.commit(
+                  constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED
+                );
+              })
+              .catch(error => {
+                console.log(
+                  `Failed to delete item with error: ${JSON.stringify(error)}`
+                );
+              })
+          );
         }
       });
 
-      store.dispatch(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, 0);
+      Promise.allSettled(promiseArray)
+        .then(() => {
+          setTimeout(() => {
+            store.dispatch(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, 0);
+          }, 2500);
+          
+        });
     }
   }
 
