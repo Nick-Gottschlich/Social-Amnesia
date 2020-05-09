@@ -71,10 +71,10 @@ export default new Vuex.Store({
       addOrRemoveItem(state.whitelistedFavorites, tweetId);
       persistentStore.set(constants.WHITELISTED_FAVORITES, state.whitelistedFavorites);
     },
-    [constants.INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS](state) {
+    [constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED](state) {
       state[constants.CURRENTLY_DELETING].itemsDeleted += 1;
     },
-    [constants.RESET_CURRENTLY_DELETING_TOTAL_ITEMS](state) {
+    [constants.RESET_CURRENTLY_DELETING_ITEMS_DELETED](state) {
       state[constants.CURRENTLY_DELETING].itemsDeleted = 0;
     },
     [constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS](state, totalItems) {
@@ -106,11 +106,11 @@ export default new Vuex.Store({
     [constants.UPDATE_WHITELISTED_FAVORITES](store, favoriteId) {
       store.commit(constants.UPDATE_WHITELISTED_FAVORITES, favoriteId);
     },
-    [constants.INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS](store) {
-      store.commit(constants.INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS);
+    [constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED](store) {
+      store.commit(constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED);
     },
-    [constants.RESET_CURRENTLY_DELETING_TOTAL_ITEMS](store) {
-      store.commit(constants.RESET_CURRENTLY_DELETING_TOTAL_ITEMS);
+    [constants.RESET_CURRENTLY_DELETING_ITEMS_DELETED](store) {
+      store.commit(constants.RESET_CURRENTLY_DELETING_ITEMS_DELETED);
     },
     [constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS](store, totalItems) {
       store.commit(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, totalItems);

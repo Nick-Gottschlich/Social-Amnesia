@@ -23,32 +23,47 @@ import constants from "@/store/constants";
 
 @Component
 export default class DeletionPanel extends Vue {
-  deleteItems(items, itemString, whitelistedItems) {    
+  deleteItems(items, itemString, whitelistedItems) {
     if (
       window.confirm(
         `Are you sure you want to delete your ${itemString}? THIS ACTION IS PERMANENT!`
       )
     ) {
-      store.dispatch(constants.RESET_CURRENTLY_DELETING_TOTAL_ITEMS);
-      store.dispatch(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, items.length)
-      items.forEach(tweet => {
-        if (!whitelistedItems[`${itemString}-${tweet.id}`]) {
+      const totalItemsLength = items.filter(item => {
+        return !whitelistedItems[`${itemString}-${item.id}`];
+      }).length;
+
+      store.dispatch(constants.RESET_CURRENTLY_DELETING_ITEMS_DELETED);
+      store.dispatch(
+        constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS,
+        totalItemsLength
+      );
+
+      items.forEach(item => {
+        if (!whitelistedItems[`${itemString}-${item.id}`]) {
           store.state[constants.TWITTER_USER_CLIENT]
             .post(
               itemString === "tweets"
                 ? "statuses/destroy"
                 : "favorites/destroy",
               {
-                id: tweet.id_str
+                id: item.id_str
               }
             )
             .then(() => {
-              store.commit(constants.INCREMENT_CURRENTLY_DELETING_TOTAL_ITEMS);
-            }).catch((error) => {
-              console.log(`Failed to delete item with error: ${JSON.stringify(error)}`);
+              store.commit(
+                constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED
+              );
+            })
+            .catch(error => {
+              console.log(
+                `Failed to delete item with error: ${JSON.stringify(error)}`
+              );
             });
         }
       });
+
+      store.dispatch(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, 0);
     }
   }
 
