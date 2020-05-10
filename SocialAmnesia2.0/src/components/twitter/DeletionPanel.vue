@@ -67,13 +67,13 @@ export default class DeletionPanel extends Vue {
         }
       });
 
-      Promise.allSettled(promiseArray)
-        .then(() => {
-          setTimeout(() => {
-            store.dispatch(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, 0);
-          }, 2500);
-          
-        });
+      Promise.allSettled(promiseArray).then(() => {
+        setTimeout(() => {
+          store.dispatch(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, 0);
+        }, 2500);
+      });
+
+      
     }
   }
 

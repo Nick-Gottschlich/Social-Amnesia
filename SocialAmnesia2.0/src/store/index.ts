@@ -31,6 +31,7 @@ export default new Vuex.Store({
   state: {
     [constants.TWITTER_LOGGED_IN]: persistentStore.get(constants.TWITTER_LOGGED_IN) || false,
     [constants.TWITTER_SCREEN_NAME]: persistentStore.get(constants.TWITTER_SCREEN_NAME) || '',
+    [constants.TWITTER_USER_ID]: persistentStore.get(constants.TWITTER_USER_ID) || '',
     [constants.USER_TWEETS]: persistentStore.get(constants.USER_TWEETS) || [],
     [constants.USER_FAVORITES]: persistentStore.get(constants.USER_FAVORITES) || [],
     [constants.TWITTER_USER_KEYS]: persistentStore.get(constants.TWITTER_USER_KEYS) || {},
@@ -50,6 +51,9 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_TWITTER_SCREEN_NAME](state, screenName) {
       updateStore(state, constants.TWITTER_SCREEN_NAME, screenName);
+    },
+    [constants.UPDATE_TWITTER_USER_ID](state, userId) {
+      updateStore(state, constants.TWITTER_USER_ID, userId);
     },
     [constants.UPDATE_USER_TWEETS](state, tweets) {
       updateStore(state, constants.USER_TWEETS, tweets);
@@ -87,6 +91,9 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_TWITTER_SCREEN_NAME](store, screenName) {
       store.commit(constants.UPDATE_TWITTER_SCREEN_NAME, screenName);
+    },
+    [constants.TWITTER_USER_ID](store, userId) {
+      store.commit(constants.UPDATE_TWITTER_USER_ID, userId);
     },
     [constants.UPDATE_USER_TWEETS](store, tweets) {
       store.commit(constants.UPDATE_USER_TWEETS, tweets);

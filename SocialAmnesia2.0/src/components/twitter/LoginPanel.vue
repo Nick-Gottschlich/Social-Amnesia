@@ -57,10 +57,10 @@ export default class LoginPanel extends Vue {
     let userFavorites = [];
     let oldest;
 
-    const gatherItems = ({ verificationResponse, maxId, apiRoute }) => {
+    const gatherItems = ({ maxId, apiRoute }) => {
       const data = {
         tweet_mode: "extended",
-        user_id: verificationResponse.user_id,
+        user_id: store.state[constants.TWITTER_USER_ID],
         // can only do 200 per request, so we need to continually make requests until we run out of tweets
         count: 200
       };
@@ -93,7 +93,7 @@ export default class LoginPanel extends Vue {
             oldest = userFavorites.slice(-1)[0].id;
           }
 
-          gatherItems({ verificationResponse, maxId: oldest, apiRoute });
+          gatherItems({ maxId: oldest, apiRoute });
         });
     };
 
@@ -130,14 +130,18 @@ export default class LoginPanel extends Vue {
             constants.UPDATE_TWITTER_SCREEN_NAME,
             verificationResponse.screen_name
           );
+          store.dispatch(
+            constants.UPDATE_TWITTER_USER_ID,
+            verificationResponse.user_id
+          );
+
           store.dispatch(constants.UPDATE_USER_TWEETS, []);
           store.dispatch(constants.UPDATE_USER_FAVORITES, []);
 
           gatherItems({
-            verificationResponse,
             apiRoute: "statuses/user_timeline"
           });
-          gatherItems({ verificationResponse, apiRoute: "favorites/list" });
+          gatherItems({ apiRoute: "favorites/list" });
 
           store.dispatch(constants.LOGIN_TO_TWITTER);
           this.loginMessage = `Logged in to twitter as @${
@@ -147,7 +151,9 @@ export default class LoginPanel extends Vue {
         })
         .catch(error => {
           // eslint-disable-next-line no-console
-          console.error(`Failed to login to twitter with error ${JSON.stringify(error)}`);
+          console.error(
+            `Failed to login to twitter with error ${JSON.stringify(error)}`
+          );
           twitterApiWindow.close();
         });
     };
@@ -170,7 +176,9 @@ export default class LoginPanel extends Vue {
       .catch(error => {
         // eslint-disable-next-line no-console
         console.error(
-          `Failed to load twitter api window with error: ${JSON.stringify(error)}s`
+          `Failed to load twitter api window with error: ${JSON.stringify(
+            error
+          )}s`
         );
       });
   }
