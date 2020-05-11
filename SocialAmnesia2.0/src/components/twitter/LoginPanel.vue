@@ -22,6 +22,7 @@ import electron from "electron";
 import store from "@/store/index";
 import constants from "@/store/constants";
 import twitterApi from "@/secrets";
+import helpers from "@/util/helpers";
 
 const TWEETS_ROUTE = "statuses/user_timeline";
 const FAVORITES_ROUTE = "favorites/list";
@@ -53,49 +54,6 @@ export default class LoginPanel extends Vue {
     const twitterApiWindow = new BrowserWindow({
       parent: mainWindow
     });
-    let userTweets = [];
-    let userFavorites = [];
-    let oldest;
-
-    const gatherItems = ({ maxId, apiRoute }) => {
-      const data = {
-        tweet_mode: "extended",
-        user_id: store.state[constants.TWITTER_USER_ID],
-        // can only do 200 per request, so we need to continually make requests until we run out of tweets
-        count: 200
-      };
-      if (maxId) {
-        data.max_id = String(maxId);
-      }
-      store.state[constants.TWITTER_USER_CLIENT]
-        .get(apiRoute, data)
-        .then(tweets => {
-          if (
-            tweets.length === 0 ||
-            (tweets.length === 1 && tweets[0].id === oldest)
-          ) {
-            if (apiRoute === TWEETS_ROUTE) {
-              store.dispatch(constants.UPDATE_USER_TWEETS, userTweets);
-            }
-            if (apiRoute === FAVORITES_ROUTE) {
-              store.dispatch(constants.UPDATE_USER_FAVORITES, userFavorites);
-            }
-            return;
-          }
-
-          if (apiRoute === TWEETS_ROUTE) {
-            userTweets = userTweets.concat(tweets);
-            oldest = userTweets.slice(-1)[0].id;
-          }
-
-          if (apiRoute === FAVORITES_ROUTE) {
-            userFavorites = userFavorites.concat(tweets);
-            oldest = userFavorites.slice(-1)[0].id;
-          }
-
-          gatherItems({ maxId: oldest, apiRoute });
-        });
-    };
 
     const makeFollowUpRequest = initialResponse => {
       client
@@ -138,10 +96,11 @@ export default class LoginPanel extends Vue {
           store.dispatch(constants.UPDATE_USER_TWEETS, []);
           store.dispatch(constants.UPDATE_USER_FAVORITES, []);
 
-          gatherItems({
-            apiRoute: "statuses/user_timeline"
+          helpers.gatherAndSetItems({
+            apiRoute: "statuses/user_timeline",
+            itemArray: []
           });
-          gatherItems({ apiRoute: "favorites/list" });
+          helpers.gatherAndSetItems({ apiRoute: "favorites/list", itemArray: [] });
 
           store.dispatch(constants.LOGIN_TO_TWITTER);
           this.loginMessage = `Logged in to twitter as @${

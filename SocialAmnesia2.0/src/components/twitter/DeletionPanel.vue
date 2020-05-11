@@ -20,6 +20,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
 import constants from "@/store/constants";
+import helpers from "@/util/helpers";
 
 @Component
 export default class DeletionPanel extends Vue {
@@ -68,12 +69,18 @@ export default class DeletionPanel extends Vue {
       });
 
       Promise.allSettled(promiseArray).then(() => {
+        helpers.gatherAndSetItems({
+          apiRoute:
+            itemString === "tweets"
+              ? constants.TWEETS_ROUTE
+              : constants.FAVORITES_ROUTE,
+          itemArray: []
+        });
+
         setTimeout(() => {
           store.dispatch(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, 0);
         }, 2500);
       });
-
-      
     }
   }
 

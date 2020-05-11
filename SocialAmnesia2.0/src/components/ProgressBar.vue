@@ -9,7 +9,7 @@
     hide-header-close
   >
     <b-progress :max="totalItems" show-progress animated>
-      <b-progress-bar :value="itemsDeleted">{{itemsDeleted}} / {{totalItems}}</b-progress-bar>
+      <b-progress-bar :value="itemsDeleted">{{itemsDeleted}} deleted / {{totalItems}} items</b-progress-bar>
     </b-progress>
   </b-modal>
 </template>

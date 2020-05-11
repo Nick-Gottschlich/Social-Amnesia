@@ -24,6 +24,10 @@ const WHITELISTED_TWEETS = 'whitelistedTweets';
 const WHITELISTED_FAVORITES = 'whitelistedFavorites';
 const CURRENTLY_DELETING = 'currentlyDeleting';
 
+// other constants
+const TWEETS_ROUTE = "statuses/user_timeline";
+const FAVORITES_ROUTE = "favorites/list";
+
 const constants = {
   LOGIN_TO_TWITTER,
   UPDATE_TWITTER_SCREEN_NAME,
@@ -47,6 +51,8 @@ const constants = {
   WHITELISTED_TWEETS,
   WHITELISTED_FAVORITES,
   CURRENTLY_DELETING,
+  TWEETS_ROUTE,
+  FAVORITES_ROUTE,
 };
 
 export default constants;

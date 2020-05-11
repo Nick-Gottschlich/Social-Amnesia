@@ -92,7 +92,7 @@ export default new Vuex.Store({
     [constants.UPDATE_TWITTER_SCREEN_NAME](store, screenName) {
       store.commit(constants.UPDATE_TWITTER_SCREEN_NAME, screenName);
     },
-    [constants.TWITTER_USER_ID](store, userId) {
+    [constants.UPDATE_TWITTER_USER_ID](store, userId) {
       store.commit(constants.UPDATE_TWITTER_USER_ID, userId);
     },
     [constants.UPDATE_USER_TWEETS](store, tweets) {
