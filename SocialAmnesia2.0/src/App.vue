@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">About</router-link>{{' |'}}
+      <router-link to="/">About</router-link>{{ " |" }}
       <router-link to="/twitter">Twitter</router-link>
     </div>
     <router-view />

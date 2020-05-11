@@ -1,8 +1,8 @@
-const { testWithSpectron } = require('vue-cli-plugin-electron-builder');
+const { testWithSpectron } = require("vue-cli-plugin-electron-builder");
 
 jest.setTimeout(50000);
 
-test('Window Loads Properly', async () => {
+test("Window Loads Properly", async () => {
   // Wait for dev server to start
   const { app, stopServe } = await testWithSpectron();
   const win = app.browserWindow;
@@ -21,8 +21,8 @@ test('Window Loads Properly', async () => {
   // App is loaded properly
   expect(
     /Welcome to Your Vue\.js (\+ TypeScript )?App/.test(
-      await client.getHTML('#app'),
-    ),
+      await client.getHTML("#app")
+    )
   ).toBe(true);
 
   await stopServe();

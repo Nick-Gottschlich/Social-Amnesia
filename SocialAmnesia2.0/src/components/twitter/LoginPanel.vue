@@ -7,8 +7,12 @@
           class="loginButton"
           variant="success"
           v-on:click="handleTwitterLogin()"
-        >Click to login</b-button>
-        <span class="loginMessage" v-bind:class="{ loginError, loggedIn }">{{ loginMessage }}</span>
+        >
+          Click to login
+        </b-button>
+        <span class="loginMessage" v-bind:class="{ loginError, loggedIn }">
+          {{ loginMessage }}
+        </span>
       </div>
     </div>
   </div>
@@ -23,9 +27,6 @@ import store from "@/store/index";
 import constants from "@/store/constants";
 import twitterApi from "@/secrets";
 import helpers from "@/util/helpers";
-
-const TWEETS_ROUTE = "statuses/user_timeline";
-const FAVORITES_ROUTE = "favorites/list";
 
 @Component
 export default class LoginPanel extends Vue {
@@ -100,7 +101,10 @@ export default class LoginPanel extends Vue {
             apiRoute: "statuses/user_timeline",
             itemArray: []
           });
-          helpers.gatherAndSetItems({ apiRoute: "favorites/list", itemArray: [] });
+          helpers.gatherAndSetItems({
+            apiRoute: "favorites/list",
+            itemArray: []
+          });
 
           store.dispatch(constants.LOGIN_TO_TWITTER);
           this.loginMessage = `Logged in to twitter as @${

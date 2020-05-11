@@ -6,11 +6,12 @@
         class="deletionButton"
         variant="danger"
         v-on:click="handleDeleteTweets()"
-      >Click to delete tweets</b-button>
-      <b-button
-        variant="danger"
-        v-on:click="handleDeleteFavorites()"
-      >Click to delete ❤️'s (favorites)</b-button>
+      >
+        Click to delete tweets
+      </b-button>
+      <b-button variant="danger" v-on:click="handleDeleteFavorites()">
+        Click to delete ❤️'s (favorites)
+      </b-button>
     </div>
   </div>
 </template>
