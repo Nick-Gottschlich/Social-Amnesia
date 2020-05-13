@@ -1,6 +1,6 @@
 <template>
   <div class="tweetsContainer" v-if="loggedIn">
-    <h1>{{this.itemType === "tweets" ? "Your tweets" : "Your favorites"}}</h1>
+    <h1>{{ this.itemtype === "tweets" ? "Your tweets" : "Your favorites" }}</h1>
     <b-pagination
       v-model="currentPage"
       :total-rows="rows"
@@ -9,12 +9,16 @@
       align="center"
     />
     <ul id="itemList" class="tweetList">
-      <li class="itemsList" v-for="tweet in userItems" :key="`${itemType}-${tweet.id}`">
+      <li
+        class="itemsList"
+        v-for="tweet in userItems"
+        :key="`${itemtype}-${tweet.id}`"
+      >
         <div class="tweetAndOptionsContainer">
           <div class="tweetOptions">
             <b-form-checkbox
               switch
-              :id="`checklist-${itemType}-${tweet.id}`"
+              :id="`checklist-${itemtype}-${tweet.id}`"
               v-on:change="handleChanged(tweet)"
               :checked="checkIfSelected(tweet)"
             />
@@ -24,39 +28,48 @@
             <div class="tweetHeader">
               <img :src="tweet.user.profile_image_url_https" />
               <div class="tweetUsernames">
-                <span class="tweetName">{{tweet.user.name}}</span>
-                <span class="tweetUsername">@{{tweet.user.screen_name}}</span>
+                <span class="tweetName">{{ tweet.user.name }}</span>
+                <span class="tweetUsername">@{{ tweet.user.screen_name }}</span>
               </div>
             </div>
             <div class="tweetBody">
-              <span class="tweetText">{{tweet.full_text}}</span>
+              <span class="tweetText">{{ tweet.full_text }}</span>
               <div
                 class="tweetMedia"
                 v-if="tweet.extended_entities && tweet.extended_entities.media"
               >
-                <li v-for="media in tweet.extended_entities.media" :key="media.id">
+                <li
+                  v-for="media in tweet.extended_entities.media"
+                  :key="media.id"
+                >
                   <img
                     v-if="media.type === 'photo'"
                     class="tweetContent"
                     :src="media.media_url_https"
                   />
                   <video
-                    v-if="media.type === 'video' || media.type === 'animated_gif'"
+                    v-if="
+                      media.type === 'video' || media.type === 'animated_gif'
+                    "
                     controls
                     class="tweetContent"
                   >
                     <source
-                      :src="media.video_info && media.video_info.variants[0].url"
+                      :src="
+                        media.video_info && media.video_info.variants[0].url
+                      "
                       type="video/mp4"
                     />
                   </video>
                 </li>
               </div>
-              <span class="tweetCreatedAt">{{new Date(tweet.created_at).toLocaleString()}}</span>
+              <span class="tweetCreatedAt">{{
+                new Date(tweet.created_at).toLocaleString()
+              }}</span>
             </div>
             <div class="tweetFooter">
-              <div class="favorites">❤️{{tweet.favorite_count}}</div>
-              <div class="retweets">🔁{{tweet.retweet_count}}</div>
+              <div class="favorites">❤️{{ tweet.favorite_count }}</div>
+              <div class="retweets">🔁{{ tweet.retweet_count }}</div>
             </div>
           </div>
         </div>
@@ -73,7 +86,7 @@ import constants from "@/store/constants";
 
 const UserItemsPanelProps = Vue.extend({
   props: {
-    itemType: String
+    itemtype: String
   }
 });
 
@@ -83,18 +96,18 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 
   perPage = 5;
 
-  itemType = this.itemType;
+  itemtype = this.itemtype;
 
   checkIfSelected(tweet) {
-    return this.itemType === "tweets"
+    return this.itemtype === "tweets"
       ? store.state[constants.WHITELISTED_TWEETS][`tweets-${tweet.id}`]
       : store.state[constants.WHITELISTED_FAVORITES][`favorites-${tweet.id}`];
   }
 
   handleChanged(item) {
-    if (this.itemType === "tweets") {
+    if (this.itemtype === "tweets") {
       store.dispatch(constants.UPDATE_WHITELISTED_TWEETS, `tweets-${item.id}`);
-    } else if (this.itemType === "favorites") {
+    } else if (this.itemtype === "favorites") {
       store.dispatch(
         constants.UPDATE_WHITELISTED_FAVORITES,
         `favorites-${item.id}`
@@ -107,13 +120,13 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   }
 
   get userItems() {
-    if (this.itemType === "tweets") {
+    if (this.itemtype === "tweets") {
       return store.state[constants.USER_TWEETS].slice(
         (this.currentPage - 1) * this.perPage,
         this.currentPage * this.perPage
       );
     }
-    if (this.itemType === "favorites") {
+    if (this.itemtype === "favorites") {
       return store.state[constants.USER_FAVORITES].slice(
         (this.currentPage - 1) * this.perPage,
         this.currentPage * this.perPage
@@ -123,10 +136,10 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   }
 
   get rows() {
-    if (this.itemType === "tweets") {
+    if (this.itemtype === "tweets") {
       return store.state[constants.USER_TWEETS].length;
     }
-    if (this.itemType === "favorites") {
+    if (this.itemtype === "favorites") {
       return store.state[constants.USER_FAVORITES].length;
     }
     return 0;

@@ -5,23 +5,26 @@
       <DeletionPanel />
     </div>
     <div class="twitterContainer paddingTop">
-      <UserItemsPanel itemType="tweets" />
-      <UserItemsPanel itemType="favorites" />
+      <UserItemsPanel itemtype="tweets" />
+      <UserItemsPanel itemtype="favorites" />
     </div>
+    <ProgressBar />
   </div>
 </template>
 
 <script>
 import LoginPanel from "@/components/twitter/LoginPanel.vue";
 import UserItemsPanel from "@/components/twitter/UserItemsPanel.vue";
-import DeletionPanel from '@/components/twitter/DeletionPanel.vue'
+import DeletionPanel from "@/components/twitter/DeletionPanel.vue";
+import ProgressBar from "@/components/ProgressBar.vue";
 
 export default {
   name: "Twitter",
   components: {
     LoginPanel,
     UserItemsPanel,
-    DeletionPanel
+    DeletionPanel,
+    ProgressBar
   }
 };
 </script>
