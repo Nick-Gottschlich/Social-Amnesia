@@ -2,6 +2,7 @@
   <div>
     <div class="twitterContainer">
       <LoginPanel />
+      <ControlPanel />
       <DeletionPanel />
     </div>
     <div class="twitterContainer paddingTop">
@@ -17,6 +18,7 @@ import LoginPanel from "@/components/twitter/LoginPanel.vue";
 import UserItemsPanel from "@/components/twitter/UserItemsPanel.vue";
 import DeletionPanel from "@/components/twitter/DeletionPanel.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
+import ControlPanel from "@/components/ControlPanel.vue";
 
 export default {
   name: "Twitter",
@@ -24,7 +26,8 @@ export default {
     LoginPanel,
     UserItemsPanel,
     DeletionPanel,
-    ProgressBar
+    ProgressBar,
+    ControlPanel
   }
 };
 </script>
