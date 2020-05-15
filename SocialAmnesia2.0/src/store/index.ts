@@ -10,7 +10,7 @@ Vue.use(Vuex);
 const persistentStore = new Store();
 
 // uncomment to manually clear persistent store
-// persistentStore.clear()
+// persistentStore.clear();
 
 const addOrRemoveItem = (whitelistedItems, itemId) => {
   if (whitelistedItems[itemId]) {
