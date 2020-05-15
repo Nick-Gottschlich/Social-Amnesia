@@ -8,12 +8,15 @@
       v-model="value"
       v-on:input="handleUpdate(value)"
       vertical
+      :readonly="!featureEnabled"
     />
   </div>
 </template>
 
 <script>
 import { Component, Vue } from "vue-property-decorator";
+import store from "@/store/index";
+import constants from "@/store/constants";
 
 const TimeRangeSpinButtonProps = Vue.extend({
   props: {
@@ -29,6 +32,10 @@ export default class TimeRangeSpinButton extends TimeRangeSpinButtonProps {
   handleUpdate(value) {
     // Update store from here
     console.log("value", value);
+  }
+
+  get featureEnabled() {
+    return store.state[constants.TWITTER_TIME_RANGE_ENABLED];
   }
 
   data() {
