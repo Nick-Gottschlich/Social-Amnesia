@@ -52,7 +52,9 @@ export default new Vuex.Store({
     [constants.CURRENTLY_DELETING]: {
       totalItems: 0,
       itemsDeleted: 0
-    }
+    },
+    [constants.TWITTER_TIME_RANGE_ENABLED]:
+      persistentStore.get(constants.TWITTER_TIME_RANGE_ENABLED) || false
   },
   mutations: {
     [constants.LOGIN_TO_TWITTER](state) {
@@ -98,6 +100,9 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS](state, totalItems) {
       state[constants.CURRENTLY_DELETING].totalItems = totalItems;
+    },
+    [constants.UPDATE_TWITTER_TIME_RANGE_ENABLED](state, enabled) {
+      updateStore(state, constants.TWITTER_TIME_RANGE_ENABLED, enabled);
     }
   },
   actions: {
@@ -136,6 +141,9 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS](store, totalItems) {
       store.commit(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, totalItems);
+    },
+    [constants.UPDATE_TWITTER_TIME_RANGE_ENABLED](store, enabled) {
+      store.commit(constants.UPDATE_TWITTER_TIME_RANGE_ENABLED, enabled);
     }
   },
   modules: {}

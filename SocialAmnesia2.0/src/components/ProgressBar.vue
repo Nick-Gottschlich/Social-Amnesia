@@ -1,6 +1,6 @@
 <template>
   <b-modal
-    v-model="totalItems"
+    v-model="showModal"
     title="Deleting your items..."
     centered
     no-close-on-backdrop
@@ -23,6 +23,8 @@ import constants from "@/store/constants";
 
 @Component
 export default class ProgressBar extends Vue {
+  showModal = Boolean(this.totalItems);
+
   get totalItems() {
     return store.state[constants.CURRENTLY_DELETING].totalItems;
   }
