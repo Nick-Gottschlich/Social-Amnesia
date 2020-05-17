@@ -7,6 +7,13 @@ import constants from "./constants";
 
 Vue.use(Vuex);
 
+interface TimeRangeModel {
+  Hours: number;
+  Days: number;
+  Weeks: number;
+  Years: number;
+}
+
 const persistentStore = new Store();
 
 // uncomment to manually clear persistent store
@@ -54,7 +61,15 @@ export default new Vuex.Store({
       itemsDeleted: 0
     },
     [constants.TWITTER_TIME_RANGE_ENABLED]:
-      persistentStore.get(constants.TWITTER_TIME_RANGE_ENABLED) || false
+      persistentStore.get(constants.TWITTER_TIME_RANGE_ENABLED) || false,
+    [constants.TWITTER_TIME_RANGE]: persistentStore.get(
+      constants.TWITTER_TIME_RANGE
+    ) || {
+      Hours: 0,
+      Days: 0,
+      Weeks: 0,
+      Years: 0
+    }
   },
   mutations: {
     [constants.LOGIN_TO_TWITTER](state) {
@@ -103,6 +118,9 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_TWITTER_TIME_RANGE_ENABLED](state, enabled) {
       updateStore(state, constants.TWITTER_TIME_RANGE_ENABLED, enabled);
+    },
+    [constants.UPDATE_TWITTER_TIME_RANGE](state, timeRange: TimeRangeModel) {
+      updateStore(state, constants.TWITTER_TIME_RANGE, timeRange);
     }
   },
   actions: {
@@ -144,6 +162,9 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_TWITTER_TIME_RANGE_ENABLED](store, enabled) {
       store.commit(constants.UPDATE_TWITTER_TIME_RANGE_ENABLED, enabled);
+    },
+    [constants.UPDATE_TWITTER_TIME_RANGE](store, timeRange: TimeRangeModel) {
+      store.commit(constants.UPDATE_TWITTER_TIME_RANGE, timeRange);
     }
   },
   modules: {}

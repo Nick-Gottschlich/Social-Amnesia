@@ -22,30 +22,10 @@
           :checked="checkIfTimeRangeSelected()"
         />
       </div>
-      <TimeRangeSpinButton
-        min="0"
-        max="23"
-        buttonId="time-range-hours"
-        label="Hours"
-      />
-      <TimeRangeSpinButton
-        min="0"
-        max="6"
-        buttonId="time-range-days"
-        label="Days"
-      />
-      <TimeRangeSpinButton
-        min="0"
-        max="51"
-        buttonId="time-range-weeks"
-        label="Weeks"
-      />
-      <TimeRangeSpinButton
-        min="0"
-        max="20"
-        buttonId="time-range-years"
-        label="Years"
-      />
+      <TimeRangeSpinButton min="0" max="23" buttonId="tr-hours" label="Hours" />
+      <TimeRangeSpinButton min="0" max="6" buttonId="tr-days" label="Days" />
+      <TimeRangeSpinButton min="0" max="51" buttonId="tr-weeks" label="Weeks" />
+      <TimeRangeSpinButton min="0" max="20" buttonId="tr-years" label="Years" />
     </div>
   </div>
 </template>

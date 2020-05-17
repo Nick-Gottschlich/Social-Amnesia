@@ -26,6 +26,26 @@ import helpers from "@/util/helpers";
 @Component
 export default class DeletionPanel extends Vue {
   deleteItems(items, itemString, whitelistedItems) {
+    const itemInSavedTimeRangeAndFlagEnabled = item => {
+      if (!store.state[constants.TWITTER_TIME_RANGE_ENABLED]) {
+        return false;
+      }
+
+      const timeRangeObject = store.state[constants.TWITTER_TIME_RANGE];
+
+      const hoursBackToSave =
+        timeRangeObject.Hours +
+        timeRangeObject.Days * 7 +
+        timeRangeObject.Weeks * 168 +
+        timeRangeObject.Years * 8766;
+      const dateOfHoursBackToSave = new Date();
+      dateOfHoursBackToSave.setHours(
+        dateOfHoursBackToSave.getHours() - hoursBackToSave
+      );
+
+      return item.created_at > dateOfHoursBackToSave.toGMTString();
+    };
+
     if (
       window.confirm(
         `Are you sure you want to delete your ${itemString}? THIS ACTION IS PERMANENT!`
@@ -44,7 +64,15 @@ export default class DeletionPanel extends Vue {
       );
 
       items.forEach(item => {
-        if (!whitelistedItems[`${itemString}-${item.id}`]) {
+        const itemIsWhitelisted = whitelistedItems[`${itemString}-${item.id}`];
+
+        // the "false" is in here for now to prevent accidentally
+        //  deleting all the tester account tweets
+        if (
+          !itemIsWhitelisted &&
+          !itemInSavedTimeRangeAndFlagEnabled(item) &&
+          false
+        ) {
           promiseArray.push(
             store.state[constants.TWITTER_USER_CLIENT]
               .post(
