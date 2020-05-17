@@ -81,7 +81,7 @@ export default class LoginPanel extends Vue {
             access_token_secret: verificationResponse.oauth_token_secret
           });
           store.dispatch(
-            constants.UPDATE_USER_CLIENT,
+            constants.UPDATE_TWITTER_USER_CLIENT,
             new Twitter(store.state[constants.TWITTER_USER_KEYS])
           );
 

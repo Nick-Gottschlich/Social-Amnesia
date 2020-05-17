@@ -75,7 +75,7 @@ export default new Vuex.Store({
     [constants.UPDATE_TWITTER_USER_KEYS](state, keys) {
       updateStore(state, constants.TWITTER_USER_KEYS, keys);
     },
-    [constants.UPDATE_USER_CLIENT](state, client) {
+    [constants.UPDATE_TWITTER_USER_CLIENT](state, client) {
       updateStore(state, constants.TWITTER_USER_CLIENT, client);
     },
     [constants.UPDATE_WHITELISTED_TWEETS](state, tweetId) {
@@ -124,8 +124,8 @@ export default new Vuex.Store({
     [constants.UPDATE_TWITTER_USER_KEYS](store, keys) {
       store.commit(constants.UPDATE_TWITTER_USER_KEYS, keys);
     },
-    [constants.UPDATE_USER_CLIENT](store, client) {
-      store.commit(constants.UPDATE_USER_CLIENT, client);
+    [constants.UPDATE_TWITTER_USER_CLIENT](store, client) {
+      store.commit(constants.UPDATE_TWITTER_USER_CLIENT, client);
     },
     [constants.UPDATE_WHITELISTED_TWEETS](store, tweetId) {
       store.commit(constants.UPDATE_WHITELISTED_TWEETS, tweetId);
