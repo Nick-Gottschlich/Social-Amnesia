@@ -7,10 +7,17 @@ import constants from "./constants";
 
 Vue.use(Vuex);
 
+interface TimeRangeModel {
+  Hours: number;
+  Days: number;
+  Weeks: number;
+  Years: number;
+}
+
 const persistentStore = new Store();
 
 // uncomment to manually clear persistent store
-// persistentStore.clear()
+// persistentStore.clear();
 
 const addOrRemoveItem = (whitelistedItems, itemId) => {
   if (whitelistedItems[itemId]) {
@@ -52,6 +59,16 @@ export default new Vuex.Store({
     [constants.CURRENTLY_DELETING]: {
       totalItems: 0,
       itemsDeleted: 0
+    },
+    [constants.TWITTER_TIME_RANGE_ENABLED]:
+      persistentStore.get(constants.TWITTER_TIME_RANGE_ENABLED) || false,
+    [constants.TWITTER_TIME_RANGE]: persistentStore.get(
+      constants.TWITTER_TIME_RANGE
+    ) || {
+      Hours: 0,
+      Days: 0,
+      Weeks: 0,
+      Years: 0
     }
   },
   mutations: {
@@ -73,7 +90,7 @@ export default new Vuex.Store({
     [constants.UPDATE_TWITTER_USER_KEYS](state, keys) {
       updateStore(state, constants.TWITTER_USER_KEYS, keys);
     },
-    [constants.UPDATE_USER_CLIENT](state, client) {
+    [constants.UPDATE_TWITTER_USER_CLIENT](state, client) {
       updateStore(state, constants.TWITTER_USER_CLIENT, client);
     },
     [constants.UPDATE_WHITELISTED_TWEETS](state, tweetId) {
@@ -98,6 +115,12 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS](state, totalItems) {
       state[constants.CURRENTLY_DELETING].totalItems = totalItems;
+    },
+    [constants.UPDATE_TWITTER_TIME_RANGE_ENABLED](state, enabled) {
+      updateStore(state, constants.TWITTER_TIME_RANGE_ENABLED, enabled);
+    },
+    [constants.UPDATE_TWITTER_TIME_RANGE](state, timeRange: TimeRangeModel) {
+      updateStore(state, constants.TWITTER_TIME_RANGE, timeRange);
     }
   },
   actions: {
@@ -119,8 +142,8 @@ export default new Vuex.Store({
     [constants.UPDATE_TWITTER_USER_KEYS](store, keys) {
       store.commit(constants.UPDATE_TWITTER_USER_KEYS, keys);
     },
-    [constants.UPDATE_USER_CLIENT](store, client) {
-      store.commit(constants.UPDATE_USER_CLIENT, client);
+    [constants.UPDATE_TWITTER_USER_CLIENT](store, client) {
+      store.commit(constants.UPDATE_TWITTER_USER_CLIENT, client);
     },
     [constants.UPDATE_WHITELISTED_TWEETS](store, tweetId) {
       store.commit(constants.UPDATE_WHITELISTED_TWEETS, tweetId);
@@ -136,6 +159,12 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS](store, totalItems) {
       store.commit(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, totalItems);
+    },
+    [constants.UPDATE_TWITTER_TIME_RANGE_ENABLED](store, enabled) {
+      store.commit(constants.UPDATE_TWITTER_TIME_RANGE_ENABLED, enabled);
+    },
+    [constants.UPDATE_TWITTER_TIME_RANGE](store, timeRange: TimeRangeModel) {
+      store.commit(constants.UPDATE_TWITTER_TIME_RANGE, timeRange);
     }
   },
   modules: {}

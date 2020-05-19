@@ -96,8 +96,6 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 
   perPage = 5;
 
-  itemtype = this.itemtype;
-
   checkIfSelected(tweet) {
     return this.itemtype === "tweets"
       ? store.state[constants.WHITELISTED_TWEETS][`tweets-${tweet.id}`]
