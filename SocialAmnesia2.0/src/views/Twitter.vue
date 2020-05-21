@@ -5,7 +5,8 @@
       <DeletionPanel />
     </div>
     <div class="controlPanel">
-      <ControlPanel />
+      <TimeRange />
+      <ScorePanel />
     </div>
     <div class="pageDivider" />
     <div class="refreshItemsButtonContainer">
@@ -24,7 +25,8 @@ import LoginPanel from "@/components/twitter/LoginPanel.vue";
 import UserItemsPanel from "@/components/twitter/UserItemsPanel.vue";
 import DeletionPanel from "@/components/twitter/DeletionPanel.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
-import ControlPanel from "@/components/ControlPanel/ControlPanel.vue";
+import TimeRange from "@/components/ControlPanel/TimeRange.vue";
+import ScorePanel from "@/components/ControlPanel/ScorePanel.vue";
 import RefreshItemsButton from "@/components/twitter/RefreshItemsButton.vue";
 import helpers from "@/util/helpers";
 import store from "@/store/index";
@@ -37,7 +39,8 @@ export default {
     UserItemsPanel,
     DeletionPanel,
     ProgressBar,
-    ControlPanel,
+    TimeRange,
+    ScorePanel,
     RefreshItemsButton
   }
 };
@@ -67,6 +70,8 @@ if (store.state[constants.TWITTER_LOGGED_IN]) {
 
 .controlPanel {
   padding: 20px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .pageDivider {

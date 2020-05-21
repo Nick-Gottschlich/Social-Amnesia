@@ -53,6 +53,7 @@ export default class TimeRangeSpinButton extends TimeRangeSpinButtonProps {
   display: flex;
   flex-direction: column;
   width: 50px;
-  padding-right: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 </style>
