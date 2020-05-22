@@ -69,7 +69,13 @@ export default new Vuex.Store({
       Days: 0,
       Weeks: 0,
       Years: 0
-    }
+    },
+    [constants.TWITTER_SCORE_ENABLED]:
+      persistentStore.get(constants.TWITTER_SCORE_ENABLED) || false,
+    [constants.TWITTER_FAVORITES_SCORE]:
+      persistentStore.get(constants.TWITTER_FAVORITES_SCORE) || 0,
+    [constants.TWITTER_RETWEETS_SCORE]:
+      persistentStore.get(constants.TWITTER_RETWEETS_SCORE) || 0
   },
   mutations: {
     [constants.LOGIN_TO_TWITTER](state) {
@@ -121,6 +127,15 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_TWITTER_TIME_RANGE](state, timeRange: TimeRangeModel) {
       updateStore(state, constants.TWITTER_TIME_RANGE, timeRange);
+    },
+    [constants.UPDATE_TWITTER_SCORE_ENABLED](state, enabled: boolean) {
+      updateStore(state, constants.TWITTER_SCORE_ENABLED, enabled);
+    },
+    [constants.UPDATE_TWITTER_FAVORITES_SCORE](state, score: number) {
+      updateStore(state, constants.TWITTER_FAVORITES_SCORE, score);
+    },
+    [constants.UPDATE_TWITTER_RETWEETS_SCORE](state, score: number) {
+      updateStore(state, constants.TWITTER_RETWEETS_SCORE, score);
     }
   },
   actions: {
@@ -165,6 +180,15 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_TWITTER_TIME_RANGE](store, timeRange: TimeRangeModel) {
       store.commit(constants.UPDATE_TWITTER_TIME_RANGE, timeRange);
+    },
+    [constants.UPDATE_TWITTER_SCORE_ENABLED](store, enabled: boolean) {
+      store.commit(constants.UPDATE_TWITTER_SCORE_ENABLED, enabled);
+    },
+    [constants.UPDATE_TWITTER_FAVORITES_SCORE](store, score: number) {
+      store.commit(constants.UPDATE_TWITTER_FAVORITES_SCORE, score);
+    },
+    [constants.UPDATE_TWITTER_RETWEETS_SCORE](store, score: number) {
+      store.commit(constants.UPDATE_TWITTER_RETWEETS_SCORE, score);
     }
   },
   modules: {}

@@ -15,7 +15,11 @@
         />
       </svg>
     </h4>
-    <b-tooltip target="time-range-tooltip-target" triggers="hover">
+    <b-tooltip
+      target="time-range-tooltip-target"
+      triggers="hover"
+      placement="bottom"
+    >
       For example, entering in a time range of 3 hour means that
       tweets/favorites made in the last 3 hours will not be deleted
     </b-tooltip>

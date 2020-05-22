@@ -16,7 +16,11 @@
         />
       </svg>
     </h4>
-    <b-tooltip target="score-panel-tooltip-target" triggers="hover">
+    <b-tooltip
+      target="score-panel-tooltip-target"
+      triggers="hover"
+      placement="bottom"
+    >
       For example, entering "100" for favorites will save any of your tweets
       that have gotten at least 100 favorites.
     </b-tooltip>
@@ -44,6 +48,9 @@
             type="number"
             aria-label="Favorites high score input"
             min="0"
+            placeholder="Enter a number"
+            v-model="favoritesValue"
+            v-on:change="handleFavoritesScoreChange(favoritesValue)"
           ></b-form-input>
         </div>
 
@@ -54,6 +61,10 @@
           <b-form-input
             type="number"
             aria-label="Favorites high score input"
+            min="0"
+            placeholder="Enter a number"
+            v-model="retweetsValue"
+            v-on:change="handleRetweetsScoreChange(retweetsValue)"
           ></b-form-input>
         </div>
       </div>
@@ -73,14 +84,35 @@ export default class ScorePanel extends Vue {
   }
 
   handleScorePanelSwitch() {
-    // store.dispatch(
-    //   constants.UPDATE_TWITTER_TIME_RANGE_ENABLED,
-    //   store.state[constants.TWITTER_TIME_RANGE_ENABLED] !== true
-    // );
+    store.dispatch(
+      constants.UPDATE_TWITTER_SCORE_ENABLED,
+      store.state[constants.TWITTER_SCORE_ENABLED] !== true
+    );
   }
 
   checkIfScorePanelSelected() {
-    // return store.state[constants.TWITTER_TIME_RANGE_ENABLED];
+    return store.state[constants.TWITTER_SCORE_ENABLED];
+  }
+
+  handleFavoritesScoreChange(favoritesValue) {
+    store.dispatch(
+      constants.UPDATE_TWITTER_FAVORITES_SCORE,
+      Math.floor(favoritesValue) || 0
+    );
+  }
+
+  handleRetweetsScoreChange(retweetsValue) {
+    store.dispatch(
+      constants.UPDATE_TWITTER_RETWEETS_SCORE,
+      Math.floor(retweetsValue) || 0
+    );
+  }
+
+  data() {
+    return {
+      favoritesValue: store.state[constants.TWITTER_FAVORITES_SCORE],
+      retweetsValue: store.state[constants.TWITTER_RETWEETS_SCORE]
+    };
   }
 }
 </script>
@@ -95,6 +127,7 @@ export default class ScorePanel extends Vue {
 .inputSection {
   display: flex;
   justify-content: space-around;
+  align-items: center;
 }
 
 .questionSVG {
