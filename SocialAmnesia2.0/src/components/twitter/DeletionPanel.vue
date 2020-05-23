@@ -26,7 +26,7 @@ import helpers from "@/util/helpers";
 @Component
 export default class DeletionPanel extends Vue {
   deleteItems(items, itemString, whitelistedItems) {
-    const itemInSavedTimeRangeAndFlagEnabled = item => {
+    const itemOutOfSavedTimeRangeAndFlagEnabled = item => {
       if (!store.state[constants.TWITTER_TIME_RANGE_ENABLED]) {
         return false;
       }
@@ -35,7 +35,7 @@ export default class DeletionPanel extends Vue {
 
       const hoursBackToSave =
         timeRangeObject.Hours +
-        timeRangeObject.Days * 7 +
+        timeRangeObject.Days * 24 +
         timeRangeObject.Weeks * 168 +
         timeRangeObject.Years * 8766;
       const dateOfHoursBackToSave = new Date();
@@ -43,7 +43,30 @@ export default class DeletionPanel extends Vue {
         dateOfHoursBackToSave.getHours() - hoursBackToSave
       );
 
-      return item.created_at > dateOfHoursBackToSave.toGMTString();
+      return (
+        new Date(item.created_at) <
+        new Date(dateOfHoursBackToSave.toGMTString())
+      );
+    };
+
+    const itemLowerThanScoreAndFlagEnabled = item => {
+      if (!store.state[constants.TWITTER_SCORE_ENABLED]) {
+        return false;
+      }
+
+      let itemLowerThanScore = true;
+
+      if (
+        item.favorite_count >= store.state[constants.TWITTER_FAVORITES_SCORE]
+      ) {
+        itemLowerThanScore = false;
+      }
+
+      if (item.retweet_count >= store.state[constants.TWITTER_RETWEETS_SCORE]) {
+        itemLowerThanScore = false;
+      }
+
+      return itemLowerThanScore;
     };
 
     if (
@@ -69,9 +92,9 @@ export default class DeletionPanel extends Vue {
         // the "false" is in here for now to prevent accidentally
         //  deleting all the tester account tweets
         if (
-          !itemIsWhitelisted &&
-          !itemInSavedTimeRangeAndFlagEnabled(item) &&
-          false
+          (!itemIsWhitelisted || !whitelistedItems) &&
+          itemOutOfSavedTimeRangeAndFlagEnabled(item) &&
+          (itemString === "favorites" || itemLowerThanScoreAndFlagEnabled(item))
         ) {
           promiseArray.push(
             store.state[constants.TWITTER_USER_CLIENT]

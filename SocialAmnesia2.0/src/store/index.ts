@@ -100,14 +100,25 @@ export default new Vuex.Store({
       updateStore(state, constants.TWITTER_USER_CLIENT, client);
     },
     [constants.UPDATE_WHITELISTED_TWEETS](state, tweetId) {
-      addOrRemoveItem(state.whitelistedTweets, tweetId);
+      if (tweetId === -1) {
+        state[constants.WHITELISTED_TWEETS] = {};
+        console.log("state in store tweets", state.whitelistedTweets);
+      } else {
+        addOrRemoveItem(state.whitelistedTweets, tweetId);
+      }
+
       persistentStore.set(
         constants.WHITELISTED_TWEETS,
         state.whitelistedTweets
       );
     },
     [constants.UPDATE_WHITELISTED_FAVORITES](state, tweetId) {
-      addOrRemoveItem(state.whitelistedFavorites, tweetId);
+      if (tweetId === -1) {
+        state[constants.WHITELISTED_FAVORITES] = {};
+        console.log("state in store favorites", state.whitelistedFavorites);
+      } else {
+        addOrRemoveItem(state.whitelistedFavorites, tweetId);
+      }
       persistentStore.set(
         constants.WHITELISTED_FAVORITES,
         state.whitelistedFavorites

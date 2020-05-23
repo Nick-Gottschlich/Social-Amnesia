@@ -3,6 +3,7 @@
     class="refreshButton"
     variant="primary"
     v-on:click="handleRefreshClick()"
+    v-if="loggedIn"
   >
     <span v-if="!this.loading">
       Refresh tweets/favorites
@@ -14,10 +15,16 @@
 <script>
 import { Component, Vue } from "vue-property-decorator";
 import helpers from "@/util/helpers";
+import store from "@/store/index";
+import constants from "@/store/constants";
 
 @Component
 export default class RefreshItemsButton extends Vue {
   loading = false;
+
+  get loggedIn() {
+    return store.state[constants.TWITTER_LOGGED_IN];
+  }
 
   handleRefreshClick() {
     this.loading = true;
