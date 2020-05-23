@@ -26,11 +26,7 @@ import helpers from "@/util/helpers";
 @Component
 export default class DeletionPanel extends Vue {
   deleteItems(items, itemString, whitelistedItems) {
-    const itemOutOfSavedTimeRangeAndFlagEnabled = item => {
-      if (!store.state[constants.TWITTER_TIME_RANGE_ENABLED]) {
-        return false;
-      }
-
+    const itemInSavedTimeRange = item => {
       const timeRangeObject = store.state[constants.TWITTER_TIME_RANGE];
 
       const hoursBackToSave =
@@ -44,29 +40,23 @@ export default class DeletionPanel extends Vue {
       );
 
       return (
-        new Date(item.created_at) <
+        new Date(item.created_at) >
         new Date(dateOfHoursBackToSave.toGMTString())
       );
     };
 
-    const itemLowerThanScoreAndFlagEnabled = item => {
-      if (!store.state[constants.TWITTER_SCORE_ENABLED]) {
-        return false;
-      }
-
-      let itemLowerThanScore = true;
-
+    const itemLowerThanScore = item => {
       if (
         item.favorite_count >= store.state[constants.TWITTER_FAVORITES_SCORE]
       ) {
-        itemLowerThanScore = false;
+        return false;
       }
 
       if (item.retweet_count >= store.state[constants.TWITTER_RETWEETS_SCORE]) {
-        itemLowerThanScore = false;
+        return false;
       }
 
-      return itemLowerThanScore;
+      return true;
     };
 
     if (
@@ -91,11 +81,16 @@ export default class DeletionPanel extends Vue {
 
         // the "false" is in here for now to prevent accidentally
         //  deleting all the tester account tweets
-        if (
-          (!itemIsWhitelisted || !whitelistedItems) &&
-          itemOutOfSavedTimeRangeAndFlagEnabled(item) &&
-          (itemString === "favorites" || itemLowerThanScoreAndFlagEnabled(item))
-        ) {
+        const shouldDeleteItem =
+          false &&
+          !itemIsWhitelisted &&
+          (!itemInSavedTimeRange(item) ||
+            !store.state[constants.TWITTER_TIME_RANGE_ENABLED]) &&
+          (itemString === "favorites" ||
+            itemLowerThanScore(item) ||
+            !store.state[constants.TWITTER_SCORE_ENABLED]);
+
+        if (shouldDeleteItem) {
           promiseArray.push(
             store.state[constants.TWITTER_USER_CLIENT]
               .post(

@@ -51,6 +51,7 @@
             placeholder="Enter a number"
             v-model="favoritesValue"
             v-on:change="handleFavoritesScoreChange(favoritesValue)"
+            :disabled="!featureEnabled"
           ></b-form-input>
         </div>
 
@@ -65,6 +66,7 @@
             placeholder="Enter a number"
             v-model="retweetsValue"
             v-on:change="handleRetweetsScoreChange(retweetsValue)"
+            :disabled="!featureEnabled"
           ></b-form-input>
         </div>
       </div>
@@ -81,6 +83,10 @@ import constants from "@/store/constants";
 export default class ScorePanel extends Vue {
   get loggedIn() {
     return store.state[constants.TWITTER_LOGGED_IN];
+  }
+
+  get featureEnabled() {
+    return store.state[constants.TWITTER_SCORE_ENABLED];
   }
 
   handleScorePanelSwitch() {
