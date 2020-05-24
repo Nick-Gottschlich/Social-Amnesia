@@ -69,7 +69,13 @@ export default new Vuex.Store({
       Days: 0,
       Weeks: 0,
       Years: 0
-    }
+    },
+    [constants.TWITTER_SCORE_ENABLED]:
+      persistentStore.get(constants.TWITTER_SCORE_ENABLED) || false,
+    [constants.TWITTER_FAVORITES_SCORE]:
+      persistentStore.get(constants.TWITTER_FAVORITES_SCORE) || 0,
+    [constants.TWITTER_RETWEETS_SCORE]:
+      persistentStore.get(constants.TWITTER_RETWEETS_SCORE) || 0
   },
   mutations: {
     [constants.LOGIN_TO_TWITTER](state) {
@@ -94,14 +100,25 @@ export default new Vuex.Store({
       updateStore(state, constants.TWITTER_USER_CLIENT, client);
     },
     [constants.UPDATE_WHITELISTED_TWEETS](state, tweetId) {
-      addOrRemoveItem(state.whitelistedTweets, tweetId);
+      if (tweetId === -1) {
+        state[constants.WHITELISTED_TWEETS] = {};
+        console.log("state in store tweets", state.whitelistedTweets);
+      } else {
+        addOrRemoveItem(state.whitelistedTweets, tweetId);
+      }
+
       persistentStore.set(
         constants.WHITELISTED_TWEETS,
         state.whitelistedTweets
       );
     },
     [constants.UPDATE_WHITELISTED_FAVORITES](state, tweetId) {
-      addOrRemoveItem(state.whitelistedFavorites, tweetId);
+      if (tweetId === -1) {
+        state[constants.WHITELISTED_FAVORITES] = {};
+        console.log("state in store favorites", state.whitelistedFavorites);
+      } else {
+        addOrRemoveItem(state.whitelistedFavorites, tweetId);
+      }
       persistentStore.set(
         constants.WHITELISTED_FAVORITES,
         state.whitelistedFavorites
@@ -121,6 +138,15 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_TWITTER_TIME_RANGE](state, timeRange: TimeRangeModel) {
       updateStore(state, constants.TWITTER_TIME_RANGE, timeRange);
+    },
+    [constants.UPDATE_TWITTER_SCORE_ENABLED](state, enabled: boolean) {
+      updateStore(state, constants.TWITTER_SCORE_ENABLED, enabled);
+    },
+    [constants.UPDATE_TWITTER_FAVORITES_SCORE](state, score: number) {
+      updateStore(state, constants.TWITTER_FAVORITES_SCORE, score);
+    },
+    [constants.UPDATE_TWITTER_RETWEETS_SCORE](state, score: number) {
+      updateStore(state, constants.TWITTER_RETWEETS_SCORE, score);
     }
   },
   actions: {
@@ -165,6 +191,15 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_TWITTER_TIME_RANGE](store, timeRange: TimeRangeModel) {
       store.commit(constants.UPDATE_TWITTER_TIME_RANGE, timeRange);
+    },
+    [constants.UPDATE_TWITTER_SCORE_ENABLED](store, enabled: boolean) {
+      store.commit(constants.UPDATE_TWITTER_SCORE_ENABLED, enabled);
+    },
+    [constants.UPDATE_TWITTER_FAVORITES_SCORE](store, score: number) {
+      store.commit(constants.UPDATE_TWITTER_FAVORITES_SCORE, score);
+    },
+    [constants.UPDATE_TWITTER_RETWEETS_SCORE](store, score: number) {
+      store.commit(constants.UPDATE_TWITTER_RETWEETS_SCORE, score);
     }
   },
   modules: {}

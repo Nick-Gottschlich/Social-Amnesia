@@ -7,6 +7,7 @@
           class="loginButton"
           variant="success"
           v-on:click="handleTwitterLogin()"
+          v-if="!loggedIn"
         >
           Click to login
         </b-button>
@@ -94,8 +95,13 @@ export default class LoginPanel extends Vue {
             verificationResponse.user_id
           );
 
+          // Clear out existing items and white list
+          // This can be removed once I add a log out button
+          //  that can clear store/persistence
           store.dispatch(constants.UPDATE_USER_TWEETS, []);
           store.dispatch(constants.UPDATE_USER_FAVORITES, []);
+          store.dispatch(constants.UPDATE_WHITELISTED_TWEETS, -1);
+          store.dispatch(constants.UPDATE_WHITELISTED_FAVORITES, -1);
 
           helpers.gatherAndSetItems({
             apiRoute: "statuses/user_timeline",

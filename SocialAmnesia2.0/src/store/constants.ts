@@ -16,6 +16,9 @@ const UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS =
   "updateCurrentlyDeletingTotalTweets";
 const UPDATE_TWITTER_TIME_RANGE_ENABLED = "updateTwitterTimeRangeEnabled";
 const UPDATE_TWITTER_TIME_RANGE = "updateTwitterTimeRange";
+const UPDATE_TWITTER_SCORE_ENABLED = "updateTwitterScoreEnabled";
+const UPDATE_TWITTER_FAVORITES_SCORE = "updateTwitterFavoritesScore";
+const UPDATE_TWITTER_RETWEETS_SCORE = "updateTwitterRetweetsScore";
 
 // ACTUAL VALUES IN STATE
 const TWITTER_LOGGED_IN = "twitterLoggedIn";
@@ -30,6 +33,9 @@ const WHITELISTED_FAVORITES = "whitelistedFavorites";
 const CURRENTLY_DELETING = "currentlyDeleting";
 const TWITTER_TIME_RANGE_ENABLED = "twitterTimeRangeEnabled";
 const TWITTER_TIME_RANGE = "twitterTimeRange";
+const TWITTER_SCORE_ENABLED = "twitterScoreEnabled";
+const TWITTER_FAVORITES_SCORE = "twitterFavoritesScore";
+const TWITTER_RETWEETS_SCORE = "twitterRetweetsScore";
 
 // other constants
 const TWEETS_ROUTE = "statuses/user_timeline";
@@ -50,6 +56,9 @@ const constants = {
   UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS,
   UPDATE_TWITTER_TIME_RANGE_ENABLED,
   UPDATE_TWITTER_TIME_RANGE,
+  UPDATE_TWITTER_SCORE_ENABLED,
+  UPDATE_TWITTER_FAVORITES_SCORE,
+  UPDATE_TWITTER_RETWEETS_SCORE,
   TWITTER_LOGGED_IN,
   TWITTER_SCREEN_NAME,
   TWITTER_USER_ID,
@@ -62,6 +71,9 @@ const constants = {
   CURRENTLY_DELETING,
   TWITTER_TIME_RANGE_ENABLED,
   TWITTER_TIME_RANGE,
+  TWITTER_SCORE_ENABLED,
+  TWITTER_FAVORITES_SCORE,
+  TWITTER_RETWEETS_SCORE,
   TWEETS_ROUTE,
   FAVORITES_ROUTE
 };
