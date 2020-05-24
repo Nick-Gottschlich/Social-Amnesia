@@ -23,9 +23,12 @@ import constants from "@/store/constants";
 
 @Component
 export default class ProgressBar extends Vue {
-  showModal = Boolean(this.totalItems);
+  showModal = false;
 
   get totalItems() {
+    this.showModal = Boolean(
+      store.state[constants.CURRENTLY_DELETING].totalItems
+    );
     return store.state[constants.CURRENTLY_DELETING].totalItems;
   }
 

@@ -66,8 +66,24 @@ export default class DeletionPanel extends Vue {
     ) {
       const promiseArray = [];
 
+      const shouldDeleteItem = item => {
+        const itemIsWhitelisted = whitelistedItems[`${itemString}-${item.id}`];
+
+        // add the "false" in here to skip deletion
+        const shouldDelete =
+          // false &&
+          !itemIsWhitelisted &&
+          (!itemInSavedTimeRange(item) ||
+            !store.state[constants.TWITTER_TIME_RANGE_ENABLED]) &&
+          (itemString === "favorites" ||
+            itemLowerThanScore(item) ||
+            !store.state[constants.TWITTER_SCORE_ENABLED]);
+
+        return shouldDelete;
+      };
+
       const totalItemsLength = items.filter(item => {
-        return !whitelistedItems[`${itemString}-${item.id}`];
+        return shouldDeleteItem(item);
       }).length;
 
       store.dispatch(constants.RESET_CURRENTLY_DELETING_ITEMS_DELETED);
@@ -77,20 +93,7 @@ export default class DeletionPanel extends Vue {
       );
 
       items.forEach(item => {
-        const itemIsWhitelisted = whitelistedItems[`${itemString}-${item.id}`];
-
-        // the "false" is in here for now to prevent accidentally
-        //  deleting all the tester account tweets
-        const shouldDeleteItem =
-          false &&
-          !itemIsWhitelisted &&
-          (!itemInSavedTimeRange(item) ||
-            !store.state[constants.TWITTER_TIME_RANGE_ENABLED]) &&
-          (itemString === "favorites" ||
-            itemLowerThanScore(item) ||
-            !store.state[constants.TWITTER_SCORE_ENABLED]);
-
-        if (shouldDeleteItem) {
+        if (shouldDeleteItem(item)) {
           promiseArray.push(
             store.state[constants.TWITTER_USER_CLIENT]
               .post(
