@@ -1,5 +1,6 @@
 // ACTIONS TO MODIFY VALUES IN STATE
 const LOGIN_TO_TWITTER = "logIntoTwitter";
+const LOGOUT_OF_TWITTER = "logoutOfTwitter";
 const UPDATE_TWITTER_SCREEN_NAME = "updateTwitterScreenName";
 const UPDATE_TWITTER_USER_ID = "updateTwitterUserId";
 const UPDATE_USER_TWEETS = "updateUserTweets";
@@ -43,6 +44,7 @@ const FAVORITES_ROUTE = "favorites/list";
 
 const constants = {
   LOGIN_TO_TWITTER,
+  LOGOUT_OF_TWITTER,
   UPDATE_TWITTER_SCREEN_NAME,
   UPDATE_TWITTER_USER_ID,
   UPDATE_USER_TWEETS,

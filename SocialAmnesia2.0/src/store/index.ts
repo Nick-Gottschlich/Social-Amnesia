@@ -153,6 +153,10 @@ export default new Vuex.Store({
     [constants.LOGIN_TO_TWITTER](store) {
       store.commit(constants.LOGIN_TO_TWITTER);
     },
+    [constants.LOGOUT_OF_TWITTER](store) {
+      // TODO(NG): this needs to clear specifically the twitter store
+      persistentStore.clear();
+    },
     [constants.UPDATE_TWITTER_SCREEN_NAME](store, screenName) {
       store.commit(constants.UPDATE_TWITTER_SCREEN_NAME, screenName);
     },

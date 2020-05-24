@@ -11,6 +11,23 @@
         >
           Click to login
         </b-button>
+        <div id="login-panel-login-button">
+          <b-button
+            class="loginButton"
+            variant="warning"
+            v-on:click="handleTwitterLogout()"
+            v-if="loggedIn"
+          >
+            Click to logout
+          </b-button>
+        </div>
+        <b-tooltip
+          target="login-panel-login-button"
+          triggers="hover"
+          placement="bottom"
+        >
+          This will clear all configuration data!
+        </b-tooltip>
         <span class="loginMessage" v-bind:class="{ loginError, loggedIn }">
           {{ loginMessage }}
         </span>
@@ -150,6 +167,10 @@ export default class LoginPanel extends Vue {
           )}s`
         );
       });
+  }
+
+  handleTwitterLogout() {
+    console.log("logout clicked");
   }
 }
 </script>
