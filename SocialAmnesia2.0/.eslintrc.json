@@ -14,7 +14,8 @@
   },
   "rules": {
     "no-debugger": "warn",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "@typescript-eslint/ban-ts-ignore": "off"
   },
   "overrides": [
     {

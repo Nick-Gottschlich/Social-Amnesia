@@ -2,6 +2,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import Store from "electron-store";
+// @ts-ignore
 import Twitter from "twitter-lite";
 import constants from "./constants";
 
@@ -19,7 +20,12 @@ const persistentStore = new Store();
 // uncomment to manually clear persistent store
 // persistentStore.clear();
 
-const addOrRemoveItem = (whitelistedItems, itemId) => {
+const addOrRemoveItem = (
+  whitelistedItems: { [key: string]: boolean },
+  itemId: string
+) => {
+  console.log("wi", whitelistedItems);
+  console.log("item id", itemId);
   if (whitelistedItems[itemId]) {
     whitelistedItems[itemId] = false;
   } else {
@@ -29,7 +35,8 @@ const addOrRemoveItem = (whitelistedItems, itemId) => {
 
 // "middleware" to ensure that both the persistent store
 //  and the vuex store are updated properly
-const updateStore = (state, marker, value) => {
+const updateStore = (state: any, marker: string, value: any) => {
+  console.log(state, marker, value);
   state[marker] = value;
   persistentStore.set(marker, value);
 };
