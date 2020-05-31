@@ -24,8 +24,6 @@ const addOrRemoveItem = (
   whitelistedItems: { [key: string]: boolean },
   itemId: string
 ) => {
-  console.log("wi", whitelistedItems);
-  console.log("item id", itemId);
   if (whitelistedItems[itemId]) {
     whitelistedItems[itemId] = false;
   } else {
@@ -36,7 +34,6 @@ const addOrRemoveItem = (
 // "middleware" to ensure that both the persistent store
 //  and the vuex store are updated properly
 const updateStore = (state: any, marker: string, value: any) => {
-  console.log(state, marker, value);
   state[marker] = value;
   persistentStore.set(marker, value);
 };
@@ -109,7 +106,6 @@ export default new Vuex.Store({
     [constants.UPDATE_WHITELISTED_TWEETS](state, tweetId) {
       if (tweetId === -1) {
         state[constants.WHITELISTED_TWEETS] = {};
-        console.log("state in store tweets", state.whitelistedTweets);
       } else {
         addOrRemoveItem(state.whitelistedTweets, tweetId);
       }
@@ -122,7 +118,6 @@ export default new Vuex.Store({
     [constants.UPDATE_WHITELISTED_FAVORITES](state, tweetId) {
       if (tweetId === -1) {
         state[constants.WHITELISTED_FAVORITES] = {};
-        console.log("state in store favorites", state.whitelistedFavorites);
       } else {
         addOrRemoveItem(state.whitelistedFavorites, tweetId);
       }
