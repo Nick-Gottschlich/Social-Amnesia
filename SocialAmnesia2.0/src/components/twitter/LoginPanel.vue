@@ -14,7 +14,7 @@
         <div id="login-panel-login-button">
           <b-button
             class="loginButton"
-            variant="warning"
+            variant="success"
             v-on:click="handleTwitterLogout()"
             v-if="loggedIn"
           >
@@ -26,7 +26,7 @@
           triggers="hover"
           placement="bottom"
         >
-          This will clear all configuration data!
+          This will clear your saved settings!
         </b-tooltip>
         <span class="loginMessage" v-bind:class="{ loginError, loggedIn }">
           {{ loginMessage }}
@@ -53,13 +53,13 @@ export default class LoginPanel extends Vue {
   loginMessage = "Not logged in!";
 
   get loggedIn() {
-    if (store.state[constants.TWITTER_LOGGED_IN]) {
+    if (store.state.twitter[constants.TWITTER_LOGGED_IN]) {
       this.loginMessage = `Logged in to twitter as @${
-        store.state[constants.TWITTER_SCREEN_NAME]
+        store.state.twitter[constants.TWITTER_SCREEN_NAME]
       }`;
     }
 
-    return store.state[constants.TWITTER_LOGGED_IN];
+    return store.state.twitter[constants.TWITTER_LOGGED_IN];
   }
 
   handleTwitterLogin() {
@@ -100,7 +100,7 @@ export default class LoginPanel extends Vue {
           });
           store.dispatch(
             constants.UPDATE_TWITTER_USER_CLIENT,
-            new Twitter(store.state[constants.TWITTER_USER_KEYS])
+            new Twitter(store.state.twitter[constants.TWITTER_USER_KEYS])
           );
 
           store.dispatch(
@@ -131,7 +131,7 @@ export default class LoginPanel extends Vue {
 
           store.dispatch(constants.LOGIN_TO_TWITTER);
           this.loginMessage = `Logged in to twitter as @${
-            store.state[constants.TWITTER_SCREEN_NAME]
+            store.state.twitter[constants.TWITTER_SCREEN_NAME]
           }`;
           twitterApiWindow.close();
         })
@@ -170,7 +170,7 @@ export default class LoginPanel extends Vue {
   }
 
   handleTwitterLogout() {
-    console.log("logout clicked");
+    store.dispatch(constants.LOGOUT_OF_TWITTER);
   }
 }
 </script>

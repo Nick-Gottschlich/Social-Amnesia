@@ -73,18 +73,18 @@ import TimeRangeSpinButton from "@/components/ControlPanel/TimeRangeSpinButton.v
 })
 export default class TimeRange extends Vue {
   get loggedIn() {
-    return store.state[constants.TWITTER_LOGGED_IN];
+    return store.state.twitter[constants.TWITTER_LOGGED_IN];
   }
 
   handleTimeRangeSwitch() {
     store.dispatch(
       constants.UPDATE_TWITTER_TIME_RANGE_ENABLED,
-      store.state[constants.TWITTER_TIME_RANGE_ENABLED] !== true
+      store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED] !== true
     );
   }
 
   checkIfTimeRangeSelected() {
-    return store.state[constants.TWITTER_TIME_RANGE_ENABLED];
+    return store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED];
   }
 }
 </script>

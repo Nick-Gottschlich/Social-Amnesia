@@ -31,18 +31,18 @@ const TimeRangeSpinButtonProps = Vue.extend({
 export default class TimeRangeSpinButton extends TimeRangeSpinButtonProps {
   handleUpdate(value) {
     store.dispatch(constants.UPDATE_TWITTER_TIME_RANGE, {
-      ...store.state[constants.TWITTER_TIME_RANGE],
+      ...store.state.twitter[constants.TWITTER_TIME_RANGE],
       [this.label]: value
     });
   }
 
   get featureEnabled() {
-    return store.state[constants.TWITTER_TIME_RANGE_ENABLED];
+    return store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED];
   }
 
   data() {
     return {
-      value: store.state[constants.TWITTER_TIME_RANGE][this.label]
+      value: store.state.twitter[constants.TWITTER_TIME_RANGE][this.label]
     };
   }
 }

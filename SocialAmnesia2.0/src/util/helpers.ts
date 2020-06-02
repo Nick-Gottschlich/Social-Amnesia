@@ -16,7 +16,7 @@ const gatherAndSetItems = ({
 }) => {
   const data = {
     tweet_mode: "extended",
-    user_id: store.state[constants.TWITTER_USER_ID],
+    user_id: store.state.twitter[constants.TWITTER_USER_ID],
     // can only do 200 per request, so we need to continually make requests until we run out of items
     count: 200
   };
@@ -24,7 +24,7 @@ const gatherAndSetItems = ({
     // @ts-ignore
     data.max_id = String(maxId);
   }
-  store.state[constants.TWITTER_USER_CLIENT]
+  store.state.twitter[constants.TWITTER_USER_CLIENT]
     .get(apiRoute, data)
     .then((items: any) => {
       if (

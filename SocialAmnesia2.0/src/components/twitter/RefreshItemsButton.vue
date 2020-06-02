@@ -23,7 +23,7 @@ export default class RefreshItemsButton extends Vue {
   loading = false;
 
   get loggedIn() {
-    return store.state[constants.TWITTER_LOGGED_IN];
+    return store.state.twitter[constants.TWITTER_LOGGED_IN];
   }
 
   handleRefreshClick() {

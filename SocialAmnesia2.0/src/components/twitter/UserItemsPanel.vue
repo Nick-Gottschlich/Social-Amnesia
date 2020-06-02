@@ -98,8 +98,10 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 
   checkIfSelected(tweet) {
     return this.itemtype === "tweets"
-      ? store.state[constants.WHITELISTED_TWEETS][`tweets-${tweet.id}`]
-      : store.state[constants.WHITELISTED_FAVORITES][`favorites-${tweet.id}`];
+      ? store.state.twitter[constants.WHITELISTED_TWEETS][`tweets-${tweet.id}`]
+      : store.state.twitter[constants.WHITELISTED_FAVORITES][
+          `favorites-${tweet.id}`
+        ];
   }
 
   handleChanged(item) {
@@ -114,18 +116,18 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   }
 
   get loggedIn() {
-    return store.state[constants.TWITTER_LOGGED_IN];
+    return store.state.twitter[constants.TWITTER_LOGGED_IN];
   }
 
   get userItems() {
     if (this.itemtype === "tweets") {
-      return store.state[constants.USER_TWEETS].slice(
+      return store.state.twitter[constants.USER_TWEETS].slice(
         (this.currentPage - 1) * this.perPage,
         this.currentPage * this.perPage
       );
     }
     if (this.itemtype === "favorites") {
-      return store.state[constants.USER_FAVORITES].slice(
+      return store.state.twitter[constants.USER_FAVORITES].slice(
         (this.currentPage - 1) * this.perPage,
         this.currentPage * this.perPage
       );
@@ -135,10 +137,10 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 
   get rows() {
     if (this.itemtype === "tweets") {
-      return store.state[constants.USER_TWEETS].length;
+      return store.state.twitter[constants.USER_TWEETS].length;
     }
     if (this.itemtype === "favorites") {
-      return store.state[constants.USER_FAVORITES].length;
+      return store.state.twitter[constants.USER_FAVORITES].length;
     }
     return 0;
   }

@@ -82,22 +82,22 @@ import constants from "@/store/constants";
 @Component
 export default class ScorePanel extends Vue {
   get loggedIn() {
-    return store.state[constants.TWITTER_LOGGED_IN];
+    return store.state.twitter[constants.TWITTER_LOGGED_IN];
   }
 
   get featureEnabled() {
-    return store.state[constants.TWITTER_SCORE_ENABLED];
+    return store.state.twitter[constants.TWITTER_SCORE_ENABLED];
   }
 
   handleScorePanelSwitch() {
     store.dispatch(
       constants.UPDATE_TWITTER_SCORE_ENABLED,
-      store.state[constants.TWITTER_SCORE_ENABLED] !== true
+      store.state.twitter[constants.TWITTER_SCORE_ENABLED] !== true
     );
   }
 
   checkIfScorePanelSelected() {
-    return store.state[constants.TWITTER_SCORE_ENABLED];
+    return store.state.twitter[constants.TWITTER_SCORE_ENABLED];
   }
 
   handleFavoritesScoreChange(favoritesValue) {
@@ -116,8 +116,8 @@ export default class ScorePanel extends Vue {
 
   data() {
     return {
-      favoritesValue: store.state[constants.TWITTER_FAVORITES_SCORE],
-      retweetsValue: store.state[constants.TWITTER_RETWEETS_SCORE]
+      favoritesValue: store.state.twitter[constants.TWITTER_FAVORITES_SCORE],
+      retweetsValue: store.state.twitter[constants.TWITTER_RETWEETS_SCORE]
     };
   }
 }

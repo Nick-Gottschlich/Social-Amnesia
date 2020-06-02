@@ -15,10 +15,10 @@ interface TimeRangeModel {
   Years: number;
 }
 
-const persistentStore = new Store();
+const twitterPersistentStore = new Store();
 
 // uncomment to manually clear persistent store
-// persistentStore.clear();
+// twitterPersistentStore.clear();
 
 const addOrRemoveItem = (
   whitelistedItems: { [key: string]: boolean },
@@ -35,55 +35,85 @@ const addOrRemoveItem = (
 //  and the vuex store are updated properly
 const updateStore = (state: any, marker: string, value: any) => {
   state[marker] = value;
-  persistentStore.set(marker, value);
+  twitterPersistentStore.set(marker, value);
+};
+
+const twitterStoreDefault = {
+  [constants.TWITTER_LOGGED_IN]: false,
+  [constants.TWITTER_SCREEN_NAME]: "",
+  [constants.TWITTER_USER_ID]: "",
+  [constants.USER_TWEETS]: [],
+  [constants.USER_FAVORITES]: [],
+  [constants.TWITTER_USER_KEYS]: {},
+  [constants.TWITTER_USER_CLIENT]: {},
+  [constants.WHITELISTED_TWEETS]: {},
+  [constants.WHITELISTED_FAVORITES]: {},
+  [constants.TWITTER_TIME_RANGE_ENABLED]: false,
+  [constants.TWITTER_TIME_RANGE]: {
+    Hours: 0,
+    Days: 0,
+    Weeks: 0,
+    Years: 0
+  },
+  [constants.TWITTER_SCORE_ENABLED]: false,
+  [constants.TWITTER_FAVORITES_SCORE]: 0,
+  [constants.TWITTER_RETWEETS_SCORE]: 0
 };
 
 export default new Vuex.Store({
   state: {
-    [constants.TWITTER_LOGGED_IN]:
-      persistentStore.get(constants.TWITTER_LOGGED_IN) || false,
-    [constants.TWITTER_SCREEN_NAME]:
-      persistentStore.get(constants.TWITTER_SCREEN_NAME) || "",
-    [constants.TWITTER_USER_ID]:
-      persistentStore.get(constants.TWITTER_USER_ID) || "",
-    [constants.USER_TWEETS]: persistentStore.get(constants.USER_TWEETS) || [],
-    [constants.USER_FAVORITES]:
-      persistentStore.get(constants.USER_FAVORITES) || [],
-    [constants.TWITTER_USER_KEYS]:
-      persistentStore.get(constants.TWITTER_USER_KEYS) || {},
-    [constants.TWITTER_USER_CLIENT]: persistentStore.get(
-      constants.TWITTER_USER_CLIENT
-    )
-      ? new Twitter(persistentStore.get(constants.TWITTER_USER_KEYS))
-      : {},
-    [constants.WHITELISTED_TWEETS]:
-      persistentStore.get(constants.WHITELISTED_TWEETS) || {},
-    [constants.WHITELISTED_FAVORITES]:
-      persistentStore.get(constants.WHITELISTED_FAVORITES) || {},
+    twitter: {
+      [constants.TWITTER_LOGGED_IN]:
+        twitterPersistentStore.get(constants.TWITTER_LOGGED_IN) || false,
+      [constants.TWITTER_SCREEN_NAME]:
+        twitterPersistentStore.get(constants.TWITTER_SCREEN_NAME) || "",
+      [constants.TWITTER_USER_ID]:
+        twitterPersistentStore.get(constants.TWITTER_USER_ID) || "",
+      [constants.USER_TWEETS]:
+        twitterPersistentStore.get(constants.USER_TWEETS) || [],
+      [constants.USER_FAVORITES]:
+        twitterPersistentStore.get(constants.USER_FAVORITES) || [],
+      [constants.TWITTER_USER_KEYS]:
+        twitterPersistentStore.get(constants.TWITTER_USER_KEYS) || {},
+      [constants.TWITTER_USER_CLIENT]: twitterPersistentStore.get(
+        constants.TWITTER_USER_CLIENT
+      )
+        ? new Twitter(twitterPersistentStore.get(constants.TWITTER_USER_KEYS))
+        : {},
+      [constants.WHITELISTED_TWEETS]:
+        twitterPersistentStore.get(constants.WHITELISTED_TWEETS) || {},
+      [constants.WHITELISTED_FAVORITES]:
+        twitterPersistentStore.get(constants.WHITELISTED_FAVORITES) || {},
+      [constants.TWITTER_TIME_RANGE_ENABLED]:
+        twitterPersistentStore.get(constants.TWITTER_TIME_RANGE_ENABLED) ||
+        false,
+      [constants.TWITTER_TIME_RANGE]: twitterPersistentStore.get(
+        constants.TWITTER_TIME_RANGE
+      ) || {
+        Hours: 0,
+        Days: 0,
+        Weeks: 0,
+        Years: 0
+      },
+      [constants.TWITTER_SCORE_ENABLED]:
+        twitterPersistentStore.get(constants.TWITTER_SCORE_ENABLED) || false,
+      [constants.TWITTER_FAVORITES_SCORE]:
+        twitterPersistentStore.get(constants.TWITTER_FAVORITES_SCORE) || 0,
+      [constants.TWITTER_RETWEETS_SCORE]:
+        twitterPersistentStore.get(constants.TWITTER_RETWEETS_SCORE) || 0
+    },
     [constants.CURRENTLY_DELETING]: {
       totalItems: 0,
       itemsDeleted: 0
-    },
-    [constants.TWITTER_TIME_RANGE_ENABLED]:
-      persistentStore.get(constants.TWITTER_TIME_RANGE_ENABLED) || false,
-    [constants.TWITTER_TIME_RANGE]: persistentStore.get(
-      constants.TWITTER_TIME_RANGE
-    ) || {
-      Hours: 0,
-      Days: 0,
-      Weeks: 0,
-      Years: 0
-    },
-    [constants.TWITTER_SCORE_ENABLED]:
-      persistentStore.get(constants.TWITTER_SCORE_ENABLED) || false,
-    [constants.TWITTER_FAVORITES_SCORE]:
-      persistentStore.get(constants.TWITTER_FAVORITES_SCORE) || 0,
-    [constants.TWITTER_RETWEETS_SCORE]:
-      persistentStore.get(constants.TWITTER_RETWEETS_SCORE) || 0
+    }
   },
   mutations: {
     [constants.LOGIN_TO_TWITTER](state) {
       updateStore(state, constants.TWITTER_LOGGED_IN, true);
+    },
+    [constants.LOGOUT_OF_TWITTER](state) {
+      state.twitter = twitterStoreDefault;
+      twitterPersistentStore.clear();
     },
     [constants.UPDATE_TWITTER_SCREEN_NAME](state, screenName) {
       updateStore(state, constants.TWITTER_SCREEN_NAME, screenName);
@@ -107,10 +137,10 @@ export default new Vuex.Store({
       if (tweetId === -1) {
         state[constants.WHITELISTED_TWEETS] = {};
       } else {
-        addOrRemoveItem(state.whitelistedTweets, tweetId);
+        addOrRemoveItem(state.twitter.whitelistedTweets, tweetId);
       }
 
-      persistentStore.set(
+      twitterPersistentStore.set(
         constants.WHITELISTED_TWEETS,
         state.whitelistedTweets
       );
@@ -119,9 +149,9 @@ export default new Vuex.Store({
       if (tweetId === -1) {
         state[constants.WHITELISTED_FAVORITES] = {};
       } else {
-        addOrRemoveItem(state.whitelistedFavorites, tweetId);
+        addOrRemoveItem(state.twitter.whitelistedFavorites, tweetId);
       }
-      persistentStore.set(
+      twitterPersistentStore.set(
         constants.WHITELISTED_FAVORITES,
         state.whitelistedFavorites
       );
@@ -156,8 +186,7 @@ export default new Vuex.Store({
       store.commit(constants.LOGIN_TO_TWITTER);
     },
     [constants.LOGOUT_OF_TWITTER](store) {
-      // TODO(NG): this needs to clear specifically the twitter store
-      persistentStore.clear();
+      store.commit(constants.LOGOUT_OF_TWITTER);
     },
     [constants.UPDATE_TWITTER_SCREEN_NAME](store, screenName) {
       store.commit(constants.UPDATE_TWITTER_SCREEN_NAME, screenName);

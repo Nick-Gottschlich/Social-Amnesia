@@ -27,7 +27,7 @@ import helpers from "@/util/helpers";
 export default class DeletionPanel extends Vue {
   deleteItems(items, itemString, whitelistedItems) {
     const itemInSavedTimeRange = item => {
-      const timeRangeObject = store.state[constants.TWITTER_TIME_RANGE];
+      const timeRangeObject = store.state.twitter[constants.TWITTER_TIME_RANGE];
 
       const hoursBackToSave =
         timeRangeObject.Hours +
@@ -47,12 +47,16 @@ export default class DeletionPanel extends Vue {
 
     const itemLowerThanScore = item => {
       if (
-        item.favorite_count >= store.state[constants.TWITTER_FAVORITES_SCORE]
+        item.favorite_count >=
+        store.state.twitter[constants.TWITTER_FAVORITES_SCORE]
       ) {
         return false;
       }
 
-      if (item.retweet_count >= store.state[constants.TWITTER_RETWEETS_SCORE]) {
+      if (
+        item.retweet_count >=
+        store.state.twitter[constants.TWITTER_RETWEETS_SCORE]
+      ) {
         return false;
       }
 
@@ -74,10 +78,10 @@ export default class DeletionPanel extends Vue {
           // false &&
           !itemIsWhitelisted &&
           (!itemInSavedTimeRange(item) ||
-            !store.state[constants.TWITTER_TIME_RANGE_ENABLED]) &&
+            !store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED]) &&
           (itemString === "favorites" ||
             itemLowerThanScore(item) ||
-            !store.state[constants.TWITTER_SCORE_ENABLED]);
+            !store.state.twitter[constants.TWITTER_SCORE_ENABLED]);
 
         return shouldDelete;
       };
@@ -95,7 +99,7 @@ export default class DeletionPanel extends Vue {
       items.forEach(item => {
         if (shouldDeleteItem(item)) {
           promiseArray.push(
-            store.state[constants.TWITTER_USER_CLIENT]
+            store.state.twitter[constants.TWITTER_USER_CLIENT]
               .post(
                 itemString === "tweets"
                   ? "statuses/destroy"
@@ -136,22 +140,22 @@ export default class DeletionPanel extends Vue {
 
   handleDeleteTweets() {
     this.deleteItems(
-      store.state[constants.USER_TWEETS],
+      store.state.twitter[constants.USER_TWEETS],
       "tweets",
-      store.state[constants.WHITELISTED_TWEETS]
+      store.state.twitter[constants.WHITELISTED_TWEETS]
     );
   }
 
   handleDeleteFavorites() {
     this.deleteItems(
-      store.state[constants.USER_FAVORITES],
+      store.state.twitter[constants.USER_FAVORITES],
       "favorites",
-      store.state[constants.WHITELISTED_FAVORITES]
+      store.state.twitter[constants.WHITELISTED_FAVORITES]
     );
   }
 
   get loggedIn() {
-    return store.state[constants.TWITTER_LOGGED_IN];
+    return store.state.twitter[constants.TWITTER_LOGGED_IN];
   }
 }
 </script>
