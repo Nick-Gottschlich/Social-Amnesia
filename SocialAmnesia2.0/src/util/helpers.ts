@@ -21,27 +21,30 @@ const gatherAndSetItems = ({
     count: 200
   };
   if (maxId) {
+    // @ts-ignore
     data.max_id = String(maxId);
   }
-  store.state[constants.TWITTER_USER_CLIENT].get(apiRoute, data).then(items => {
-    if (
-      items.length === 0 ||
-      (items.length === 1 && items[0].id === oldestItem)
-    ) {
-      if (apiRoute === constants.TWEETS_ROUTE) {
-        store.dispatch(constants.UPDATE_USER_TWEETS, itemArray);
+  store.state[constants.TWITTER_USER_CLIENT]
+    .get(apiRoute, data)
+    .then((items: any) => {
+      if (
+        items.length === 0 ||
+        (items.length === 1 && items[0].id === oldestItem)
+      ) {
+        if (apiRoute === constants.TWEETS_ROUTE) {
+          store.dispatch(constants.UPDATE_USER_TWEETS, itemArray);
+        }
+        if (apiRoute === constants.FAVORITES_ROUTE) {
+          store.dispatch(constants.UPDATE_USER_FAVORITES, itemArray);
+        }
+        return;
       }
-      if (apiRoute === constants.FAVORITES_ROUTE) {
-        store.dispatch(constants.UPDATE_USER_FAVORITES, itemArray);
-      }
-      return;
-    }
 
-    itemArray = itemArray.concat(items);
-    oldestItem = itemArray.slice(-1)[0].id;
+      itemArray = itemArray.concat(items);
+      oldestItem = itemArray.slice(-1)[0].id;
 
-    gatherAndSetItems({ maxId: oldestItem, apiRoute, itemArray, oldestItem });
-  });
+      gatherAndSetItems({ maxId: oldestItem, apiRoute, itemArray, oldestItem });
+    });
 };
 
 const helpers = {
