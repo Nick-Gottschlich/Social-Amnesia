@@ -33,8 +33,8 @@ const addOrRemoveItem = (
 
 // "middleware" to ensure that both the persistent store
 //  and the vuex store are updated properly
-const updateStore = (state: any, marker: string, value: any) => {
-  state[marker] = value;
+const updateStore = (state: any, marker: string, value: any, site: string) => {
+  state[site][marker] = value;
   twitterPersistentStore.set(marker, value);
 };
 
@@ -109,29 +109,31 @@ export default new Vuex.Store({
   },
   mutations: {
     [constants.LOGIN_TO_TWITTER](state) {
-      updateStore(state, constants.TWITTER_LOGGED_IN, true);
+      updateStore(state, constants.TWITTER_LOGGED_IN, true, "twitter");
     },
     [constants.LOGOUT_OF_TWITTER](state) {
-      state.twitter = twitterStoreDefault;
+      Object.keys(state.twitter).forEach(key => {
+        state.twitter[key] = twitterStoreDefault[key];
+      });
       twitterPersistentStore.clear();
     },
     [constants.UPDATE_TWITTER_SCREEN_NAME](state, screenName) {
-      updateStore(state, constants.TWITTER_SCREEN_NAME, screenName);
+      updateStore(state, constants.TWITTER_SCREEN_NAME, screenName, "twitter");
     },
     [constants.UPDATE_TWITTER_USER_ID](state, userId) {
-      updateStore(state, constants.TWITTER_USER_ID, userId);
+      updateStore(state, constants.TWITTER_USER_ID, userId, "twitter");
     },
     [constants.UPDATE_USER_TWEETS](state, tweets) {
-      updateStore(state, constants.USER_TWEETS, tweets);
+      updateStore(state, constants.USER_TWEETS, tweets, "twitter");
     },
     [constants.UPDATE_USER_FAVORITES](state, favorites) {
-      updateStore(state, constants.USER_FAVORITES, favorites);
+      updateStore(state, constants.USER_FAVORITES, favorites, "twitter");
     },
     [constants.UPDATE_TWITTER_USER_KEYS](state, keys) {
-      updateStore(state, constants.TWITTER_USER_KEYS, keys);
+      updateStore(state, constants.TWITTER_USER_KEYS, keys, "twitter");
     },
     [constants.UPDATE_TWITTER_USER_CLIENT](state, client) {
-      updateStore(state, constants.TWITTER_USER_CLIENT, client);
+      updateStore(state, constants.TWITTER_USER_CLIENT, client, "twitter");
     },
     [constants.UPDATE_WHITELISTED_TWEETS](state, tweetId) {
       if (tweetId === -1) {
@@ -166,19 +168,24 @@ export default new Vuex.Store({
       state[constants.CURRENTLY_DELETING].totalItems = totalItems;
     },
     [constants.UPDATE_TWITTER_TIME_RANGE_ENABLED](state, enabled) {
-      updateStore(state, constants.TWITTER_TIME_RANGE_ENABLED, enabled);
+      updateStore(
+        state,
+        constants.TWITTER_TIME_RANGE_ENABLED,
+        enabled,
+        "twitter"
+      );
     },
     [constants.UPDATE_TWITTER_TIME_RANGE](state, timeRange: TimeRangeModel) {
-      updateStore(state, constants.TWITTER_TIME_RANGE, timeRange);
+      updateStore(state, constants.TWITTER_TIME_RANGE, timeRange, "twitter");
     },
     [constants.UPDATE_TWITTER_SCORE_ENABLED](state, enabled: boolean) {
-      updateStore(state, constants.TWITTER_SCORE_ENABLED, enabled);
+      updateStore(state, constants.TWITTER_SCORE_ENABLED, enabled, "twitter");
     },
     [constants.UPDATE_TWITTER_FAVORITES_SCORE](state, score: number) {
-      updateStore(state, constants.TWITTER_FAVORITES_SCORE, score);
+      updateStore(state, constants.TWITTER_FAVORITES_SCORE, score, "twitter");
     },
     [constants.UPDATE_TWITTER_RETWEETS_SCORE](state, score: number) {
-      updateStore(state, constants.TWITTER_RETWEETS_SCORE, score);
+      updateStore(state, constants.TWITTER_RETWEETS_SCORE, score, "twitter");
     }
   },
   actions: {

@@ -137,9 +137,7 @@ export default class LoginPanel extends Vue {
         })
         .catch(error => {
           // eslint-disable-next-line no-console
-          console.error(
-            `Failed to login to twitter with error ${JSON.stringify(error)}`
-          );
+          console.error("Failed to login to twitter with error:", error);
           twitterApiWindow.close();
         });
     };
@@ -170,6 +168,15 @@ export default class LoginPanel extends Vue {
   }
 
   handleTwitterLogout() {
+    const { BrowserWindow } = electron.remote;
+    const mainWindow = electron.remote.getCurrentWindow();
+    // this removes the cookie that will auto login to twitter
+    mainWindow.webContents.session.cookies.remove(
+      "https://twitter.com",
+      "auth_token"
+    );
+
+    this.loginMessage = "Not Logged In!";
     store.dispatch(constants.LOGOUT_OF_TWITTER);
   }
 }
