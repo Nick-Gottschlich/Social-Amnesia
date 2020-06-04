@@ -15,10 +15,10 @@ interface TimeRangeModel {
   Years: number;
 }
 
-const persistentStore = new Store();
+const twitterPersistentStore = new Store();
 
 // uncomment to manually clear persistent store
-// persistentStore.clear();
+// twitterPersistentStore.clear();
 
 const addOrRemoveItem = (
   whitelistedItems: { [key: string]: boolean },
@@ -33,84 +33,116 @@ const addOrRemoveItem = (
 
 // "middleware" to ensure that both the persistent store
 //  and the vuex store are updated properly
-const updateStore = (state: any, marker: string, value: any) => {
-  state[marker] = value;
-  persistentStore.set(marker, value);
+const updateStore = (state: any, marker: string, value: any, site: string) => {
+  state[site][marker] = value;
+  twitterPersistentStore.set(marker, value);
+};
+
+const twitterStoreDefault = {
+  [constants.TWITTER_LOGGED_IN]: false,
+  [constants.TWITTER_SCREEN_NAME]: "",
+  [constants.TWITTER_USER_ID]: "",
+  [constants.USER_TWEETS]: [],
+  [constants.USER_FAVORITES]: [],
+  [constants.TWITTER_USER_KEYS]: {},
+  [constants.TWITTER_USER_CLIENT]: {},
+  [constants.WHITELISTED_TWEETS]: {},
+  [constants.WHITELISTED_FAVORITES]: {},
+  [constants.TWITTER_TIME_RANGE_ENABLED]: false,
+  [constants.TWITTER_TIME_RANGE]: {
+    Hours: 0,
+    Days: 0,
+    Weeks: 0,
+    Years: 0
+  },
+  [constants.TWITTER_SCORE_ENABLED]: false,
+  [constants.TWITTER_FAVORITES_SCORE]: 0,
+  [constants.TWITTER_RETWEETS_SCORE]: 0
 };
 
 export default new Vuex.Store({
   state: {
-    [constants.TWITTER_LOGGED_IN]:
-      persistentStore.get(constants.TWITTER_LOGGED_IN) || false,
-    [constants.TWITTER_SCREEN_NAME]:
-      persistentStore.get(constants.TWITTER_SCREEN_NAME) || "",
-    [constants.TWITTER_USER_ID]:
-      persistentStore.get(constants.TWITTER_USER_ID) || "",
-    [constants.USER_TWEETS]: persistentStore.get(constants.USER_TWEETS) || [],
-    [constants.USER_FAVORITES]:
-      persistentStore.get(constants.USER_FAVORITES) || [],
-    [constants.TWITTER_USER_KEYS]:
-      persistentStore.get(constants.TWITTER_USER_KEYS) || {},
-    [constants.TWITTER_USER_CLIENT]: persistentStore.get(
-      constants.TWITTER_USER_CLIENT
-    )
-      ? new Twitter(persistentStore.get(constants.TWITTER_USER_KEYS))
-      : {},
-    [constants.WHITELISTED_TWEETS]:
-      persistentStore.get(constants.WHITELISTED_TWEETS) || {},
-    [constants.WHITELISTED_FAVORITES]:
-      persistentStore.get(constants.WHITELISTED_FAVORITES) || {},
+    twitter: {
+      [constants.TWITTER_LOGGED_IN]:
+        twitterPersistentStore.get(constants.TWITTER_LOGGED_IN) || false,
+      [constants.TWITTER_SCREEN_NAME]:
+        twitterPersistentStore.get(constants.TWITTER_SCREEN_NAME) || "",
+      [constants.TWITTER_USER_ID]:
+        twitterPersistentStore.get(constants.TWITTER_USER_ID) || "",
+      [constants.USER_TWEETS]:
+        twitterPersistentStore.get(constants.USER_TWEETS) || [],
+      [constants.USER_FAVORITES]:
+        twitterPersistentStore.get(constants.USER_FAVORITES) || [],
+      [constants.TWITTER_USER_KEYS]:
+        twitterPersistentStore.get(constants.TWITTER_USER_KEYS) || {},
+      [constants.TWITTER_USER_CLIENT]: twitterPersistentStore.get(
+        constants.TWITTER_USER_CLIENT
+      )
+        ? new Twitter(twitterPersistentStore.get(constants.TWITTER_USER_KEYS))
+        : {},
+      [constants.WHITELISTED_TWEETS]:
+        twitterPersistentStore.get(constants.WHITELISTED_TWEETS) || {},
+      [constants.WHITELISTED_FAVORITES]:
+        twitterPersistentStore.get(constants.WHITELISTED_FAVORITES) || {},
+      [constants.TWITTER_TIME_RANGE_ENABLED]:
+        twitterPersistentStore.get(constants.TWITTER_TIME_RANGE_ENABLED) ||
+        false,
+      [constants.TWITTER_TIME_RANGE]: twitterPersistentStore.get(
+        constants.TWITTER_TIME_RANGE
+      ) || {
+        Hours: 0,
+        Days: 0,
+        Weeks: 0,
+        Years: 0
+      },
+      [constants.TWITTER_SCORE_ENABLED]:
+        twitterPersistentStore.get(constants.TWITTER_SCORE_ENABLED) || false,
+      [constants.TWITTER_FAVORITES_SCORE]:
+        twitterPersistentStore.get(constants.TWITTER_FAVORITES_SCORE) || 0,
+      [constants.TWITTER_RETWEETS_SCORE]:
+        twitterPersistentStore.get(constants.TWITTER_RETWEETS_SCORE) || 0
+    },
     [constants.CURRENTLY_DELETING]: {
       totalItems: 0,
       itemsDeleted: 0
-    },
-    [constants.TWITTER_TIME_RANGE_ENABLED]:
-      persistentStore.get(constants.TWITTER_TIME_RANGE_ENABLED) || false,
-    [constants.TWITTER_TIME_RANGE]: persistentStore.get(
-      constants.TWITTER_TIME_RANGE
-    ) || {
-      Hours: 0,
-      Days: 0,
-      Weeks: 0,
-      Years: 0
-    },
-    [constants.TWITTER_SCORE_ENABLED]:
-      persistentStore.get(constants.TWITTER_SCORE_ENABLED) || false,
-    [constants.TWITTER_FAVORITES_SCORE]:
-      persistentStore.get(constants.TWITTER_FAVORITES_SCORE) || 0,
-    [constants.TWITTER_RETWEETS_SCORE]:
-      persistentStore.get(constants.TWITTER_RETWEETS_SCORE) || 0
+    }
   },
   mutations: {
     [constants.LOGIN_TO_TWITTER](state) {
-      updateStore(state, constants.TWITTER_LOGGED_IN, true);
+      updateStore(state, constants.TWITTER_LOGGED_IN, true, "twitter");
+    },
+    [constants.LOGOUT_OF_TWITTER](state) {
+      Object.keys(state.twitter).forEach(key => {
+        state.twitter[key] = twitterStoreDefault[key];
+      });
+      twitterPersistentStore.clear();
     },
     [constants.UPDATE_TWITTER_SCREEN_NAME](state, screenName) {
-      updateStore(state, constants.TWITTER_SCREEN_NAME, screenName);
+      updateStore(state, constants.TWITTER_SCREEN_NAME, screenName, "twitter");
     },
     [constants.UPDATE_TWITTER_USER_ID](state, userId) {
-      updateStore(state, constants.TWITTER_USER_ID, userId);
+      updateStore(state, constants.TWITTER_USER_ID, userId, "twitter");
     },
     [constants.UPDATE_USER_TWEETS](state, tweets) {
-      updateStore(state, constants.USER_TWEETS, tweets);
+      updateStore(state, constants.USER_TWEETS, tweets, "twitter");
     },
     [constants.UPDATE_USER_FAVORITES](state, favorites) {
-      updateStore(state, constants.USER_FAVORITES, favorites);
+      updateStore(state, constants.USER_FAVORITES, favorites, "twitter");
     },
     [constants.UPDATE_TWITTER_USER_KEYS](state, keys) {
-      updateStore(state, constants.TWITTER_USER_KEYS, keys);
+      updateStore(state, constants.TWITTER_USER_KEYS, keys, "twitter");
     },
     [constants.UPDATE_TWITTER_USER_CLIENT](state, client) {
-      updateStore(state, constants.TWITTER_USER_CLIENT, client);
+      updateStore(state, constants.TWITTER_USER_CLIENT, client, "twitter");
     },
     [constants.UPDATE_WHITELISTED_TWEETS](state, tweetId) {
       if (tweetId === -1) {
         state[constants.WHITELISTED_TWEETS] = {};
       } else {
-        addOrRemoveItem(state.whitelistedTweets, tweetId);
+        addOrRemoveItem(state.twitter.whitelistedTweets, tweetId);
       }
 
-      persistentStore.set(
+      twitterPersistentStore.set(
         constants.WHITELISTED_TWEETS,
         state.whitelistedTweets
       );
@@ -119,9 +151,9 @@ export default new Vuex.Store({
       if (tweetId === -1) {
         state[constants.WHITELISTED_FAVORITES] = {};
       } else {
-        addOrRemoveItem(state.whitelistedFavorites, tweetId);
+        addOrRemoveItem(state.twitter.whitelistedFavorites, tweetId);
       }
-      persistentStore.set(
+      twitterPersistentStore.set(
         constants.WHITELISTED_FAVORITES,
         state.whitelistedFavorites
       );
@@ -136,24 +168,32 @@ export default new Vuex.Store({
       state[constants.CURRENTLY_DELETING].totalItems = totalItems;
     },
     [constants.UPDATE_TWITTER_TIME_RANGE_ENABLED](state, enabled) {
-      updateStore(state, constants.TWITTER_TIME_RANGE_ENABLED, enabled);
+      updateStore(
+        state,
+        constants.TWITTER_TIME_RANGE_ENABLED,
+        enabled,
+        "twitter"
+      );
     },
     [constants.UPDATE_TWITTER_TIME_RANGE](state, timeRange: TimeRangeModel) {
-      updateStore(state, constants.TWITTER_TIME_RANGE, timeRange);
+      updateStore(state, constants.TWITTER_TIME_RANGE, timeRange, "twitter");
     },
     [constants.UPDATE_TWITTER_SCORE_ENABLED](state, enabled: boolean) {
-      updateStore(state, constants.TWITTER_SCORE_ENABLED, enabled);
+      updateStore(state, constants.TWITTER_SCORE_ENABLED, enabled, "twitter");
     },
     [constants.UPDATE_TWITTER_FAVORITES_SCORE](state, score: number) {
-      updateStore(state, constants.TWITTER_FAVORITES_SCORE, score);
+      updateStore(state, constants.TWITTER_FAVORITES_SCORE, score, "twitter");
     },
     [constants.UPDATE_TWITTER_RETWEETS_SCORE](state, score: number) {
-      updateStore(state, constants.TWITTER_RETWEETS_SCORE, score);
+      updateStore(state, constants.TWITTER_RETWEETS_SCORE, score, "twitter");
     }
   },
   actions: {
     [constants.LOGIN_TO_TWITTER](store) {
       store.commit(constants.LOGIN_TO_TWITTER);
+    },
+    [constants.LOGOUT_OF_TWITTER](store) {
+      store.commit(constants.LOGOUT_OF_TWITTER);
     },
     [constants.UPDATE_TWITTER_SCREEN_NAME](store, screenName) {
       store.commit(constants.UPDATE_TWITTER_SCREEN_NAME, screenName);

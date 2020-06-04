@@ -45,7 +45,7 @@ export default {
   }
 };
 
-if (store.state[constants.TWITTER_LOGGED_IN]) {
+if (store.state.twitter[constants.TWITTER_LOGGED_IN]) {
   // when the app is loaded, automatically refresh items
   helpers.gatherAndSetItems({
     apiRoute: "statuses/user_timeline",

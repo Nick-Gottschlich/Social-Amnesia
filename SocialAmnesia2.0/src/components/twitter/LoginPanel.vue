@@ -4,13 +4,30 @@
       <div class="loginContainer">
         <h1>Log in to Twitter</h1>
         <b-button
-          class="loginButton"
+          class="logButton"
           variant="success"
           v-on:click="handleTwitterLogin()"
           v-if="!loggedIn"
         >
           Click to login
         </b-button>
+        <div id="login-panel-logout-button">
+          <b-button
+            class="logButton"
+            variant="success"
+            v-on:click="handleTwitterLogout()"
+            v-if="loggedIn"
+          >
+            Click to logout
+          </b-button>
+        </div>
+        <b-tooltip
+          target="login-panel-logout-button"
+          triggers="hover"
+          placement="bottom"
+        >
+          This will clear your saved settings!
+        </b-tooltip>
         <span class="loginMessage" v-bind:class="{ loginError, loggedIn }">
           {{ loginMessage }}
         </span>
@@ -36,13 +53,13 @@ export default class LoginPanel extends Vue {
   loginMessage = "Not logged in!";
 
   get loggedIn() {
-    if (store.state[constants.TWITTER_LOGGED_IN]) {
+    if (store.state.twitter[constants.TWITTER_LOGGED_IN]) {
       this.loginMessage = `Logged in to twitter as @${
-        store.state[constants.TWITTER_SCREEN_NAME]
+        store.state.twitter[constants.TWITTER_SCREEN_NAME]
       }`;
     }
 
-    return store.state[constants.TWITTER_LOGGED_IN];
+    return store.state.twitter[constants.TWITTER_LOGGED_IN];
   }
 
   handleTwitterLogin() {
@@ -83,7 +100,7 @@ export default class LoginPanel extends Vue {
           });
           store.dispatch(
             constants.UPDATE_TWITTER_USER_CLIENT,
-            new Twitter(store.state[constants.TWITTER_USER_KEYS])
+            new Twitter(store.state.twitter[constants.TWITTER_USER_KEYS])
           );
 
           store.dispatch(
@@ -114,15 +131,13 @@ export default class LoginPanel extends Vue {
 
           store.dispatch(constants.LOGIN_TO_TWITTER);
           this.loginMessage = `Logged in to twitter as @${
-            store.state[constants.TWITTER_SCREEN_NAME]
+            store.state.twitter[constants.TWITTER_SCREEN_NAME]
           }`;
           twitterApiWindow.close();
         })
         .catch(error => {
           // eslint-disable-next-line no-console
-          console.error(
-            `Failed to login to twitter with error ${JSON.stringify(error)}`
-          );
+          console.error("Failed to login to twitter with error:", error);
           twitterApiWindow.close();
         });
     };
@@ -151,6 +166,19 @@ export default class LoginPanel extends Vue {
         );
       });
   }
+
+  handleTwitterLogout() {
+    const { BrowserWindow } = electron.remote;
+    const mainWindow = electron.remote.getCurrentWindow();
+    // this removes the cookie that will auto login to twitter
+    mainWindow.webContents.session.cookies.remove(
+      "https://twitter.com",
+      "auth_token"
+    );
+
+    this.loginMessage = "Not Logged In!";
+    store.dispatch(constants.LOGOUT_OF_TWITTER);
+  }
 }
 </script>
 
@@ -174,7 +202,7 @@ export default class LoginPanel extends Vue {
   padding: 20px;
   margin-top: 10px;
 
-  .loginButton {
+  .logButton {
     width: 150px;
   }
 
