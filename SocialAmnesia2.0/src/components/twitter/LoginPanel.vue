@@ -4,16 +4,16 @@
       <div class="loginContainer">
         <h1>Log in to Twitter</h1>
         <b-button
-          class="loginButton"
+          class="logButton"
           variant="success"
           v-on:click="handleTwitterLogin()"
           v-if="!loggedIn"
         >
           Click to login
         </b-button>
-        <div id="login-panel-login-button">
+        <div id="login-panel-logout-button">
           <b-button
-            class="loginButton"
+            class="logButton"
             variant="success"
             v-on:click="handleTwitterLogout()"
             v-if="loggedIn"
@@ -22,7 +22,7 @@
           </b-button>
         </div>
         <b-tooltip
-          target="login-panel-login-button"
+          target="login-panel-logout-button"
           triggers="hover"
           placement="bottom"
         >
@@ -202,7 +202,7 @@ export default class LoginPanel extends Vue {
   padding: 20px;
   margin-top: 10px;
 
-  .loginButton {
+  .logButton {
     width: 150px;
   }
 
