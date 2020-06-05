@@ -159,6 +159,7 @@ export default new Vuex.Store({
       );
     },
     [constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED](state) {
+      // @ts-ignore
       state[constants.CURRENTLY_DELETING].itemsDeleted += 1;
     },
     [constants.RESET_CURRENTLY_DELETING_ITEMS_DELETED](state) {
