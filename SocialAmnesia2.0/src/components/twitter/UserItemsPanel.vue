@@ -16,13 +16,23 @@
       >
         <div class="tweetAndOptionsContainer">
           <div class="tweetOptions">
-            <b-form-checkbox
-              switch
-              :id="`checklist-${itemtype}-${tweet.id}`"
-              v-on:change="handleChanged(tweet)"
-              :checked="checkIfSelected(tweet)"
+            <div class="tweetWhitelist">
+              <b-form-checkbox
+                switch
+                :id="`checklist-${itemtype}-${tweet.id}`"
+                v-on:change="handleChanged(tweet)"
+                :checked="checkIfSelected(tweet)"
+              />
+              <span>Whitelist</span>
+            </div>
+            <b-icon
+              v-b-tooltip.hover.bottom
+              :title="
+                itemtype === 'tweets' ? 'Delete this tweet' : 'Remove this item'
+              "
+              icon="trash"
+              class="tweetDeleteIcon"
             />
-            <span>Whitelist</span>
           </div>
           <div class="tweet">
             <div class="tweetHeader">
@@ -159,14 +169,26 @@ export default class UserItemsPanel extends UserItemsPanelProps {
     list-style: none;
   }
 
+  .tweetOptions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tweetWhitelist {
+    display: flex;
+    padding-left: 5px;
+    padding-bottom: 20px;
+  }
+
+  .tweetDeleteIcon {
+    width: 30px;
+    height: 30px;
+  }
+
   .tweetAndOptionsContainer {
     display: flex;
     align-items: center;
-
-    .tweetOptions {
-      display: flex;
-      padding-left: 5px;
-    }
 
     .tweet {
       padding: 15px;
