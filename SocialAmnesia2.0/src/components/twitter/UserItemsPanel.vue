@@ -16,13 +16,24 @@
       >
         <div class="tweetAndOptionsContainer">
           <div class="tweetOptions">
-            <b-form-checkbox
-              switch
-              :id="`checklist-${itemtype}-${tweet.id}`"
-              v-on:change="handleChanged(tweet)"
-              :checked="checkIfSelected(tweet)"
+            <div class="tweetWhitelist">
+              <b-form-checkbox
+                switch
+                :id="`checklist-${itemtype}-${tweet.id}`"
+                v-on:change="handleChanged(tweet)"
+                :checked="checkIfSelected(tweet)"
+              />
+              <span>Whitelist</span>
+            </div>
+            <b-icon
+              v-b-tooltip.hover.bottom
+              :title="
+                itemtype === 'tweets' ? 'Delete this tweet' : 'Remove this ❤️'
+              "
+              icon="trash"
+              class="tweetDeleteIcon"
+              v-on:click="handleDeleteItemClicked(tweet)"
             />
-            <span>Whitelist</span>
           </div>
           <div class="tweet">
             <div class="tweetHeader">
@@ -83,6 +94,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
 import constants from "@/store/constants";
+import helpers from "@/util/helpers";
 
 const UserItemsPanelProps = Vue.extend({
   props: {
@@ -112,6 +124,34 @@ export default class UserItemsPanel extends UserItemsPanelProps {
         constants.UPDATE_WHITELISTED_FAVORITES,
         `favorites-${item.id}`
       );
+    }
+  }
+
+  handleDeleteItemClicked(item) {
+    if (
+      // eslint-disable-next-line no-alert
+      window.confirm(
+        `Are you sure you want to delete this ${
+          this.itemtype === "tweets" ? "tweet" : "❤️"
+        }? THIS ACTION IS PERMANENT!`
+      )
+    ) {
+      store.state.twitter[constants.TWITTER_USER_CLIENT]
+        .post(
+          this.itemtype === "tweets" ? "statuses/destroy" : "favorites/destroy",
+          {
+            id: item.id_str
+          }
+        )
+        .then(() => {
+          helpers.gatherAndSetItems({
+            apiRoute:
+              this.itemtype === "tweets"
+                ? constants.TWEETS_ROUTE
+                : constants.FAVORITES_ROUTE,
+            itemArray: []
+          });
+        });
     }
   }
 
@@ -159,14 +199,26 @@ export default class UserItemsPanel extends UserItemsPanelProps {
     list-style: none;
   }
 
+  .tweetOptions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tweetWhitelist {
+    display: flex;
+    padding-left: 5px;
+    padding-bottom: 20px;
+  }
+
+  .tweetDeleteIcon {
+    width: 30px;
+    height: 30px;
+  }
+
   .tweetAndOptionsContainer {
     display: flex;
     align-items: center;
-
-    .tweetOptions {
-      display: flex;
-      padding-left: 5px;
-    }
 
     .tweet {
       padding: 15px;
