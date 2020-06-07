@@ -6,15 +6,7 @@
     <h4 id="score-panel-tooltip-target">
       Save items that have gotten a certain amount of favorites (❤️'s) or
       retweets.
-      <svg
-        viewBox="0 0 515.556 515.556"
-        xmlns="http://www.w3.org/2000/svg"
-        class="questionSVG"
-      >
-        <path
-          d="M257.778 0C115.641 0 0 115.641 0 257.778s115.641 257.778 257.778 257.778 257.778-115.641 257.778-257.778S399.914 0 257.778 0zM290 418.889h-64.444v-64.444H290zm32.222-147.769L290 303.342v18.88h-64.444V290c0-8.543 3.398-16.74 9.44-22.782l41.662-41.662c8.48-8.48 13.342-20.233 13.342-32.222 0-17.763-14.459-32.222-32.222-32.222s-32.222 14.459-32.222 32.222v32.222h-64.444v-32.222c0-53.305 43.361-96.667 96.667-96.667s96.667 43.361 96.667 96.667c-.001 29.39-11.44 57.018-32.224 77.786z"
-        />
-      </svg>
+      <b-icon icon="question-circle-fill" />
     </h4>
     <b-tooltip
       target="score-panel-tooltip-target"
@@ -134,12 +126,6 @@ export default class ScorePanel extends Vue {
   display: flex;
   justify-content: space-around;
   align-items: center;
-}
-
-.questionSVG {
-  position: relative;
-  top: -2px;
-  height: 20px;
 }
 
 .scoreInputsContainer {
