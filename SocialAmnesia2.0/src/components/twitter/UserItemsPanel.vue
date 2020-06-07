@@ -28,10 +28,11 @@
             <b-icon
               v-b-tooltip.hover.bottom
               :title="
-                itemtype === 'tweets' ? 'Delete this tweet' : 'Remove this item'
+                itemtype === 'tweets' ? 'Delete this tweet' : 'Remove this ❤️'
               "
               icon="trash"
               class="tweetDeleteIcon"
+              v-on:click="handleDeleteItemClicked(tweet)"
             />
           </div>
           <div class="tweet">
@@ -93,6 +94,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
 import constants from "@/store/constants";
+import helpers from "@/util/helpers";
 
 const UserItemsPanelProps = Vue.extend({
   props: {
@@ -122,6 +124,34 @@ export default class UserItemsPanel extends UserItemsPanelProps {
         constants.UPDATE_WHITELISTED_FAVORITES,
         `favorites-${item.id}`
       );
+    }
+  }
+
+  handleDeleteItemClicked(item) {
+    if (
+      // eslint-disable-next-line no-alert
+      window.confirm(
+        `Are you sure you want to delete this ${
+          this.itemtype === "tweets" ? "tweet" : "❤️"
+        }? THIS ACTION IS PERMANENT!`
+      )
+    ) {
+      store.state.twitter[constants.TWITTER_USER_CLIENT]
+        .post(
+          this.itemtype === "tweets" ? "statuses/destroy" : "favorites/destroy",
+          {
+            id: item.id_str
+          }
+        )
+        .then(() => {
+          helpers.gatherAndSetItems({
+            apiRoute:
+              this.itemtype === "tweets"
+                ? constants.TWEETS_ROUTE
+                : constants.FAVORITES_ROUTE,
+            itemArray: []
+          });
+        });
     }
   }
 
