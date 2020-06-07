@@ -25,15 +25,17 @@
               />
               <span>Whitelist</span>
             </div>
-            <b-icon
-              v-b-tooltip.hover.bottom
-              :title="
-                itemtype === 'tweets' ? 'Delete this tweet' : 'Remove this ❤️'
-              "
-              icon="trash"
-              class="tweetDeleteIcon"
-              v-on:click="handleDeleteItemClicked(tweet)"
-            />
+            <div class="tweetDeleteIconContainer">
+              <b-icon
+                v-b-tooltip.hover.bottom
+                :title="
+                  itemtype === 'tweets' ? 'Delete this tweet' : 'Remove this ❤️'
+                "
+                icon="trash"
+                class="tweetDeleteIcon"
+                v-on:click="handleDeleteItemClicked(tweet)"
+              />
+            </div>
           </div>
           <div class="tweet">
             <div class="tweetHeader">
@@ -209,6 +211,12 @@ export default class UserItemsPanel extends UserItemsPanelProps {
     display: flex;
     padding-left: 5px;
     padding-bottom: 20px;
+  }
+
+  .tweetDeleteIconContainer {
+    :hover {
+      cursor: pointer;
+    }
   }
 
   .tweetDeleteIcon {
