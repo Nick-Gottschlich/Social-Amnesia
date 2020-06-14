@@ -43,7 +43,7 @@ import Twitter from "twitter-lite";
 import electron from "electron";
 import store from "@/store/index";
 import constants from "@/store/constants";
-import twitterApi from "@/secrets";
+import twitterApi from "@/twitterSecrets";
 import helpers from "@/util/helpers";
 
 @Component

@@ -27,4 +27,5 @@ yarn-error.log*
 /dist_electron
 
 # API keys
-secrets.ts
+twitterSecrets.ts
+redditSecrets.ts

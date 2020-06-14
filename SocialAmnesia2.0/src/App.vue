@@ -2,7 +2,8 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">About</router-link>{{ " |" }}
-      <router-link to="/twitter">Twitter</router-link>
+      <router-link to="/twitter">Twitter</router-link>{{ " |" }}
+      <router-link to="/reddit">Reddit</router-link>
     </div>
     <router-view />
   </div>
