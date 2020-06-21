@@ -165,14 +165,14 @@ export default class DeletionPanel extends Vue {
   border: 4mm ridge #dc3545;
   padding: 20px;
   margin-top: 10px;
+}
 
-  .deletionButtonContainer {
-    display: flex;
-    flex-direction: column;
+.deletionButtonContainer {
+  display: flex;
+  flex-direction: column;
+}
 
-    .deletionButton {
-      margin-bottom: 5px;
-    }
-  }
+.deletionButton {
+  margin-bottom: 5px;
 }
 </style>

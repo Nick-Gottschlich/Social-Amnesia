@@ -195,104 +195,104 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   height: 99%;
   border: 4mm ridge #1da1f2;
   margin-bottom: 10px;
+}
 
-  .tweetList {
-    padding-left: 0;
-    list-style: none;
+.tweetList {
+  padding-left: 0;
+  list-style: none;
+}
+
+.tweetOptions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tweetWhitelist {
+  display: flex;
+  padding-left: 5px;
+  padding-bottom: 20px;
+}
+
+.tweetDeleteIconContainer {
+  :hover {
+    cursor: pointer;
   }
+}
 
-  .tweetOptions {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.tweetDeleteIcon {
+  width: 30px;
+  height: 30px;
+}
+
+.tweetAndOptionsContainer {
+  display: flex;
+  align-items: center;
+}
+
+.tweet {
+  padding: 15px;
+  margin: 10px;
+  border: 1px solid #e1e8ed;
+  border-radius: 5px;
+  flex-grow: 1;
+
+  &:hover {
+    background-color: #dddddd;
   }
+}
 
-  .tweetWhitelist {
-    display: flex;
-    padding-left: 5px;
-    padding-bottom: 20px;
-  }
+.tweetHeader {
+  display: flex;
+  justify-content: flex-start;
+}
 
-  .tweetDeleteIconContainer {
-    :hover {
-      cursor: pointer;
-    }
-  }
+.tweetUsernames {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 5px;
+}
 
-  .tweetDeleteIcon {
-    width: 30px;
-    height: 30px;
-  }
+.tweetName {
+  line-height: 1.3125;
+  font-weight: bold;
+}
+.tweetUsername {
+  color: #697882;
+}
 
-  .tweetAndOptionsContainer {
-    display: flex;
-    align-items: center;
+.tweetBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-    .tweet {
-      padding: 15px;
-      margin: 10px;
-      border: 1px solid #e1e8ed;
-      border-radius: 5px;
-      flex-grow: 1;
+.tweetText {
+  font-size: 24px;
+}
 
-      &:hover {
-        background-color: #dddddd;
-      }
+.tweetCreatedAt {
+  color: #697882;
+}
 
-      .tweetHeader {
-        display: flex;
-        justify-content: flex-start;
+.tweetMedia {
+  display: grid;
+  grid-template-columns: auto auto;
+}
 
-        .tweetUsernames {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          padding-left: 5px;
+.tweetContent {
+  border: 1px solid #e1e8ed;
+  border-radius: 5px;
+  width: 100%;
+}
 
-          .tweetName {
-            line-height: 1.3125;
-            font-weight: bold;
-          }
-          .tweetUsername {
-            color: #697882;
-          }
-        }
-      }
+.tweetFooter {
+  display: flex;
+  justify-content: flex-start;
+}
 
-      .tweetBody {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-
-        .tweetText {
-          font-size: 24px;
-        }
-
-        .tweetCreatedAt {
-          color: #697882;
-        }
-
-        .tweetMedia {
-          display: grid;
-          grid-template-columns: auto auto;
-
-          .tweetContent {
-            border: 1px solid #e1e8ed;
-            border-radius: 5px;
-            width: 100%;
-          }
-        }
-      }
-
-      .tweetFooter {
-        display: flex;
-        justify-content: flex-start;
-
-        .retweets {
-          padding-left: 20px;
-        }
-      }
-    }
-  }
+.retweets {
+  padding-left: 20px;
 }
 </style>
