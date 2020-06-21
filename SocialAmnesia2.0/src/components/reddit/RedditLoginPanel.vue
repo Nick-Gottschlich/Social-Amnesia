@@ -2,12 +2,33 @@
   <div class="loginContainer">
     <h1>Log in to Reddit</h1>
     <b-button
-      class="logButton"
+      class="redditLogButton"
       variant="success"
       v-on:click="handleRedditLogin()"
+      v-if="!loggedIn"
     >
       Click to login
     </b-button>
+    <div id="login-panel-logout-button">
+      <b-button
+        class="redditLogButton"
+        variant="success"
+        v-on:click="handleTwitterLogout()"
+        v-if="loggedIn"
+      >
+        Click to logout
+      </b-button>
+    </div>
+    <b-tooltip
+      target="login-panel-logout-button"
+      triggers="hover"
+      placement="bottom"
+    >
+      This will clear your saved settings!
+    </b-tooltip>
+    <span class="loginMessage" v-bind:class="{ loginError, loggedIn }">
+      {{ loginMessage }}
+    </span>
   </div>
 </template>
 
@@ -17,9 +38,25 @@ import { Component, Vue } from "vue-property-decorator";
 import electron from "electron";
 import axios from "axios";
 import redditAPI from "@/redditSecrets";
+import constants from "@/store/constants";
+import store from "@/store/index";
 
 @Component
 export default class RedditLoginPanel extends Vue {
+  loginError = false;
+
+  loginMessage = "Not logged in!";
+
+  get loggedIn() {
+    if (store.state.reddit[constants.REDDIT_LOGGED_IN]) {
+      this.loginMessage = `Logged in to reddit as @${
+        store.state.reddit[constants.REDDIT_USER_NAME]
+      }`;
+    }
+
+    return store.state.reddit[constants.REDDIT_LOGGED_IN];
+  }
+
   handleRedditLogin() {
     const { BrowserWindow } = electron.remote;
     const mainWindow = electron.remote.getCurrentWindow();
@@ -33,11 +70,9 @@ export default class RedditLoginPanel extends Vue {
 
     redditAPIWindow.webContents.on("did-navigate", (event, url) => {
       if (url.indexOf("google") >= 0 && url.indexOf("reddit") === -1) {
-        console.log("URL", url);
-
         const searchParams = new URLSearchParams(url.slice(23));
         const oauthCode = searchParams.get("code");
-        console.log("oauth code", oauthCode);
+        redditAPIWindow.close();
 
         axios
           .post(
@@ -60,7 +95,13 @@ export default class RedditLoginPanel extends Vue {
 
             const accessToken = response.data.access_token;
 
-            // testing successful login...
+            store.dispatch(constants.LOGIN_TO_REDDIT);
+            store.dispatch(
+              constants.UPDATE_REDDIT_ACCESS_TOKEN,
+              response.data.access_token
+            );
+
+            // TODO(NG): move this to a helper function
             axios
               .get("https://oauth.reddit.com/api/v1/me", {
                 headers: {
@@ -69,10 +110,26 @@ export default class RedditLoginPanel extends Vue {
               })
               .then(loginResponse => {
                 console.log("api me response", loginResponse);
+
+                store.dispatch(
+                  constants.UPDATE_REDDIT_USER_NAME,
+                  loginResponse.data.name
+                );
               });
+          })
+          .catch(error => {
+            console.error("Failed to login to reddit with error:", error);
+            redditAPIWindow.close();
           });
       }
     });
+  }
+
+  handleTwitterLogout() {
+    // TODO(NG): remove cookies that auto login to reddit
+
+    this.loginMessage = "Not Logged In!";
+    store.dispatch(constants.LOGOUT_OF_REDDIT);
   }
 }
 </script>

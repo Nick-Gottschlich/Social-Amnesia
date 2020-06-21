@@ -20,6 +20,10 @@ const UPDATE_TWITTER_TIME_RANGE = "updateTwitterTimeRange";
 const UPDATE_TWITTER_SCORE_ENABLED = "updateTwitterScoreEnabled";
 const UPDATE_TWITTER_FAVORITES_SCORE = "updateTwitterFavoritesScore";
 const UPDATE_TWITTER_RETWEETS_SCORE = "updateTwitterRetweetsScore";
+const LOGIN_TO_REDDIT = "loginToReddit";
+const LOGOUT_OF_REDDIT = "logoutOfReddit";
+const UPDATE_REDDIT_USER_NAME = "updateRedditUsername";
+const UPDATE_REDDIT_ACCESS_TOKEN = "updateRedditAccessToken";
 
 // ACTUAL VALUES IN STATE
 const TWITTER_LOGGED_IN = "twitterLoggedIn";
@@ -37,6 +41,9 @@ const TWITTER_TIME_RANGE = "twitterTimeRange";
 const TWITTER_SCORE_ENABLED = "twitterScoreEnabled";
 const TWITTER_FAVORITES_SCORE = "twitterFavoritesScore";
 const TWITTER_RETWEETS_SCORE = "twitterRetweetsScore";
+const REDDIT_LOGGED_IN = "redditLoggedIn";
+const REDDIT_USER_NAME = "redditUserName";
+const REDDIT_ACCESS_TOKEN = "redditAccessToken";
 
 // other constants
 const TWEETS_ROUTE = "statuses/user_timeline";
@@ -61,6 +68,10 @@ const constants = {
   UPDATE_TWITTER_SCORE_ENABLED,
   UPDATE_TWITTER_FAVORITES_SCORE,
   UPDATE_TWITTER_RETWEETS_SCORE,
+  LOGIN_TO_REDDIT,
+  LOGOUT_OF_REDDIT,
+  UPDATE_REDDIT_USER_NAME,
+  UPDATE_REDDIT_ACCESS_TOKEN,
   TWITTER_LOGGED_IN,
   TWITTER_SCREEN_NAME,
   TWITTER_USER_ID,
@@ -76,6 +87,9 @@ const constants = {
   TWITTER_SCORE_ENABLED,
   TWITTER_FAVORITES_SCORE,
   TWITTER_RETWEETS_SCORE,
+  REDDIT_LOGGED_IN,
+  REDDIT_USER_NAME,
+  REDDIT_ACCESS_TOKEN,
   TWEETS_ROUTE,
   FAVORITES_ROUTE
 };

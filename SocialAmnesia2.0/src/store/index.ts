@@ -16,9 +16,11 @@ interface TimeRangeModel {
 }
 
 const twitterPersistentStore = new Store();
+const redditPersistentStore = new Store();
 
-// uncomment to manually clear persistent store
+// uncomment to manually clear persistent stores
 // twitterPersistentStore.clear();
+// redditPersistentStore.clear();
 
 const addOrRemoveItem = (
   whitelistedItems: { [key: string]: boolean },
@@ -35,7 +37,11 @@ const addOrRemoveItem = (
 //  and the vuex store are updated properly
 const updateStore = (state: any, marker: string, value: any, site: string) => {
   state[site][marker] = value;
-  twitterPersistentStore.set(marker, value);
+  if (site === "twitter") {
+    twitterPersistentStore.set(marker, value);
+  } else if (site === "reddit") {
+    redditPersistentStore.set(marker, value);
+  }
 };
 
 const twitterStoreDefault = {
@@ -58,6 +64,12 @@ const twitterStoreDefault = {
   [constants.TWITTER_SCORE_ENABLED]: false,
   [constants.TWITTER_FAVORITES_SCORE]: 0,
   [constants.TWITTER_RETWEETS_SCORE]: 0
+};
+
+const redditStoreDefault = {
+  [constants.REDDIT_LOGGED_IN]: false,
+  [constants.REDDIT_USER_NAME]: "",
+  [constants.REDDIT_ACCESS_TOKEN]: ""
 };
 
 export default new Vuex.Store({
@@ -101,6 +113,14 @@ export default new Vuex.Store({
         twitterPersistentStore.get(constants.TWITTER_FAVORITES_SCORE) || 0,
       [constants.TWITTER_RETWEETS_SCORE]:
         twitterPersistentStore.get(constants.TWITTER_RETWEETS_SCORE) || 0
+    },
+    reddit: {
+      [constants.REDDIT_LOGGED_IN]:
+        redditPersistentStore.get(constants.REDDIT_LOGGED_IN) || false,
+      [constants.REDDIT_USER_NAME]:
+        redditPersistentStore.get(constants.REDDIT_USER_NAME) || "",
+      [constants.REDDIT_ACCESS_TOKEN]:
+        redditPersistentStore.get(constants.REDDIT_ACCESS_TOKEN) || ""
     },
     [constants.CURRENTLY_DELETING]: {
       totalItems: 0,
@@ -187,6 +207,21 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_TWITTER_RETWEETS_SCORE](state, score: number) {
       updateStore(state, constants.TWITTER_RETWEETS_SCORE, score, "twitter");
+    },
+    [constants.LOGIN_TO_REDDIT](state) {
+      updateStore(state, constants.REDDIT_LOGGED_IN, true, "reddit");
+    },
+    [constants.LOGOUT_OF_REDDIT](state) {
+      Object.keys(state.reddit).forEach(key => {
+        state.reddit[key] = redditStoreDefault[key];
+      });
+      redditPersistentStore.clear();
+    },
+    [constants.UPDATE_REDDIT_USER_NAME](state, screenName) {
+      updateStore(state, constants.REDDIT_USER_NAME, screenName, "reddit");
+    },
+    [constants.UPDATE_REDDIT_ACCESS_TOKEN](state, accessToken) {
+      updateStore(state, constants.REDDIT_ACCESS_TOKEN, accessToken, "reddit");
     }
   },
   actions: {
@@ -243,6 +278,18 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_TWITTER_RETWEETS_SCORE](store, score: number) {
       store.commit(constants.UPDATE_TWITTER_RETWEETS_SCORE, score);
+    },
+    [constants.LOGIN_TO_REDDIT](store) {
+      store.commit(constants.LOGIN_TO_REDDIT);
+    },
+    [constants.LOGOUT_OF_REDDIT](store) {
+      store.commit(constants.LOGOUT_OF_REDDIT);
+    },
+    [constants.UPDATE_REDDIT_USER_NAME](store, screenName) {
+      store.commit(constants.UPDATE_REDDIT_USER_NAME, screenName);
+    },
+    [constants.UPDATE_REDDIT_ACCESS_TOKEN](store, accessToken) {
+      store.commit(constants.UPDATE_REDDIT_ACCESS_TOKEN, accessToken);
     }
   },
   modules: {}
