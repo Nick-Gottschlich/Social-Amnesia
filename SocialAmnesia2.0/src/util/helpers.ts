@@ -3,7 +3,7 @@
 import store from "@/store/index";
 import constants from "@/store/constants";
 
-const gatherAndSetItems = ({
+const twitterGatherAndSetItems = ({
   maxId,
   apiRoute,
   itemArray,
@@ -43,12 +43,17 @@ const gatherAndSetItems = ({
       itemArray = itemArray.concat(items);
       oldestItem = itemArray.slice(-1)[0].id;
 
-      gatherAndSetItems({ maxId: oldestItem, apiRoute, itemArray, oldestItem });
+      twitterGatherAndSetItems({
+        maxId: oldestItem,
+        apiRoute,
+        itemArray,
+        oldestItem
+      });
     });
 };
 
 const helpers = {
-  gatherAndSetItems
+  twitterGatherAndSetItems
 };
 
 export default helpers;

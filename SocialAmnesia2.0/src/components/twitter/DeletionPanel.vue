@@ -123,7 +123,7 @@ export default class DeletionPanel extends Vue {
       });
 
       Promise.allSettled(promiseArray).then(() => {
-        helpers.gatherAndSetItems({
+        helpers.twitterGatherAndSetItems({
           apiRoute:
             itemString === "tweets"
               ? constants.TWEETS_ROUTE

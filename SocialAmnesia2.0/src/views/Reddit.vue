@@ -1,18 +1,25 @@
 <template>
   <div>
     <div class="redditLoginAndDeleteContainer">
-      <RedditLoginPanel />
+      <LoginPanel site="Reddit" />
     </div>
   </div>
 </template>
 
 <script>
-import RedditLoginPanel from "@/components/reddit/RedditLoginPanel.vue";
+import LoginPanel from "@/components/shared/LoginPanel.vue";
 
 export default {
   name: "Twitter",
   components: {
-    RedditLoginPanel
+    LoginPanel
   }
 };
 </script>
+
+<style lang="scss">
+.twitterLoginAndDeleteContainer {
+  display: flex;
+  justify-content: space-around;
+}
+</style>

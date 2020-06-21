@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="twitterContainer">
-      <LoginPanel />
+      <LoginPanel site="Twitter" />
       <DeletionPanel />
     </div>
     <div class="controlPanel">
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import LoginPanel from "@/components/twitter/LoginPanel.vue";
+import LoginPanel from "@/components/shared/LoginPanel.vue";
 import UserItemsPanel from "@/components/twitter/UserItemsPanel.vue";
 import DeletionPanel from "@/components/twitter/DeletionPanel.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
@@ -47,11 +47,11 @@ export default {
 
 if (store.state.twitter[constants.TWITTER_LOGGED_IN]) {
   // when the app is loaded, automatically refresh items
-  helpers.gatherAndSetItems({
+  helpers.twitterGatherAndSetItems({
     apiRoute: "statuses/user_timeline",
     itemArray: []
   });
-  helpers.gatherAndSetItems({
+  helpers.twitterGatherAndSetItems({
     apiRoute: "favorites/list",
     itemArray: []
   });

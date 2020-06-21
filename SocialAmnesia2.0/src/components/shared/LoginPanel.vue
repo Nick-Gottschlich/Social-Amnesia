@@ -1,38 +1,38 @@
 <template>
-  <div class="allContainer">
-    <div class="controls">
-      <div class="loginContainer">
-        <h1>Log in to Twitter</h1>
-        <b-button
-          class="logButton"
-          variant="success"
-          v-on:click="handleTwitterLogin()"
-          v-if="!loggedIn"
-        >
-          Click to login
-        </b-button>
-        <div id="login-panel-logout-button">
-          <b-button
-            class="logButton"
-            variant="success"
-            v-on:click="handleTwitterLogout()"
-            v-if="loggedIn"
-          >
-            Click to logout
-          </b-button>
-        </div>
-        <b-tooltip
-          target="login-panel-logout-button"
-          triggers="hover"
-          placement="bottom"
-        >
-          This will clear your saved settings!
-        </b-tooltip>
-        <span class="loginMessage" v-bind:class="{ loginError, loggedIn }">
-          {{ loginMessage }}
-        </span>
-      </div>
+  <div class="loginContainer">
+    <h1>Log in to {{ site }}</h1>
+    <b-button
+      class="logButton"
+      variant="success"
+      v-on:click="
+        site === 'Twitter' ? handleTwitterLogin() : handleRedditLogin()
+      "
+      v-if="!loggedIn"
+    >
+      Click to login
+    </b-button>
+    <div id="login-panel-logout-button">
+      <b-button
+        class="logButton"
+        variant="success"
+        v-on:click="
+          site === 'Twitter' ? handleTwitterLogout() : handleRedditLogout()
+        "
+        v-if="loggedIn"
+      >
+        Click to logout
+      </b-button>
     </div>
+    <b-tooltip
+      target="login-panel-logout-button"
+      triggers="hover"
+      placement="bottom"
+    >
+      This will clear your saved settings!
+    </b-tooltip>
+    <span class="loginMessage" v-bind:class="{ loginError, loggedIn }">
+      {{ loginMessage }}
+    </span>
   </div>
 </template>
 
@@ -40,26 +40,47 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Component, Vue } from "vue-property-decorator";
 import Twitter from "twitter-lite";
+import axios from "axios";
 import electron from "electron";
 import store from "@/store/index";
 import constants from "@/store/constants";
 import twitterApi from "@/twitterSecrets";
+import redditAPI from "@/redditSecrets";
 import helpers from "@/util/helpers";
 
+const LoginPanelProps = Vue.extend({
+  props: {
+    site: String
+  }
+});
+
 @Component
-export default class LoginPanel extends Vue {
+export default class LoginPanel extends LoginPanelProps {
   loginError = false;
 
   loginMessage = "Not logged in!";
 
   get loggedIn() {
-    if (store.state.twitter[constants.TWITTER_LOGGED_IN]) {
-      this.loginMessage = `Logged in to twitter as @${
-        store.state.twitter[constants.TWITTER_SCREEN_NAME]
-      }`;
+    if (this.site === "Twitter") {
+      if (store.state.twitter[constants.TWITTER_LOGGED_IN]) {
+        this.loginMessage = `Logged in to twitter as @${
+          store.state.twitter[constants.TWITTER_SCREEN_NAME]
+        }`;
+      }
+
+      return store.state.twitter[constants.TWITTER_LOGGED_IN];
+    }
+    if (this.site === "Reddit") {
+      if (store.state.reddit[constants.REDDIT_LOGGED_IN]) {
+        this.loginMessage = `Logged in to reddit as @${
+          store.state.reddit[constants.REDDIT_USER_NAME]
+        }`;
+      }
+
+      return store.state.reddit[constants.REDDIT_LOGGED_IN];
     }
 
-    return store.state.twitter[constants.TWITTER_LOGGED_IN];
+    return null;
   }
 
   handleTwitterLogin() {
@@ -112,19 +133,11 @@ export default class LoginPanel extends Vue {
             verificationResponse.user_id
           );
 
-          // Clear out existing items and white list
-          // This can be removed once I add a log out button
-          //  that can clear store/persistence
-          store.dispatch(constants.UPDATE_USER_TWEETS, []);
-          store.dispatch(constants.UPDATE_USER_FAVORITES, []);
-          store.dispatch(constants.UPDATE_WHITELISTED_TWEETS, -1);
-          store.dispatch(constants.UPDATE_WHITELISTED_FAVORITES, -1);
-
-          helpers.gatherAndSetItems({
+          helpers.twitterGatherAndSetItems({
             apiRoute: "statuses/user_timeline",
             itemArray: []
           });
-          helpers.gatherAndSetItems({
+          helpers.twitterGatherAndSetItems({
             apiRoute: "favorites/list",
             itemArray: []
           });
@@ -167,6 +180,70 @@ export default class LoginPanel extends Vue {
       });
   }
 
+  handleRedditLogin() {
+    const { BrowserWindow } = electron.remote;
+    const mainWindow = electron.remote.getCurrentWindow();
+    const redditAPIWindow = new BrowserWindow({
+      parent: mainWindow
+    });
+
+    redditAPIWindow.loadURL(
+      `https://www.reddit.com/api/v1/authorize?client_id=${redditAPI.clientId}&response_type=code&state=randomString&redirect_uri=https://google.com&duration=permanent&scope=identity,history,read,edit`
+    );
+
+    redditAPIWindow.webContents.on("did-navigate", (event, url) => {
+      if (url.indexOf("google") >= 0 && url.indexOf("reddit") === -1) {
+        const searchParams = new URLSearchParams(url.slice(23));
+        const oauthCode = searchParams.get("code");
+        redditAPIWindow.close();
+
+        axios
+          .post(
+            "https://www.reddit.com/api/v1/access_token",
+            {},
+            {
+              params: {
+                grant_type: "authorization_code",
+                code: oauthCode,
+                redirect_uri: "https://google.com"
+              },
+              auth: {
+                username: redditAPI.clientId,
+                password: ""
+              }
+            }
+          )
+          .then(response => {
+            const accessToken = response.data.access_token;
+
+            store.dispatch(constants.LOGIN_TO_REDDIT);
+            store.dispatch(
+              constants.UPDATE_REDDIT_ACCESS_TOKEN,
+              response.data.access_token
+            );
+
+            // TODO(NG): move this to a helper function
+            axios
+              .get("https://oauth.reddit.com/api/v1/me", {
+                headers: {
+                  Authorization: `bearer ${accessToken}`
+                }
+              })
+              .then(loginResponse => {
+                store.dispatch(
+                  constants.UPDATE_REDDIT_USER_NAME,
+                  loginResponse.data.name
+                );
+              });
+          })
+          .catch(error => {
+            console.error("Failed to login to reddit with error:", error);
+            redditAPIWindow.close();
+          });
+      }
+    });
+  }
+
   handleTwitterLogout() {
     const { BrowserWindow } = electron.remote;
     const mainWindow = electron.remote.getCurrentWindow();
@@ -179,43 +256,43 @@ export default class LoginPanel extends Vue {
     this.loginMessage = "Not Logged In!";
     store.dispatch(constants.LOGOUT_OF_TWITTER);
   }
+
+  handleRedditLogout() {
+    // TODO(NG): remove cookies that auto login to reddit
+
+    this.loginMessage = "Not Logged In!";
+    store.dispatch(constants.LOGOUT_OF_REDDIT);
+  }
 }
 </script>
 
 <style lang="scss">
-.allContainer {
+.loginContainer {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Ubuntu, "Helvetica Neue", sans-serif;
-}
-
-.controls {
   display: flex;
   justify-content: space-around;
-}
-
-.loginContainer {
-  display: flex;
   flex-direction: column;
   align-items: center;
 
   border: 4mm ridge #218838;
   padding: 20px;
   margin-top: 10px;
+}
 
-  .logButton {
-    width: 150px;
-  }
+.logButton {
+  width: 150px;
+}
 
-  .loginMessage {
-    padding-top: 10px;
-  }
+.loginMessage {
+  padding-top: 10px;
+}
 
-  .loginError {
-    color: #dc3545;
-  }
+.loginError {
+  color: #dc3545;
+}
 
-  .loggedIn {
-    color: #218838;
-  }
+.loggedIn {
+  color: #218838;
 }
 </style>

@@ -28,11 +28,11 @@ export default class RefreshItemsButton extends Vue {
 
   handleRefreshClick() {
     this.loading = true;
-    helpers.gatherAndSetItems({
+    helpers.twitterGatherAndSetItems({
       apiRoute: "statuses/user_timeline",
       itemArray: []
     });
-    helpers.gatherAndSetItems({
+    helpers.twitterGatherAndSetItems({
       apiRoute: "favorites/list",
       itemArray: []
     });

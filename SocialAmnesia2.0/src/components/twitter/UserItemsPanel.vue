@@ -146,7 +146,7 @@ export default class UserItemsPanel extends UserItemsPanelProps {
           }
         )
         .then(() => {
-          helpers.gatherAndSetItems({
+          helpers.twitterGatherAndSetItems({
             apiRoute:
               this.itemtype === "tweets"
                 ? constants.TWEETS_ROUTE
