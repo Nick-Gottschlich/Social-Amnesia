@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 import store from "@/store/index";
 import constants from "@/store/constants";
+import axios, { AxiosResponse } from "axios";
 
 const twitterGatherAndSetItems = ({
   maxId,
@@ -52,8 +53,25 @@ const twitterGatherAndSetItems = ({
     });
 };
 
+const makeRedditGetRequest = async (url: string): Promise<any> => {
+  try {
+    const { data }: AxiosResponse = await axios.get(url, {
+      headers: {
+        Authorization: `bearer ${
+          store.state.reddit[constants.REDDIT_ACCESS_TOKEN]
+        }`
+      }
+    });
+    return data;
+  } catch (error) {
+    console.error(`Error in reddit request ${url}`, error);
+    return error;
+  }
+};
+
 const helpers = {
-  twitterGatherAndSetItems
+  twitterGatherAndSetItems,
+  makeRedditGetRequest
 };
 
 export default helpers;

@@ -222,18 +222,10 @@ export default class LoginPanel extends LoginPanelProps {
               response.data.access_token
             );
 
-            // TODO(NG): move this to a helper function
-            axios
-              .get("https://oauth.reddit.com/api/v1/me", {
-                headers: {
-                  Authorization: `bearer ${accessToken}`
-                }
-              })
-              .then(loginResponse => {
-                store.dispatch(
-                  constants.UPDATE_REDDIT_USER_NAME,
-                  loginResponse.data.name
-                );
+            helpers
+              .makeRedditGetRequest("https://oauth.reddit.com/api/v1/me")
+              .then(meData => {
+                store.dispatch(constants.UPDATE_REDDIT_USER_NAME, meData.name);
               });
           })
           .catch(error => {
