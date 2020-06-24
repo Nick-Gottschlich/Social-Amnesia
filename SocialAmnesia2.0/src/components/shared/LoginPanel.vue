@@ -63,7 +63,7 @@ export default class LoginPanel extends LoginPanelProps {
   get loggedIn() {
     if (this.site === "Twitter") {
       if (store.state.twitter[constants.TWITTER_LOGGED_IN]) {
-        this.loginMessage = `Logged in to twitter as @${
+        this.loginMessage = `Logged in to Twitter as @${
           store.state.twitter[constants.TWITTER_SCREEN_NAME]
         }`;
       }
@@ -72,7 +72,7 @@ export default class LoginPanel extends LoginPanelProps {
     }
     if (this.site === "Reddit") {
       if (store.state.reddit[constants.REDDIT_LOGGED_IN]) {
-        this.loginMessage = `Logged in to reddit as @${
+        this.loginMessage = `Logged in to Reddit as @${
           store.state.reddit[constants.REDDIT_USER_NAME]
         }`;
       }
@@ -84,6 +84,8 @@ export default class LoginPanel extends LoginPanelProps {
   }
 
   handleTwitterLogin() {
+    this.loginError = false;
+
     const client = new Twitter({
       consumer_key: twitterApi.consumer_key,
       consumer_secret: twitterApi.consumer_secret
@@ -108,7 +110,7 @@ export default class LoginPanel extends LoginPanelProps {
             !verificationResponse.oauth_token_secret
           ) {
             // login has failed, abort
-            this.loginMessage = "Failed to login to twitter!";
+            this.loginMessage = "Failed to login to Twitter!";
             this.loginError = true;
             throw Error(verificationResponse);
           }
@@ -181,6 +183,8 @@ export default class LoginPanel extends LoginPanelProps {
   }
 
   handleRedditLogin() {
+    this.loginError = false;
+
     const { BrowserWindow } = electron.remote;
     const mainWindow = electron.remote.getCurrentWindow();
     const redditAPIWindow = new BrowserWindow({
@@ -214,7 +218,11 @@ export default class LoginPanel extends LoginPanelProps {
             }
           )
           .then(response => {
-            const accessToken = response.data.access_token;
+            if (response?.data?.error === "invalid_request") {
+              this.loginMessage = "Failed to login to Reddit!";
+              this.loginError = true;
+              throw Error("invalid request");
+            }
 
             store.dispatch(constants.LOGIN_TO_REDDIT);
             store.dispatch(
@@ -237,6 +245,8 @@ export default class LoginPanel extends LoginPanelProps {
   }
 
   handleTwitterLogout() {
+    this.loginError = false;
+
     const { BrowserWindow } = electron.remote;
     const mainWindow = electron.remote.getCurrentWindow();
     // this removes the cookie that will auto login to twitter
@@ -250,6 +260,8 @@ export default class LoginPanel extends LoginPanelProps {
   }
 
   handleRedditLogout() {
+    this.loginError = false;
+
     // TODO(NG): remove cookies that auto login to reddit
 
     this.loginMessage = "Not Logged In!";
