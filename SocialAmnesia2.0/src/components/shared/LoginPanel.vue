@@ -234,6 +234,8 @@ export default class LoginPanel extends LoginPanelProps {
               .makeRedditGetRequest("https://oauth.reddit.com/api/v1/me")
               .then(meData => {
                 store.dispatch(constants.UPDATE_REDDIT_USER_NAME, meData.name);
+
+                helpers.redditGatherAndSetItems();
               });
           })
           .catch(error => {

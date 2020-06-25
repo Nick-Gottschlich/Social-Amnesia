@@ -24,6 +24,8 @@ const LOGIN_TO_REDDIT = "loginToReddit";
 const LOGOUT_OF_REDDIT = "logoutOfReddit";
 const UPDATE_REDDIT_USER_NAME = "updateRedditUsername";
 const UPDATE_REDDIT_ACCESS_TOKEN = "updateRedditAccessToken";
+const UPDATE_REDDIT_COMMENTS = "updateRedditComments";
+const UPDATE_REDDIT_POSTS = "updateRedditPosts";
 
 // ACTUAL VALUES IN STATE
 const TWITTER_LOGGED_IN = "twitterLoggedIn";
@@ -44,6 +46,8 @@ const TWITTER_RETWEETS_SCORE = "twitterRetweetsScore";
 const REDDIT_LOGGED_IN = "redditLoggedIn";
 const REDDIT_USER_NAME = "redditUserName";
 const REDDIT_ACCESS_TOKEN = "redditAccessToken";
+const REDDIT_COMMENTS = "redditComments";
+const REDDIT_POSTS = "redditPosts";
 
 // other constants
 const TWEETS_ROUTE = "statuses/user_timeline";
@@ -72,6 +76,8 @@ const constants = {
   LOGOUT_OF_REDDIT,
   UPDATE_REDDIT_USER_NAME,
   UPDATE_REDDIT_ACCESS_TOKEN,
+  UPDATE_REDDIT_COMMENTS,
+  UPDATE_REDDIT_POSTS,
   TWITTER_LOGGED_IN,
   TWITTER_SCREEN_NAME,
   TWITTER_USER_ID,
@@ -90,6 +96,8 @@ const constants = {
   REDDIT_LOGGED_IN,
   REDDIT_USER_NAME,
   REDDIT_ACCESS_TOKEN,
+  REDDIT_COMMENTS,
+  REDDIT_POSTS,
   TWEETS_ROUTE,
   FAVORITES_ROUTE
 };

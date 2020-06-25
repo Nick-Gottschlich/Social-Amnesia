@@ -69,9 +69,39 @@ const makeRedditGetRequest = async (url: string): Promise<any> => {
   }
 };
 
+const redditGatherAndSetItems = () => {
+  makeRedditGetRequest(
+    `https://oauth.reddit.com/user/${
+      store.state.reddit[constants.REDDIT_USER_NAME]
+    }/comments`
+  ).then(commentsData => {
+    console.log("comments Data", commentsData);
+
+    store.dispatch(
+      constants.UPDATE_REDDIT_COMMENTS,
+      commentsData.data.children
+    );
+
+    console.log(store.state.reddit[constants.REDDIT_COMMENTS]);
+  });
+
+  makeRedditGetRequest(
+    `https://oauth.reddit.com/user/${
+      store.state.reddit[constants.REDDIT_USER_NAME]
+    }/submitted`
+  ).then(submissionData => {
+    console.log("submission Data", submissionData);
+
+    store.dispatch(constants.UPDATE_REDDIT_POSTS, submissionData.data.children);
+
+    console.log(store.state.reddit[constants.REDDIT_POSTS]);
+  });
+};
+
 const helpers = {
   twitterGatherAndSetItems,
-  makeRedditGetRequest
+  makeRedditGetRequest,
+  redditGatherAndSetItems
 };
 
 export default helpers;
