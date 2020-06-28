@@ -1,0 +1,157 @@
+<template>
+  <div class="redditUserItemsContainer">
+    <h1>{{ this.itemtype === "comments" ? "Your comments" : "Your posts" }}</h1>
+    <b-pagination
+      v-model="currentPage"
+      :total-rows="rows"
+      :per-page="perPage"
+      aria-controls="itemList"
+      align="center"
+    />
+    <ul id="redditItemsList" class="tweetList">
+      <li v-for="item in userItems" :key="`${itemtype}-${item.data.id}`">
+        <div class="redditItemAndOptionsContainer">
+          <div class="redditOptions">
+            <div class="redditWhiteList">
+              <b-form-checkbox
+                switch
+                :id="`checklist-${itemtype}-${item.data.id}`"
+              />
+              <span>Whitelist</span>
+            </div>
+            <div class="redditDeleteIconContainer">
+              <b-icon
+                v-b-tooltip.hover.bottom
+                :title="
+                  itemtype === 'comments'
+                    ? 'Delete this comment'
+                    : 'Delete this post'
+                "
+                icon="trash"
+                class="tweetDeleteIcon"
+              />
+            </div>
+          </div>
+          <div class="redditItem">
+            <div class="redditLinkTitle">
+              <a
+                :href="item.data.link_url"
+                target="_blank"
+                @click.prevent="openExternalBrowser"
+              >
+                {{ item.data.link_title }}
+              </a>
+            </div>
+            <div class="redditItemBody">
+              {{ item.data.body }}
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+import { Component, Vue } from "vue-property-decorator";
+import store from "@/store/index";
+import constants from "@/store/constants";
+import helpers from "@/util/helpers";
+import remote from "electron";
+// const { remote } = require('electron');
+
+const UserItemsPanelProps = Vue.extend({
+  props: {
+    itemtype: String
+  }
+});
+
+@Component
+export default class UserItemsPanel extends UserItemsPanelProps {
+  currentPage = 1;
+
+  perPage = 5;
+
+  get userItems() {
+    console.log("comments", store.state.reddit[constants.REDDIT_COMMENTS]);
+
+    if (this.itemtype === "comments") {
+      return store.state.reddit[constants.REDDIT_COMMENTS].slice(
+        (this.currentPage - 1) * this.perPage,
+        this.currentPage * this.perPage
+      );
+    }
+    if (this.itemtype === "posts") {
+      return store.state.reddit[constants.REDDIT_POSTS].slice(
+        (this.currentPage - 1) * this.perPage,
+        this.currentPage * this.perPage
+      );
+    }
+    return [];
+  }
+
+  get rows() {
+    if (this.itemtype === "comments") {
+      return store.state.twitter[constants.USER_TWEETS].length;
+    }
+    if (this.itemtype === "posts") {
+      return store.state.twitter[constants.USER_FAVORITES].length;
+    }
+    return 0;
+  }
+
+  openExternalBrowser(event) {
+    remote.shell.openExternal(event.target.href);
+  }
+}
+</script>
+
+<style lang="scss">
+.redditUserItemsContainer {
+  width: 48%;
+  height: 99%;
+  border: 4mm ridge #1da1f2;
+  margin-bottom: 10px;
+}
+
+.redditItemsList {
+  padding-left: 0;
+  list-style: none;
+}
+
+.redditItemAndOptionsContainer {
+  display: flex;
+  align-items: center;
+}
+
+.redditOptions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.redditWhitelist {
+  display: flex;
+  padding-left: 5px;
+  padding-bottom: 20px;
+}
+
+.redditItem {
+  padding: 15px;
+  margin: 10px;
+  border: 1px solid #e1e8ed;
+  border-radius: 5px;
+  flex-grow: 1;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+
+  &:hover {
+    background-color: #dddddd;
+  }
+}
+
+.redditLinkTitle {
+  color: #0000ff;
+}
+</style>

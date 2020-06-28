@@ -9,11 +9,7 @@
       align="center"
     />
     <ul id="itemList" class="tweetList">
-      <li
-        class="itemsList"
-        v-for="tweet in userItems"
-        :key="`${itemtype}-${tweet.id}`"
-      >
+      <li v-for="tweet in userItems" :key="`${itemtype}-${tweet.id}`">
         <div class="tweetAndOptionsContainer">
           <div class="tweetOptions">
             <div class="tweetWhitelist">
