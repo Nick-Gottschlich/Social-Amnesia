@@ -33,17 +33,45 @@
             </div>
           </div>
           <div class="redditItem">
-            <div class="redditLinkTitle">
-              <a
-                :href="item.data.link_url"
-                target="_blank"
-                @click.prevent="openExternalBrowser"
-              >
-                {{ item.data.link_title }}
-              </a>
+            <div class="redditTitleContainer">
+              <span class="redditLinkTitle">
+                <a
+                  :href="item.data.link_url"
+                  target="_blank"
+                  @click.prevent="openExternalBrowser"
+                >
+                  {{ item.data.link_title }}
+                </a>
+              </span>
+              <div class="redditSubPostedTo">
+                <span>in</span>
+                <a
+                  :href="
+                    `https://reddit.com/${item.data.subreddit_name_prefixed}`
+                  "
+                  target="_blank"
+                  @click.prevent="openExternalBrowser"
+                >
+                  {{ item.data.subreddit_name_prefixed }}
+                </a>
+              </div>
             </div>
-            <div class="redditItemBody">
-              {{ item.data.body }}
+            <div class="redditPostContentContainer">
+              <div class="redditUserAndScore">
+                <span class="redditUser">
+                  {{ item.data.author }}
+                </span>
+                <span class="redditPostScore">
+                  {{ item.data.score }}
+                  {{ item.data.score === 1 ? "point" : "points" }}
+                </span>
+                <span class="redditPostDate">
+                  {{ new Date(item.data.created_utc * 1000).toDateString() }}
+                </span>
+              </div>
+              <div class="redditItemBody">
+                {{ item.data.body }}
+              </div>
             </div>
           </div>
         </div>
@@ -151,7 +179,51 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   }
 }
 
+.redditTitleContainer {
+  display: flex;
+  align-items: center;
+}
+
 .redditLinkTitle {
   color: #0000ff;
+}
+
+.redditSubPostedTo {
+  padding-left: 10px;
+  font-size: 13px;
+}
+
+.redditUser {
+  background-color: #0055df;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 0 2px 0 2px;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.redditPostContentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 20px;
+}
+
+.redditPostScore {
+  padding-left: 10px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.redditPostDate {
+  color: #888;
+  font-size: 13px;
+  padding-left: 5px;
+}
+
+.redditItemBody {
+  padding-top: 10px;
+  text-align: left;
+  word-break: break-word;
 }
 </style>
