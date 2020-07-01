@@ -6,6 +6,7 @@
     <div class="pageDivider" />
     <div class="redditContainer paddingTop">
       <UserItemsPanel itemtype="comments" />
+      <UserItemsPanel itemtype="posts" />
     </div>
   </div>
 </template>

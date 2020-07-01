@@ -32,15 +32,28 @@
               />
             </div>
           </div>
-          <div class="redditItem">
+          <a
+            class="redditItem"
+            :href="`https://reddit.com${item.data.permalink}`"
+            target="_blank"
+            @click.prevent="openExternalBrowser"
+          >
             <div class="redditTitleContainer">
               <span class="redditLinkTitle">
                 <a
-                  :href="item.data.link_url"
+                  :href="
+                    itemtype === 'comments'
+                      ? item.data.link_url
+                      : `https://reddit.com${item.data.permalink}`
+                  "
                   target="_blank"
                   @click.prevent="openExternalBrowser"
                 >
-                  {{ item.data.link_title }}
+                  {{
+                    itemtype === "comments"
+                      ? item.data.link_title
+                      : item.data.title
+                  }}
                 </a>
               </span>
               <div class="redditSubPostedTo">
@@ -69,11 +82,11 @@
                   {{ new Date(item.data.created_utc * 1000).toDateString() }}
                 </span>
               </div>
-              <div class="redditItemBody">
-                {{ item.data.body }}
-              </div>
+              <span class="redditItemBody">
+                {{ createRedditItemBody(item) }}
+              </span>
             </div>
-          </div>
+          </a>
         </div>
       </li>
     </ul>
@@ -86,7 +99,6 @@ import store from "@/store/index";
 import constants from "@/store/constants";
 import helpers from "@/util/helpers";
 import remote from "electron";
-// const { remote } = require('electron');
 
 const UserItemsPanelProps = Vue.extend({
   props: {
@@ -102,6 +114,7 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 
   get userItems() {
     console.log("comments", store.state.reddit[constants.REDDIT_COMMENTS]);
+    console.log("posts", store.state.reddit[constants.REDDIT_POSTS]);
 
     if (this.itemtype === "comments") {
       return store.state.reddit[constants.REDDIT_COMMENTS].slice(
@@ -126,6 +139,13 @@ export default class UserItemsPanel extends UserItemsPanelProps {
       return store.state.twitter[constants.USER_FAVORITES].length;
     }
     return 0;
+  }
+
+  createRedditItemBody(item) {
+    const text =
+      this.itemtype === "comments" ? item.data.body : item.data.selftext;
+
+    return text.length >= 500 ? `${text.slice(0, 500)}...` : text;
   }
 
   openExternalBrowser(event) {
@@ -173,9 +193,13 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
+  text-decoration: inherit;
+  color: inherit;
 
   &:hover {
     background-color: #dddddd;
+    text-decoration: inherit;
+    color: inherit;
   }
 }
 
@@ -225,5 +249,6 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   padding-top: 10px;
   text-align: left;
   word-break: break-word;
+  white-space: pre-line;
 }
 </style>
