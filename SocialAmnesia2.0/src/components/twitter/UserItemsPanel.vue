@@ -33,7 +33,18 @@
               />
             </div>
           </div>
-          <div class="tweet">
+          <a
+            class="tweet"
+            :href="
+              `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`
+            "
+            target="_blank"
+            @click.prevent="
+              openExternalBrowser(
+                `https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`
+              )
+            "
+          >
             <div class="tweetHeader">
               <img :src="tweet.user.profile_image_url_https" />
               <div class="tweetUsernames">
@@ -80,7 +91,7 @@
               <div class="favorites">❤️{{ tweet.favorite_count }}</div>
               <div class="retweets">🔁{{ tweet.retweet_count }}</div>
             </div>
-          </div>
+          </a>
         </div>
       </li>
     </ul>
@@ -93,6 +104,7 @@ import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
 import constants from "@/store/constants";
 import helpers from "@/util/helpers";
+import remote from "electron";
 
 const UserItemsPanelProps = Vue.extend({
   props: {
@@ -182,6 +194,10 @@ export default class UserItemsPanel extends UserItemsPanelProps {
     }
     return 0;
   }
+
+  openExternalBrowser(link) {
+    remote.shell.openExternal(link);
+  }
 }
 </script>
 
@@ -232,9 +248,13 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   border: 1px solid #e1e8ed;
   border-radius: 5px;
   flex-grow: 1;
+  text-decoration: inherit;
+  color: inherit;
 
   &:hover {
     background-color: #dddddd;
+    text-decoration: inherit;
+    color: inherit;
   }
 }
 

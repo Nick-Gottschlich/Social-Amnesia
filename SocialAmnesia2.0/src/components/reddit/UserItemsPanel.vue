@@ -36,37 +36,25 @@
             class="redditItem"
             :href="`https://reddit.com${item.data.permalink}`"
             target="_blank"
-            @click.prevent="openExternalBrowser"
+            @click.prevent="
+              openExternalBrowser(`https://reddit.com${item.data.permalink}`)
+            "
           >
             <div class="redditTitleContainer">
               <span class="redditLinkTitle">
-                <a
-                  :href="
-                    itemtype === 'comments'
-                      ? item.data.link_url
-                      : `https://reddit.com${item.data.permalink}`
-                  "
-                  target="_blank"
-                  @click.prevent="openExternalBrowser"
-                >
+                <span>
                   {{
                     itemtype === "comments"
                       ? item.data.link_title
                       : item.data.title
                   }}
-                </a>
+                </span>
               </span>
               <div class="redditSubPostedTo">
                 <span>in</span>
-                <a
-                  :href="
-                    `https://reddit.com/${item.data.subreddit_name_prefixed}`
-                  "
-                  target="_blank"
-                  @click.prevent="openExternalBrowser"
-                >
+                <span class="redditSubPostedToName">
                   {{ item.data.subreddit_name_prefixed }}
-                </a>
+                </span>
               </div>
             </div>
             <div class="redditPostContentContainer">
@@ -148,8 +136,8 @@ export default class UserItemsPanel extends UserItemsPanelProps {
     return text.length >= 500 ? `${text.slice(0, 500)}...` : text;
   }
 
-  openExternalBrowser(event) {
-    remote.shell.openExternal(event.target.href);
+  openExternalBrowser(link) {
+    remote.shell.openExternal(link);
   }
 }
 </script>
@@ -215,6 +203,10 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 .redditSubPostedTo {
   padding-left: 10px;
   font-size: 13px;
+}
+
+.redditSubPostedToName {
+  color: #0000ff;
 }
 
 .redditUser {
