@@ -102,11 +102,13 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   perPage = 5;
 
   handleDeleteItemClicked(item) {
-    helpers.makeRedditPostRequest("https://oauth.reddit.com/api/del/", {
-      id: item.data.name
-    });
-
-    // TODO: Refresh user panel once item is deleted
+    helpers
+      .makeRedditPostRequest("https://oauth.reddit.com/api/del/", {
+        id: item.data.name
+      })
+      .then(() => {
+        helpers.redditGatherAndSetItems();
+      });
   }
 
   get loggedIn() {
