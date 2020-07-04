@@ -1,5 +1,5 @@
 <template>
-  <div class="redditUserItemsContainer">
+  <div class="redditUserItemsContainer" v-if="loggedIn">
     <h1>{{ this.itemtype === "comments" ? "Your comments" : "Your posts" }}</h1>
     <b-pagination
       v-model="currentPage"
@@ -12,7 +12,7 @@
       <li v-for="item in userItems" :key="`${itemtype}-${item.data.id}`">
         <div class="redditItemAndOptionsContainer">
           <div class="redditOptions">
-            <div class="redditWhiteList">
+            <div class="redditWhitelist">
               <b-form-checkbox
                 switch
                 :id="`checklist-${itemtype}-${item.data.id}`"
@@ -28,7 +28,8 @@
                     : 'Delete this post'
                 "
                 icon="trash"
-                class="tweetDeleteIcon"
+                class="redditDeleteIcon"
+                v-on:click="handleDeleteItemClicked(item)"
               />
             </div>
           </div>
@@ -100,6 +101,18 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 
   perPage = 5;
 
+  handleDeleteItemClicked(item) {
+    helpers.makeRedditPostRequest("https://oauth.reddit.com/api/del/", {
+      id: item.data.name
+    });
+
+    // TODO: Refresh user panel once item is deleted
+  }
+
+  get loggedIn() {
+    return store.state.reddit[constants.REDDIT_LOGGED_IN];
+  }
+
   get userItems() {
     console.log("comments", store.state.reddit[constants.REDDIT_COMMENTS]);
     console.log("posts", store.state.reddit[constants.REDDIT_POSTS]);
@@ -170,6 +183,17 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   display: flex;
   padding-left: 5px;
   padding-bottom: 20px;
+}
+
+.redditDeleteIconContainer {
+  :hover {
+    cursor: pointer;
+  }
+}
+
+.redditDeleteIcon {
+  width: 30px;
+  height: 30px;
 }
 
 .redditItem {
