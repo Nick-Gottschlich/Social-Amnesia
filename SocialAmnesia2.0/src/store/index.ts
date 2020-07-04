@@ -71,7 +71,9 @@ const redditStoreDefault = {
   [constants.REDDIT_USER_NAME]: "",
   [constants.REDDIT_ACCESS_TOKEN]: "",
   [constants.REDDIT_COMMENTS]: [],
-  [constants.REDDIT_POSTS]: []
+  [constants.REDDIT_POSTS]: [],
+  [constants.REDDIT_WHITELISTED_COMMENTS]: {},
+  [constants.REDDIT_WHITELISTED_POSTS]: {}
 };
 
 export default new Vuex.Store({
@@ -126,7 +128,11 @@ export default new Vuex.Store({
       [constants.REDDIT_COMMENTS]:
         redditPersistentStore.get(constants.REDDIT_COMMENTS) || [],
       [constants.REDDIT_POSTS]:
-        redditPersistentStore.get(constants.REDDIT_POSTS) || []
+        redditPersistentStore.get(constants.REDDIT_POSTS) || [],
+      [constants.REDDIT_WHITELISTED_COMMENTS]:
+        redditPersistentStore.get(constants.REDDIT_WHITELISTED_COMMENTS) || {},
+      [constants.REDDIT_WHITELISTED_POSTS]:
+        redditPersistentStore.get(constants.REDDIT_WHITELISTED_POSTS) || {}
     },
     [constants.CURRENTLY_DELETING]: {
       totalItems: 0,
@@ -162,26 +168,20 @@ export default new Vuex.Store({
       updateStore(state, constants.TWITTER_USER_CLIENT, client, "twitter");
     },
     [constants.UPDATE_WHITELISTED_TWEETS](state, tweetId) {
-      if (tweetId === -1) {
-        state[constants.WHITELISTED_TWEETS] = {};
-      } else {
-        addOrRemoveItem(state.twitter.whitelistedTweets, tweetId);
-      }
-
+      addOrRemoveItem(state.twitter[constants.WHITELISTED_TWEETS], tweetId);
       twitterPersistentStore.set(
         constants.WHITELISTED_TWEETS,
-        state.whitelistedTweets
+        state.twitter[constants.WHITELISTED_TWEETS]
       );
     },
-    [constants.UPDATE_WHITELISTED_FAVORITES](state, tweetId) {
-      if (tweetId === -1) {
-        state[constants.WHITELISTED_FAVORITES] = {};
-      } else {
-        addOrRemoveItem(state.twitter.whitelistedFavorites, tweetId);
-      }
+    [constants.UPDATE_WHITELISTED_FAVORITES](state, favoriteId) {
+      addOrRemoveItem(
+        state.twitter[constants.WHITELISTED_FAVORITES],
+        favoriteId
+      );
       twitterPersistentStore.set(
         constants.WHITELISTED_FAVORITES,
-        state.whitelistedFavorites
+        state.twitter[constants.WHITELISTED_FAVORITES]
       );
     },
     [constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED](state) {
@@ -234,6 +234,23 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_REDDIT_POSTS](state, posts) {
       updateStore(state, constants.REDDIT_POSTS, posts, "reddit");
+    },
+    [constants.UPDATE_REDDIT_WHITELISTED_COMMENTS](state, commentId) {
+      addOrRemoveItem(
+        state.reddit[constants.REDDIT_WHITELISTED_COMMENTS],
+        commentId
+      );
+      redditPersistentStore.set(
+        constants.REDDIT_WHITELISTED_COMMENTS,
+        state.reddit[constants.REDDIT_WHITELISTED_COMMENTS]
+      );
+    },
+    [constants.UPDATE_REDDIT_WHITELISTED_POSTS](state, postId) {
+      addOrRemoveItem(state.reddit[constants.REDDIT_WHITELISTED_POSTS], postId);
+      redditPersistentStore.set(
+        constants.REDDIT_WHITELISTED_POSTS,
+        state.reddit[constants.REDDIT_WHITELISTED_POSTS]
+      );
     }
   },
   actions: {
@@ -308,6 +325,12 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_REDDIT_POSTS](store, posts) {
       store.commit(constants.UPDATE_REDDIT_POSTS, posts);
+    },
+    [constants.UPDATE_REDDIT_WHITELISTED_COMMENTS](store, commentId) {
+      store.commit(constants.UPDATE_REDDIT_WHITELISTED_COMMENTS, commentId);
+    },
+    [constants.UPDATE_REDDIT_WHITELISTED_POSTS](store, postId) {
+      store.commit(constants.UPDATE_REDDIT_WHITELISTED_POSTS, postId);
     }
   },
   modules: {}

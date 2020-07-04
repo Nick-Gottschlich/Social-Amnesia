@@ -16,6 +16,8 @@
               <b-form-checkbox
                 switch
                 :id="`checklist-${itemtype}-${item.data.id}`"
+                v-on:change="handleChanged(item)"
+                :checked="checkIfSelected(item)"
               />
               <span>Whitelist</span>
             </div>
@@ -100,6 +102,30 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   currentPage = 1;
 
   perPage = 5;
+
+  checkIfSelected(item) {
+    return this.itemtype === "comments"
+      ? store.state.reddit[constants.REDDIT_WHITELISTED_COMMENTS][
+          `reddit-comment-${item.data.name}`
+        ]
+      : store.state.reddit[constants.REDDIT_WHITELISTED_POSTS][
+          `reddit-post-${item.data.name}`
+        ];
+  }
+
+  handleChanged(item) {
+    if (this.itemtype === "comments") {
+      store.dispatch(
+        constants.UPDATE_REDDIT_WHITELISTED_COMMENTS,
+        `reddit-comment-${item.data.name}`
+      );
+    } else if (this.itemtype === "posts") {
+      store.dispatch(
+        constants.UPDATE_REDDIT_WHITELISTED_POSTS,
+        `reddit-post-${item.data.name}`
+      );
+    }
+  }
 
   handleDeleteItemClicked(item) {
     helpers
