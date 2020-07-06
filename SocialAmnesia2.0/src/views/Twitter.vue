@@ -10,7 +10,7 @@
     </div>
     <div class="pageDivider" />
     <div class="refreshItemsButtonContainer">
-      <RefreshItemsButton />
+      <RefreshItemsButton site="Twitter" />
     </div>
     <div class="twitterContainer paddingTop">
       <UserItemsPanel itemtype="tweets" />
@@ -27,7 +27,7 @@ import DeletionPanel from "@/components/twitter/DeletionPanel.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 import TimeRange from "@/components/ControlPanel/TimeRange.vue";
 import ScorePanel from "@/components/ControlPanel/ScorePanel.vue";
-import RefreshItemsButton from "@/components/twitter/RefreshItemsButton.vue";
+import RefreshItemsButton from "@/components/shared/RefreshItemsButton.vue";
 import helpers from "@/util/helpers";
 import store from "@/store/index";
 import constants from "@/store/constants";

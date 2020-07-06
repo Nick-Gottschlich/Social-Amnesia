@@ -4,6 +4,9 @@
       <LoginPanel site="Reddit" />
     </div>
     <div class="pageDivider" />
+    <div class="refreshItemsButtonContainer">
+      <RefreshItemsButton site="Reddit" />
+    </div>
     <div class="redditContainer paddingTop">
       <UserItemsPanel itemtype="comments" />
       <UserItemsPanel itemtype="posts" />
@@ -14,12 +17,14 @@
 <script>
 import LoginPanel from "@/components/shared/LoginPanel.vue";
 import UserItemsPanel from "@/components/reddit/UserItemsPanel.vue";
+import RefreshItemsButton from "@/components/shared/RefreshItemsButton.vue";
 
 export default {
   name: "Twitter",
   components: {
     LoginPanel,
-    UserItemsPanel
+    UserItemsPanel,
+    RefreshItemsButton
   }
 };
 </script>
