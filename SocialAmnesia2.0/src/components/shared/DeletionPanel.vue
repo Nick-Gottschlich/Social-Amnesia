@@ -1,16 +1,27 @@
 <template>
   <div class="deletionContainer" v-if="loggedIn">
-    <h1>Clean Twitter</h1>
+    <h1>Clean {{ site }}</h1>
     <div class="deletionButtonContainer">
       <b-button
         class="deletionButton"
         variant="danger"
-        v-on:click="handleDeleteTweets()"
+        v-on:click="
+          site === 'Twitter'
+            ? handleDeleteTwitterTweets()
+            : handleDeleteRedditComments()
+        "
       >
-        Click to delete tweets
+        Click to delete {{ site === "Twitter" ? "tweets" : "comments" }}
       </b-button>
-      <b-button variant="danger" v-on:click="handleDeleteFavorites()">
-        Click to delete ❤️'s (favorites)
+      <b-button
+        variant="danger"
+        v-on:click="
+          site === 'Twitter'
+            ? handleDeleteTwitterFavorites()
+            : handleDeleteRedditPosts()
+        "
+      >
+        Click to delete {{ site === "Twitter" ? "❤️'s (favorites)" : "posts" }}
       </b-button>
     </div>
   </div>
@@ -23,9 +34,15 @@ import store from "@/store/index";
 import constants from "@/store/constants";
 import helpers from "@/util/helpers";
 
+const DeletionPanelProps = Vue.extend({
+  props: {
+    site: String
+  }
+});
+
 @Component
-export default class DeletionPanel extends Vue {
-  deleteItems(items, itemString, whitelistedItems) {
+export default class DeletionPanel extends DeletionPanelProps {
+  deleteTwitterItems(items, itemString, whitelistedItems) {
     const itemInSavedTimeRange = item => {
       const timeRangeObject = store.state.twitter[constants.TWITTER_TIME_RANGE];
 
@@ -138,8 +155,8 @@ export default class DeletionPanel extends Vue {
     }
   }
 
-  handleDeleteTweets() {
-    this.deleteItems(
+  handleDeleteTwitterTweets() {
+    this.deleteTwitterItems(
       store.state.twitter[constants.USER_TWEETS],
       "tweets",
       store.state.twitter[constants.WHITELISTED_TWEETS]
@@ -147,15 +164,91 @@ export default class DeletionPanel extends Vue {
   }
 
   handleDeleteFavorites() {
-    this.deleteItems(
+    this.deleteTwitterItems(
       store.state.twitter[constants.USER_FAVORITES],
       "favorites",
       store.state.twitter[constants.WHITELISTED_FAVORITES]
     );
   }
 
+  deleteRedditItems(items, itemString, whitelistedItems) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete your ${itemString}? THIS ACTION IS PERMANENT!`
+      )
+    ) {
+      const promiseArray = [];
+
+      const shouldDeleteItem = item => {
+        const itemIsWhitelisted =
+          whitelistedItems[`${itemString}-${item.data.name}`];
+
+        const shouldDelete = !itemIsWhitelisted;
+
+        return shouldDelete;
+      };
+
+      const totalItemsLength = items.filter(item => {
+        return shouldDeleteItem(item);
+      }).length;
+
+      store.dispatch(constants.RESET_CURRENTLY_DELETING_ITEMS_DELETED);
+      store.dispatch(
+        constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS,
+        totalItemsLength
+      );
+
+      items.forEach(item => {
+        if (shouldDeleteItem(item)) {
+          promiseArray.push(
+            helpers
+              .makeRedditPostRequest("https://oauth.reddit.com/api/del/", {
+                id: item.data.name
+              })
+              .then(() => {
+                store.commit(
+                  constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED
+                );
+              })
+              .catch(error => {
+                console.log(
+                  `Failed to delete item with error: ${JSON.stringify(error)}`
+                );
+              })
+          );
+        }
+      });
+
+      Promise.allSettled(promiseArray).then(() => {
+        helpers.redditGatherAndSetItems();
+
+        setTimeout(() => {
+          store.dispatch(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, 0);
+        }, 2500);
+      });
+    }
+  }
+
+  handleDeleteRedditComments() {
+    this.deleteRedditItems(
+      store.state.reddit[constants.REDDIT_COMMENTS],
+      "reddit-comment",
+      store.state.reddit[constants.REDDIT_WHITELISTED_COMMENTS]
+    );
+  }
+
+  handleDeleteRedditPosts() {
+    this.deleteRedditItems(
+      store.state.reddit[constants.REDDIT_POSTS],
+      "reddit-post",
+      store.state.reddit[constants.REDDIT_WHITELISTED_POSTS]
+    );
+  }
+
   get loggedIn() {
-    return store.state.twitter[constants.TWITTER_LOGGED_IN];
+    return this.site === "Twitter"
+      ? store.state.twitter[constants.TWITTER_LOGGED_IN]
+      : store.state.reddit[constants.REDDIT_LOGGED_IN];
   }
 }
 </script>

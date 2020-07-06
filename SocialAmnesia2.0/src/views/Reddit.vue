@@ -2,6 +2,7 @@
   <div>
     <div class="redditContainer">
       <LoginPanel site="Reddit" />
+      <DeletionPanel site="Reddit" />
     </div>
     <div class="pageDivider" />
     <div class="refreshItemsButtonContainer">
@@ -18,13 +19,15 @@
 import LoginPanel from "@/components/shared/LoginPanel.vue";
 import UserItemsPanel from "@/components/reddit/UserItemsPanel.vue";
 import RefreshItemsButton from "@/components/shared/RefreshItemsButton.vue";
+import DeletionPanel from "@/components/shared/DeletionPanel.vue";
 
 export default {
   name: "Twitter",
   components: {
     LoginPanel,
     UserItemsPanel,
-    RefreshItemsButton
+    RefreshItemsButton,
+    DeletionPanel
   }
 };
 </script>

@@ -2,7 +2,7 @@
   <div>
     <div class="twitterContainer">
       <LoginPanel site="Twitter" />
-      <DeletionPanel />
+      <DeletionPanel site="Twitter" />
     </div>
     <div class="controlPanel">
       <TimeRange />
@@ -23,7 +23,7 @@
 <script>
 import LoginPanel from "@/components/shared/LoginPanel.vue";
 import UserItemsPanel from "@/components/twitter/UserItemsPanel.vue";
-import DeletionPanel from "@/components/twitter/DeletionPanel.vue";
+import DeletionPanel from "@/components/shared/DeletionPanel.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 import TimeRange from "@/components/ControlPanel/TimeRange.vue";
 import ScorePanel from "@/components/ControlPanel/ScorePanel.vue";
