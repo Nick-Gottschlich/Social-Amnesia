@@ -12,6 +12,7 @@
       <UserItemsPanel itemtype="comments" />
       <UserItemsPanel itemtype="posts" />
     </div>
+    <ProgressBar />
   </div>
 </template>
 
@@ -21,6 +22,7 @@ import LoginPanel from "@/components/shared/LoginPanel.vue";
 import UserItemsPanel from "@/components/reddit/UserItemsPanel.vue";
 import RefreshItemsButton from "@/components/shared/RefreshItemsButton.vue";
 import DeletionPanel from "@/components/shared/DeletionPanel.vue";
+import ProgressBar from "@/components/ProgressBar.vue";
 import helpers from "@/util/helpers";
 import store from "@/store/index";
 import constants from "@/store/constants";
@@ -31,7 +33,8 @@ export default {
     LoginPanel,
     UserItemsPanel,
     RefreshItemsButton,
-    DeletionPanel
+    DeletionPanel,
+    ProgressBar
   }
 };
 
