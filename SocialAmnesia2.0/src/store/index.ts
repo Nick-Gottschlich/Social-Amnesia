@@ -70,6 +70,7 @@ const redditStoreDefault = {
   [constants.REDDIT_LOGGED_IN]: false,
   [constants.REDDIT_USER_NAME]: "",
   [constants.REDDIT_ACCESS_TOKEN]: "",
+  [constants.REDDIT_REFRESH_TOKEN]: "",
   [constants.REDDIT_COMMENTS]: [],
   [constants.REDDIT_POSTS]: [],
   [constants.REDDIT_WHITELISTED_COMMENTS]: {},
@@ -125,6 +126,8 @@ export default new Vuex.Store({
         redditPersistentStore.get(constants.REDDIT_USER_NAME) || "",
       [constants.REDDIT_ACCESS_TOKEN]:
         redditPersistentStore.get(constants.REDDIT_ACCESS_TOKEN) || "",
+      [constants.REDDIT_REFRESH_TOKEN]:
+        redditPersistentStore.get(constants.REDDIT_REFRESH_TOKEN) || "",
       [constants.REDDIT_COMMENTS]:
         redditPersistentStore.get(constants.REDDIT_COMMENTS) || [],
       [constants.REDDIT_POSTS]:
@@ -229,6 +232,14 @@ export default new Vuex.Store({
     [constants.UPDATE_REDDIT_ACCESS_TOKEN](state, accessToken) {
       updateStore(state, constants.REDDIT_ACCESS_TOKEN, accessToken, "reddit");
     },
+    [constants.UPDATE_REDDIT_REFRESH_TOKEN](state, refreshToken) {
+      updateStore(
+        state,
+        constants.REDDIT_REFRESH_TOKEN,
+        refreshToken,
+        "reddit"
+      );
+    },
     [constants.UPDATE_REDDIT_COMMENTS](state, comments) {
       updateStore(state, constants.REDDIT_COMMENTS, comments, "reddit");
     },
@@ -319,6 +330,9 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_REDDIT_ACCESS_TOKEN](store, accessToken) {
       store.commit(constants.UPDATE_REDDIT_ACCESS_TOKEN, accessToken);
+    },
+    [constants.UPDATE_REDDIT_REFRESH_TOKEN](store, refreshToken) {
+      store.commit(constants.UPDATE_REDDIT_REFRESH_TOKEN, refreshToken);
     },
     [constants.UPDATE_REDDIT_COMMENTS](store, comments) {
       store.commit(constants.UPDATE_REDDIT_COMMENTS, comments);

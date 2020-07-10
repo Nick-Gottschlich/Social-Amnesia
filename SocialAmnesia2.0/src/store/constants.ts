@@ -24,6 +24,7 @@ const LOGIN_TO_REDDIT = "loginToReddit";
 const LOGOUT_OF_REDDIT = "logoutOfReddit";
 const UPDATE_REDDIT_USER_NAME = "updateRedditUsername";
 const UPDATE_REDDIT_ACCESS_TOKEN = "updateRedditAccessToken";
+const UPDATE_REDDIT_REFRESH_TOKEN = "updateRedditRefreshToken";
 const UPDATE_REDDIT_COMMENTS = "updateRedditComments";
 const UPDATE_REDDIT_POSTS = "updateRedditPosts";
 const UPDATE_REDDIT_WHITELISTED_COMMENTS = "updateRedditWhitelistedComments";
@@ -48,6 +49,7 @@ const TWITTER_RETWEETS_SCORE = "twitterRetweetsScore";
 const REDDIT_LOGGED_IN = "redditLoggedIn";
 const REDDIT_USER_NAME = "redditUserName";
 const REDDIT_ACCESS_TOKEN = "redditAccessToken";
+const REDDIT_REFRESH_TOKEN = "redditRefreshToken";
 const REDDIT_COMMENTS = "redditComments";
 const REDDIT_POSTS = "redditPosts";
 const REDDIT_WHITELISTED_COMMENTS = "redditWhitelistedComments";
@@ -80,6 +82,7 @@ const constants = {
   LOGOUT_OF_REDDIT,
   UPDATE_REDDIT_USER_NAME,
   UPDATE_REDDIT_ACCESS_TOKEN,
+  UPDATE_REDDIT_REFRESH_TOKEN,
   UPDATE_REDDIT_COMMENTS,
   UPDATE_REDDIT_POSTS,
   UPDATE_REDDIT_WHITELISTED_COMMENTS,
@@ -102,6 +105,7 @@ const constants = {
   REDDIT_LOGGED_IN,
   REDDIT_USER_NAME,
   REDDIT_ACCESS_TOKEN,
+  REDDIT_REFRESH_TOKEN,
   REDDIT_COMMENTS,
   REDDIT_POSTS,
   REDDIT_WHITELISTED_COMMENTS,

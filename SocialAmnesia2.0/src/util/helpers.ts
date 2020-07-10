@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 import store from "@/store/index";
 import constants from "@/store/constants";
+import redditAPI from "@/redditSecrets";
 import axios, { AxiosResponse } from "axios";
 import qs from "qs";
 
@@ -114,11 +115,62 @@ const redditGatherAndSetItems = () => {
   });
 };
 
+let accessTokenTimer: any;
+
+const stopRedditAccessTokenRefresh = () => {
+  clearTimeout(accessTokenTimer);
+};
+
+const refreshRedditAccessToken = () => {
+  axios
+    .post(
+      "https://www.reddit.com/api/v1/access_token",
+      {},
+      {
+        params: {
+          grant_type: "refresh_token",
+          refresh_token: store.state.reddit[constants.REDDIT_REFRESH_TOKEN]
+        },
+        auth: {
+          username: redditAPI.clientId,
+          password: ""
+        }
+      }
+    )
+    .then(response => {
+      if (response.data.access_token) {
+        store.dispatch(
+          constants.UPDATE_REDDIT_ACCESS_TOKEN,
+          response.data.access_token
+        );
+      } else {
+        throw new Error("No access token found!");
+      }
+    })
+    .catch(error => {
+      console.error(
+        "Failed to get reddit access_token on app load with error:",
+        error
+      );
+    });
+
+  // refresh the items while we're at it
+  redditGatherAndSetItems();
+
+  // the reddit API requires you to get a new access token every hour
+  //  we do it at 59 minutes because we real rebels here
+  accessTokenTimer = setTimeout(() => {
+    refreshRedditAccessToken();
+  }, 3540000);
+};
+
 const helpers = {
   twitterGatherAndSetItems,
   makeRedditGetRequest,
   makeRedditPostRequest,
-  redditGatherAndSetItems
+  redditGatherAndSetItems,
+  stopRedditAccessTokenRefresh,
+  refreshRedditAccessToken
 };
 
 export default helpers;

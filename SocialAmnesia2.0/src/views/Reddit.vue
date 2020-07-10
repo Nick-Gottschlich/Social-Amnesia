@@ -16,10 +16,14 @@
 </template>
 
 <script>
+/* eslint-disable @typescript-eslint/camelcase */
 import LoginPanel from "@/components/shared/LoginPanel.vue";
 import UserItemsPanel from "@/components/reddit/UserItemsPanel.vue";
 import RefreshItemsButton from "@/components/shared/RefreshItemsButton.vue";
 import DeletionPanel from "@/components/shared/DeletionPanel.vue";
+import helpers from "@/util/helpers";
+import store from "@/store/index";
+import constants from "@/store/constants";
 
 export default {
   name: "Twitter",
@@ -30,6 +34,11 @@ export default {
     DeletionPanel
   }
 };
+
+if (store.state.reddit[constants.REDDIT_LOGGED_IN]) {
+  helpers.stopRedditAccessTokenRefresh();
+  helpers.refreshRedditAccessToken();
+}
 </script>
 
 <style lang="scss">

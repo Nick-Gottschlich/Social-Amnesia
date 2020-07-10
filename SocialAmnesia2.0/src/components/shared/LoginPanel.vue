@@ -229,6 +229,13 @@ export default class LoginPanel extends LoginPanelProps {
               constants.UPDATE_REDDIT_ACCESS_TOKEN,
               response.data.access_token
             );
+            store.dispatch(
+              constants.UPDATE_REDDIT_REFRESH_TOKEN,
+              response.data.refresh_token
+            );
+
+            helpers.stopRedditAccessTokenRefresh();
+            helpers.refreshRedditAccessToken();
 
             helpers
               .makeRedditGetRequest("https://oauth.reddit.com/api/v1/me")
