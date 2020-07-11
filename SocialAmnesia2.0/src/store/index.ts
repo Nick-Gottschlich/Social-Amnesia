@@ -15,6 +15,9 @@ interface TimeRangeModel {
   Years: number;
 }
 
+const REDDIT_CONSTANT = "reddit";
+const TWITTER_CONSTANT = "twitter";
+
 const twitterPersistentStore = new Store();
 const redditPersistentStore = new Store();
 
@@ -37,9 +40,9 @@ const addOrRemoveItem = (
 //  and the vuex store are updated properly
 const updateStore = (state: any, marker: string, value: any, site: string) => {
   state[site][marker] = value;
-  if (site === "twitter") {
+  if (site === TWITTER_CONSTANT) {
     twitterPersistentStore.set(marker, value);
-  } else if (site === "reddit") {
+  } else if (site === REDDIT_CONSTANT) {
     redditPersistentStore.set(marker, value);
   }
 };
@@ -74,7 +77,14 @@ const redditStoreDefault = {
   [constants.REDDIT_COMMENTS]: [],
   [constants.REDDIT_POSTS]: [],
   [constants.REDDIT_WHITELISTED_COMMENTS]: {},
-  [constants.REDDIT_WHITELISTED_POSTS]: {}
+  [constants.REDDIT_WHITELISTED_POSTS]: {},
+  [constants.REDDIT_TIME_RANGE_ENABLED]: false,
+  [constants.REDDIT_TIME_RANGE]: {
+    Hours: 0,
+    Days: 0,
+    Weeks: 0,
+    Years: 0
+  }
 };
 
 export default new Vuex.Store({
@@ -135,7 +145,17 @@ export default new Vuex.Store({
       [constants.REDDIT_WHITELISTED_COMMENTS]:
         redditPersistentStore.get(constants.REDDIT_WHITELISTED_COMMENTS) || {},
       [constants.REDDIT_WHITELISTED_POSTS]:
-        redditPersistentStore.get(constants.REDDIT_WHITELISTED_POSTS) || {}
+        redditPersistentStore.get(constants.REDDIT_WHITELISTED_POSTS) || {},
+      [constants.REDDIT_TIME_RANGE_ENABLED]:
+        redditPersistentStore.get(constants.REDDIT_TIME_RANGE_ENABLED) || false,
+      [constants.REDDIT_TIME_RANGE]: redditPersistentStore.get(
+        constants.REDDIT_TIME_RANGE
+      ) || {
+        Hours: 0,
+        Days: 0,
+        Weeks: 0,
+        Years: 0
+      }
     },
     [constants.CURRENTLY_DELETING]: {
       totalItems: 0,
@@ -144,7 +164,7 @@ export default new Vuex.Store({
   },
   mutations: {
     [constants.LOGIN_TO_TWITTER](state) {
-      updateStore(state, constants.TWITTER_LOGGED_IN, true, "twitter");
+      updateStore(state, constants.TWITTER_LOGGED_IN, true, TWITTER_CONSTANT);
     },
     [constants.LOGOUT_OF_TWITTER](state) {
       Object.keys(state.twitter).forEach(key => {
@@ -153,22 +173,32 @@ export default new Vuex.Store({
       twitterPersistentStore.clear();
     },
     [constants.UPDATE_TWITTER_SCREEN_NAME](state, screenName) {
-      updateStore(state, constants.TWITTER_SCREEN_NAME, screenName, "twitter");
+      updateStore(
+        state,
+        constants.TWITTER_SCREEN_NAME,
+        screenName,
+        TWITTER_CONSTANT
+      );
     },
     [constants.UPDATE_TWITTER_USER_ID](state, userId) {
-      updateStore(state, constants.TWITTER_USER_ID, userId, "twitter");
+      updateStore(state, constants.TWITTER_USER_ID, userId, TWITTER_CONSTANT);
     },
     [constants.UPDATE_USER_TWEETS](state, tweets) {
-      updateStore(state, constants.USER_TWEETS, tweets, "twitter");
+      updateStore(state, constants.USER_TWEETS, tweets, TWITTER_CONSTANT);
     },
     [constants.UPDATE_USER_FAVORITES](state, favorites) {
-      updateStore(state, constants.USER_FAVORITES, favorites, "twitter");
+      updateStore(state, constants.USER_FAVORITES, favorites, TWITTER_CONSTANT);
     },
     [constants.UPDATE_TWITTER_USER_KEYS](state, keys) {
-      updateStore(state, constants.TWITTER_USER_KEYS, keys, "twitter");
+      updateStore(state, constants.TWITTER_USER_KEYS, keys, TWITTER_CONSTANT);
     },
     [constants.UPDATE_TWITTER_USER_CLIENT](state, client) {
-      updateStore(state, constants.TWITTER_USER_CLIENT, client, "twitter");
+      updateStore(
+        state,
+        constants.TWITTER_USER_CLIENT,
+        client,
+        TWITTER_CONSTANT
+      );
     },
     [constants.UPDATE_WHITELISTED_TWEETS](state, tweetId) {
       addOrRemoveItem(state.twitter[constants.WHITELISTED_TWEETS], tweetId);
@@ -202,23 +232,43 @@ export default new Vuex.Store({
         state,
         constants.TWITTER_TIME_RANGE_ENABLED,
         enabled,
-        "twitter"
+        TWITTER_CONSTANT
       );
     },
     [constants.UPDATE_TWITTER_TIME_RANGE](state, timeRange: TimeRangeModel) {
-      updateStore(state, constants.TWITTER_TIME_RANGE, timeRange, "twitter");
+      updateStore(
+        state,
+        constants.TWITTER_TIME_RANGE,
+        timeRange,
+        TWITTER_CONSTANT
+      );
     },
     [constants.UPDATE_TWITTER_SCORE_ENABLED](state, enabled: boolean) {
-      updateStore(state, constants.TWITTER_SCORE_ENABLED, enabled, "twitter");
+      updateStore(
+        state,
+        constants.TWITTER_SCORE_ENABLED,
+        enabled,
+        TWITTER_CONSTANT
+      );
     },
     [constants.UPDATE_TWITTER_FAVORITES_SCORE](state, score: number) {
-      updateStore(state, constants.TWITTER_FAVORITES_SCORE, score, "twitter");
+      updateStore(
+        state,
+        constants.TWITTER_FAVORITES_SCORE,
+        score,
+        TWITTER_CONSTANT
+      );
     },
     [constants.UPDATE_TWITTER_RETWEETS_SCORE](state, score: number) {
-      updateStore(state, constants.TWITTER_RETWEETS_SCORE, score, "twitter");
+      updateStore(
+        state,
+        constants.TWITTER_RETWEETS_SCORE,
+        score,
+        TWITTER_CONSTANT
+      );
     },
     [constants.LOGIN_TO_REDDIT](state) {
-      updateStore(state, constants.REDDIT_LOGGED_IN, true, "reddit");
+      updateStore(state, constants.REDDIT_LOGGED_IN, true, REDDIT_CONSTANT);
     },
     [constants.LOGOUT_OF_REDDIT](state) {
       Object.keys(state.reddit).forEach(key => {
@@ -227,24 +277,34 @@ export default new Vuex.Store({
       redditPersistentStore.clear();
     },
     [constants.UPDATE_REDDIT_USER_NAME](state, screenName) {
-      updateStore(state, constants.REDDIT_USER_NAME, screenName, "reddit");
+      updateStore(
+        state,
+        constants.REDDIT_USER_NAME,
+        screenName,
+        REDDIT_CONSTANT
+      );
     },
     [constants.UPDATE_REDDIT_ACCESS_TOKEN](state, accessToken) {
-      updateStore(state, constants.REDDIT_ACCESS_TOKEN, accessToken, "reddit");
+      updateStore(
+        state,
+        constants.REDDIT_ACCESS_TOKEN,
+        accessToken,
+        REDDIT_CONSTANT
+      );
     },
     [constants.UPDATE_REDDIT_REFRESH_TOKEN](state, refreshToken) {
       updateStore(
         state,
         constants.REDDIT_REFRESH_TOKEN,
         refreshToken,
-        "reddit"
+        REDDIT_CONSTANT
       );
     },
     [constants.UPDATE_REDDIT_COMMENTS](state, comments) {
-      updateStore(state, constants.REDDIT_COMMENTS, comments, "reddit");
+      updateStore(state, constants.REDDIT_COMMENTS, comments, REDDIT_CONSTANT);
     },
     [constants.UPDATE_REDDIT_POSTS](state, posts) {
-      updateStore(state, constants.REDDIT_POSTS, posts, "reddit");
+      updateStore(state, constants.REDDIT_POSTS, posts, REDDIT_CONSTANT);
     },
     [constants.UPDATE_REDDIT_WHITELISTED_COMMENTS](state, commentId) {
       addOrRemoveItem(
@@ -261,6 +321,22 @@ export default new Vuex.Store({
       redditPersistentStore.set(
         constants.REDDIT_WHITELISTED_POSTS,
         state.reddit[constants.REDDIT_WHITELISTED_POSTS]
+      );
+    },
+    [constants.UPDATE_REDDIT_TIME_RANGE_ENABLED](state, enabled) {
+      updateStore(
+        state,
+        constants.REDDIT_TIME_RANGE_ENABLED,
+        enabled,
+        REDDIT_CONSTANT
+      );
+    },
+    [constants.UPDATE_REDDIT_TIME_RANGE](state, timeRange: TimeRangeModel) {
+      updateStore(
+        state,
+        constants.REDDIT_TIME_RANGE,
+        timeRange,
+        REDDIT_CONSTANT
       );
     }
   },
@@ -345,6 +421,12 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_REDDIT_WHITELISTED_POSTS](store, postId) {
       store.commit(constants.UPDATE_REDDIT_WHITELISTED_POSTS, postId);
+    },
+    [constants.UPDATE_REDDIT_TIME_RANGE_ENABLED](store, enabled) {
+      store.commit(constants.UPDATE_REDDIT_TIME_RANGE_ENABLED, enabled);
+    },
+    [constants.UPDATE_REDDIT_TIME_RANGE](store, timeRange: TimeRangeModel) {
+      store.commit(constants.UPDATE_REDDIT_TIME_RANGE, timeRange);
     }
   },
   modules: {}

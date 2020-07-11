@@ -4,6 +4,9 @@
       <LoginPanel site="Reddit" />
       <DeletionPanel site="Reddit" />
     </div>
+    <div class="redditControlPanel">
+      <TimeRange site="Reddit" />
+    </div>
     <div class="pageDivider" />
     <div class="refreshItemsButtonContainer">
       <RefreshItemsButton site="Reddit" />
@@ -23,6 +26,7 @@ import UserItemsPanel from "@/components/reddit/UserItemsPanel.vue";
 import RefreshItemsButton from "@/components/shared/RefreshItemsButton.vue";
 import DeletionPanel from "@/components/shared/DeletionPanel.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
+import TimeRange from "@/components/ControlPanel/TimeRange.vue";
 import helpers from "@/util/helpers";
 import store from "@/store/index";
 import constants from "@/store/constants";
@@ -34,7 +38,8 @@ export default {
     UserItemsPanel,
     RefreshItemsButton,
     DeletionPanel,
-    ProgressBar
+    ProgressBar,
+    TimeRange
   }
 };
 
@@ -57,5 +62,11 @@ if (store.state.reddit[constants.REDDIT_LOGGED_IN]) {
 
 .paddingTop {
   padding-top: 20px;
+}
+
+.redditControlPanel {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
 }
 </style>

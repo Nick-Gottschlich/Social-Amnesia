@@ -23,26 +23,39 @@ const TimeRangeSpinButtonProps = Vue.extend({
     min: String,
     max: String,
     buttonId: String,
-    label: String
+    label: String,
+    site: String
   }
 });
 
 @Component
 export default class TimeRangeSpinButton extends TimeRangeSpinButtonProps {
   handleUpdate(value) {
-    store.dispatch(constants.UPDATE_TWITTER_TIME_RANGE, {
-      ...store.state.twitter[constants.TWITTER_TIME_RANGE],
-      [this.label]: value
-    });
+    if (this.site === "Twitter") {
+      store.dispatch(constants.UPDATE_TWITTER_TIME_RANGE, {
+        ...store.state.twitter[constants.TWITTER_TIME_RANGE],
+        [this.label]: value
+      });
+    } else if (this.site === "Reddit") {
+      store.dispatch(constants.UPDATE_REDDIT_TIME_RANGE, {
+        ...store.state.reddit[constants.REDDIT_TIME_RANGE],
+        [this.label]: value
+      });
+    }
   }
 
   get featureEnabled() {
-    return store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED];
+    return this.site === "Twitter"
+      ? store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED]
+      : store.state.reddit[constants.REDDIT_TIME_RANGE_ENABLED];
   }
 
   data() {
     return {
-      value: store.state.twitter[constants.TWITTER_TIME_RANGE][this.label]
+      value:
+        this.site === "Twitter"
+          ? store.state.twitter[constants.TWITTER_TIME_RANGE][this.label]
+          : store.state.reddit[constants.REDDIT_TIME_RANGE][this.label]
     };
   }
 }

@@ -5,7 +5,7 @@
       <DeletionPanel site="Twitter" />
     </div>
     <div class="controlPanel">
-      <TimeRange />
+      <TimeRange site="Twitter" />
       <ScorePanel />
     </div>
     <div class="pageDivider" />

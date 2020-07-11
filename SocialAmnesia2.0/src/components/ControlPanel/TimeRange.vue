@@ -33,19 +33,28 @@
           max="23"
           buttonId="tr-hours"
           label="Hours"
+          :site="site"
         />
-        <TimeRangeSpinButton min="0" max="6" buttonId="tr-days" label="Days" />
+        <TimeRangeSpinButton
+          min="0"
+          max="6"
+          buttonId="tr-days"
+          label="Days"
+          :site="site"
+        />
         <TimeRangeSpinButton
           min="0"
           max="51"
           buttonId="tr-weeks"
           label="Weeks"
+          :site="site"
         />
         <TimeRangeSpinButton
           min="0"
           max="20"
           buttonId="tr-years"
           label="Years"
+          :site="site"
         />
       </div>
     </div>
@@ -58,25 +67,42 @@ import store from "@/store/index";
 import constants from "@/store/constants";
 import TimeRangeSpinButton from "@/components/ControlPanel/TimeRangeSpinButton.vue";
 
+const TimeRangeProps = Vue.extend({
+  props: {
+    site: String
+  }
+});
+
 @Component({
   components: {
     TimeRangeSpinButton
   }
 })
-export default class TimeRange extends Vue {
+export default class TimeRange extends TimeRangeProps {
   get loggedIn() {
-    return store.state.twitter[constants.TWITTER_LOGGED_IN];
+    return this.site === "Twitter"
+      ? store.state.twitter[constants.TWITTER_LOGGED_IN]
+      : store.state.reddit[constants.REDDIT_LOGGED_IN];
   }
 
   handleTimeRangeSwitch() {
-    store.dispatch(
-      constants.UPDATE_TWITTER_TIME_RANGE_ENABLED,
-      store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED] !== true
-    );
+    if (this.site === "Twitter") {
+      store.dispatch(
+        constants.UPDATE_TWITTER_TIME_RANGE_ENABLED,
+        store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED] !== true
+      );
+    } else if (this.site === "Reddit") {
+      store.dispatch(
+        constants.UPDATE_REDDIT_TIME_RANGE_ENABLED,
+        store.state.reddit[constants.REDDIT_TIME_RANGE_ENABLED] !== true
+      );
+    }
   }
 
   checkIfTimeRangeSelected() {
-    return store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED];
+    return this.site === "Twitter"
+      ? store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED]
+      : store.state.reddit[constants.REDDIT_TIME_RANGE_ENABLED];
   }
 }
 </script>

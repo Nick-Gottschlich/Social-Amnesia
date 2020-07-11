@@ -90,9 +90,7 @@ export default class DeletionPanel extends DeletionPanelProps {
       const shouldDeleteItem = item => {
         const itemIsWhitelisted = whitelistedItems[`${itemString}-${item.id}`];
 
-        // add the "false" in here to skip deletion
         const shouldDelete =
-          // false &&
           !itemIsWhitelisted &&
           (!itemInSavedTimeRange(item) ||
             !store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED]) &&
@@ -172,6 +170,28 @@ export default class DeletionPanel extends DeletionPanelProps {
   }
 
   deleteRedditItems(items, itemString, whitelistedItems) {
+    const redditItemInSavedTimeRange = item => {
+      const timeRangeObject = store.state.reddit[constants.REDDIT_TIME_RANGE];
+
+      const hoursBackToSave =
+        timeRangeObject.Hours +
+        timeRangeObject.Days * 24 +
+        timeRangeObject.Weeks * 168 +
+        timeRangeObject.Years * 8766;
+      const dateOfHoursBackToSave = new Date();
+      dateOfHoursBackToSave.setHours(
+        dateOfHoursBackToSave.getHours() - hoursBackToSave
+      );
+
+      const convertedItemDate = new Date(
+        new Date(item.data.created_utc * 1000).toGMTString()
+      );
+      const convertedDateRangeDate = new Date(
+        dateOfHoursBackToSave.toGMTString()
+      );
+      return convertedItemDate > convertedDateRangeDate;
+    };
+
     if (
       window.confirm(
         `Are you sure you want to delete your ${itemString}? THIS ACTION IS PERMANENT!`
@@ -183,7 +203,10 @@ export default class DeletionPanel extends DeletionPanelProps {
         const itemIsWhitelisted =
           whitelistedItems[`${itemString}-${item.data.name}`];
 
-        const shouldDelete = !itemIsWhitelisted;
+        const shouldDelete =
+          !itemIsWhitelisted &&
+          (!redditItemInSavedTimeRange(item) ||
+            !store.state.reddit[constants.REDDIT_TIME_RANGE_ENABLED]);
 
         return shouldDelete;
       };
