@@ -4,6 +4,7 @@ import store from "@/store/index";
 import constants from "@/store/constants";
 import redditAPI from "@/redditSecrets";
 import axios, { AxiosResponse } from "axios";
+// @ts-ignore
 import qs from "qs";
 
 const twitterGatherAndSetItems = ({
