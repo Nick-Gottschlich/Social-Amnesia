@@ -13,7 +13,8 @@
       placement="bottom"
     >
       For example, entering in a time range of 3 hour means that
-      tweets/favorites made in the last 3 hours will not be deleted
+      {{ site === "Twitter" ? "tweets/favorites" : "comments/posts" }} made in
+      the last 3 hours will not be deleted
     </b-tooltip>
     <div class="timeRangeSection">
       <div>
@@ -65,7 +66,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
 import constants from "@/store/constants";
-import TimeRangeSpinButton from "@/components/ControlPanel/TimeRangeSpinButton.vue";
+import TimeRangeSpinButton from "@/components/shared/ControlPanel/TimeRangeSpinButton.vue";
 
 const TimeRangeProps = Vue.extend({
   props: {

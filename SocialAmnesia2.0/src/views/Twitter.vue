@@ -6,7 +6,7 @@
     </div>
     <div class="controlPanel">
       <TimeRange site="Twitter" />
-      <ScorePanel />
+      <ScorePanel site="Twitter" />
     </div>
     <div class="pageDivider" />
     <div class="refreshItemsButtonContainer">
@@ -25,8 +25,8 @@ import LoginPanel from "@/components/shared/LoginPanel.vue";
 import UserItemsPanel from "@/components/twitter/UserItemsPanel.vue";
 import DeletionPanel from "@/components/shared/DeletionPanel.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
-import TimeRange from "@/components/ControlPanel/TimeRange.vue";
-import ScorePanel from "@/components/ControlPanel/ScorePanel.vue";
+import TimeRange from "@/components/shared/ControlPanel/TimeRange.vue";
+import ScorePanel from "@/components/shared/ControlPanel/ScorePanel.vue";
 import RefreshItemsButton from "@/components/shared/RefreshItemsButton.vue";
 import helpers from "@/util/helpers";
 import store from "@/store/index";

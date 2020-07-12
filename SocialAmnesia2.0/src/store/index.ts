@@ -84,7 +84,9 @@ const redditStoreDefault = {
     Days: 0,
     Weeks: 0,
     Years: 0
-  }
+  },
+  [constants.REDDIT_SCORE_ENABLED]: false,
+  [constants.REDDIT_UPVOTES_SCORE]: 0
 };
 
 export default new Vuex.Store({
@@ -155,7 +157,11 @@ export default new Vuex.Store({
         Days: 0,
         Weeks: 0,
         Years: 0
-      }
+      },
+      [constants.REDDIT_SCORE_ENABLED]:
+        redditPersistentStore.get(constants.REDDIT_SCORE_ENABLED) || false,
+      [constants.REDDIT_UPVOTES_SCORE]:
+        redditPersistentStore.get(constants.REDDIT_UPVOTES_SCORE) || 0
     },
     [constants.CURRENTLY_DELETING]: {
       totalItems: 0,
@@ -338,6 +344,22 @@ export default new Vuex.Store({
         timeRange,
         REDDIT_CONSTANT
       );
+    },
+    [constants.UPDATE_REDDIT_SCORE_ENABLED](state, enabled: boolean) {
+      updateStore(
+        state,
+        constants.REDDIT_SCORE_ENABLED,
+        enabled,
+        REDDIT_CONSTANT
+      );
+    },
+    [constants.UPDATE_REDDIT_UPVOTES_SCORE](state, score: number) {
+      updateStore(
+        state,
+        constants.REDDIT_UPVOTES_SCORE,
+        score,
+        REDDIT_CONSTANT
+      );
     }
   },
   actions: {
@@ -427,6 +449,12 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_REDDIT_TIME_RANGE](store, timeRange: TimeRangeModel) {
       store.commit(constants.UPDATE_REDDIT_TIME_RANGE, timeRange);
+    },
+    [constants.UPDATE_REDDIT_SCORE_ENABLED](store, enabled: boolean) {
+      store.commit(constants.UPDATE_REDDIT_SCORE_ENABLED, enabled);
+    },
+    [constants.UPDATE_REDDIT_UPVOTES_SCORE](store, score: number) {
+      store.commit(constants.UPDATE_REDDIT_UPVOTES_SCORE, score);
     }
   },
   modules: {}

@@ -156,7 +156,7 @@ export default class DeletionPanel extends DeletionPanelProps {
   handleDeleteTwitterTweets() {
     this.deleteTwitterItems(
       store.state.twitter[constants.USER_TWEETS],
-      "tweets",
+      "twitter tweets",
       store.state.twitter[constants.WHITELISTED_TWEETS]
     );
   }
@@ -164,7 +164,7 @@ export default class DeletionPanel extends DeletionPanelProps {
   handleDeleteFavorites() {
     this.deleteTwitterItems(
       store.state.twitter[constants.USER_FAVORITES],
-      "favorites",
+      "twitter favorites",
       store.state.twitter[constants.WHITELISTED_FAVORITES]
     );
   }
@@ -192,6 +192,16 @@ export default class DeletionPanel extends DeletionPanelProps {
       return convertedItemDate > convertedDateRangeDate;
     };
 
+    const redditItemLowerThanScore = item => {
+      if (
+        item.data.score >= store.state.reddit[constants.REDDIT_UPVOTES_SCORE]
+      ) {
+        return false;
+      }
+
+      return true;
+    };
+
     if (
       window.confirm(
         `Are you sure you want to delete your ${itemString}? THIS ACTION IS PERMANENT!`
@@ -206,7 +216,9 @@ export default class DeletionPanel extends DeletionPanelProps {
         const shouldDelete =
           !itemIsWhitelisted &&
           (!redditItemInSavedTimeRange(item) ||
-            !store.state.reddit[constants.REDDIT_TIME_RANGE_ENABLED]);
+            !store.state.reddit[constants.REDDIT_TIME_RANGE_ENABLED]) &&
+          (redditItemLowerThanScore(item) ||
+            !store.state.reddit[constants.REDDIT_SCORE_ENABLED]);
 
         return shouldDelete;
       };
@@ -255,7 +267,7 @@ export default class DeletionPanel extends DeletionPanelProps {
   handleDeleteRedditComments() {
     this.deleteRedditItems(
       store.state.reddit[constants.REDDIT_COMMENTS],
-      "reddit-comment",
+      "reddit comments",
       store.state.reddit[constants.REDDIT_WHITELISTED_COMMENTS]
     );
   }
@@ -263,7 +275,7 @@ export default class DeletionPanel extends DeletionPanelProps {
   handleDeleteRedditPosts() {
     this.deleteRedditItems(
       store.state.reddit[constants.REDDIT_POSTS],
-      "reddit-post",
+      "reddit posts",
       store.state.reddit[constants.REDDIT_WHITELISTED_POSTS]
     );
   }

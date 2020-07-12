@@ -128,13 +128,22 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   }
 
   handleDeleteItemClicked(item) {
-    helpers
-      .makeRedditPostRequest("https://oauth.reddit.com/api/del/", {
-        id: item.data.name
-      })
-      .then(() => {
-        helpers.redditGatherAndSetItems();
-      });
+    if (
+      // eslint-disable-next-line no-alert
+      window.confirm(
+        `Are you sure you want to delete this ${
+          this.itemtype === "comments" ? "comment" : "post"
+        }? THIS ACTION IS PERMANENT!`
+      )
+    ) {
+      helpers
+        .makeRedditPostRequest("https://oauth.reddit.com/api/del/", {
+          id: item.data.name
+        })
+        .then(() => {
+          helpers.redditGatherAndSetItems();
+        });
+    }
   }
 
   get loggedIn() {

@@ -26,6 +26,8 @@ const UPDATE_REDDIT_WHITELISTED_COMMENTS = "updateRedditWhitelistedComments";
 const UPDATE_REDDIT_WHITELISTED_POSTS = "updateRedditWhitelistedPosts";
 const UPDATE_REDDIT_TIME_RANGE_ENABLED = "updatedRedditTimeRangeEnabled";
 const UPDATE_REDDIT_TIME_RANGE = "updateRedditTimeRange";
+const UPDATE_REDDIT_SCORE_ENABLED = "updateRedditScoreEnabled";
+const UPDATE_REDDIT_UPVOTES_SCORE = "updatedRedditUpvotesScore";
 
 const INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED =
   "incrementCurrentlyDeletingItemsDeleted";
@@ -60,6 +62,8 @@ const REDDIT_WHITELISTED_COMMENTS = "redditWhitelistedComments";
 const REDDIT_WHITELISTED_POSTS = "redditWhitelistedPosts";
 const REDDIT_TIME_RANGE_ENABLED = "redditTimeRangeEnabled";
 const REDDIT_TIME_RANGE = "redditTimeRange";
+const REDDIT_SCORE_ENABLED = "redditScoreEnabled";
+const REDDIT_UPVOTES_SCORE = "redditUpvotesScore";
 
 const CURRENTLY_DELETING = "currentlyDeleting";
 
@@ -97,6 +101,8 @@ const constants = {
   UPDATE_REDDIT_WHITELISTED_POSTS,
   UPDATE_REDDIT_TIME_RANGE_ENABLED,
   UPDATE_REDDIT_TIME_RANGE,
+  UPDATE_REDDIT_SCORE_ENABLED,
+  UPDATE_REDDIT_UPVOTES_SCORE,
   TWITTER_LOGGED_IN,
   TWITTER_SCREEN_NAME,
   TWITTER_USER_ID,
@@ -122,6 +128,8 @@ const constants = {
   REDDIT_WHITELISTED_POSTS,
   REDDIT_TIME_RANGE_ENABLED,
   REDDIT_TIME_RANGE,
+  REDDIT_SCORE_ENABLED,
+  REDDIT_UPVOTES_SCORE,
   TWEETS_ROUTE,
   FAVORITES_ROUTE
 };
