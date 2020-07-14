@@ -171,10 +171,10 @@ export default class UserItemsPanel extends UserItemsPanelProps {
 
   get rows() {
     if (this.itemtype === "comments") {
-      return store.state.twitter[constants.USER_TWEETS].length;
+      return store.state.reddit[constants.REDDIT_COMMENTS].length;
     }
     if (this.itemtype === "posts") {
-      return store.state.twitter[constants.USER_FAVORITES].length;
+      return store.state.reddit[constants.REDDIT_POSTS].length;
     }
     return 0;
   }

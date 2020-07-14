@@ -56,14 +56,18 @@ const twitterGatherAndSetItems = ({
     });
 };
 
-const makeRedditGetRequest = async (url: string): Promise<any> => {
+const makeRedditGetRequest = async (
+  url: string,
+  params?: any
+): Promise<any> => {
   try {
     const { data }: AxiosResponse = await axios.get(url, {
       headers: {
         Authorization: `bearer ${
           store.state.reddit[constants.REDDIT_ACCESS_TOKEN]
         }`
-      }
+      },
+      params
     });
     return data;
   } catch (error) {
@@ -95,24 +99,66 @@ const makeRedditPostRequest = async (url: string, body: any): Promise<any> => {
   }
 };
 
+const redditGatherAndSetItemsHelper = ({
+  maxId,
+  apiUrl,
+  commentsOrPosts,
+  itemArray,
+  oldestItem
+}: {
+  maxId?: string;
+  apiUrl: string;
+  commentsOrPosts: string;
+  itemArray: any;
+  oldestItem?: string;
+}) => {
+  const params = {
+    limit: 100
+  };
+  if (maxId) {
+    // @ts-ignore
+    params.after = maxId;
+  }
+
+  makeRedditGetRequest(apiUrl, params).then(response => {
+    const items = response.data.children;
+
+    if (items.length === 0) {
+      if (commentsOrPosts === "comments") {
+        store.dispatch(constants.UPDATE_REDDIT_COMMENTS, itemArray);
+      } else {
+        store.dispatch(constants.UPDATE_REDDIT_POSTS, itemArray);
+      }
+    }
+
+    itemArray = itemArray.concat(items);
+    oldestItem = itemArray.slice(-1)[0].data.name;
+
+    redditGatherAndSetItemsHelper({
+      maxId: oldestItem,
+      apiUrl,
+      commentsOrPosts,
+      itemArray,
+      oldestItem
+    });
+  });
+};
+
 const redditGatherAndSetItems = () => {
-  makeRedditGetRequest(
-    `https://oauth.reddit.com/user/${
+  redditGatherAndSetItemsHelper({
+    apiUrl: `https://oauth.reddit.com/user/${
       store.state.reddit[constants.REDDIT_USER_NAME]
-    }/comments`
-  ).then(commentsData => {
-    store.dispatch(
-      constants.UPDATE_REDDIT_COMMENTS,
-      commentsData.data.children
-    );
+    }/comments`,
+    commentsOrPosts: "comments",
+    itemArray: []
   });
 
-  makeRedditGetRequest(
-    `https://oauth.reddit.com/user/${
+  redditGatherAndSetItemsHelper({
+    apiUrl: `https://oauth.reddit.com/user/${
       store.state.reddit[constants.REDDIT_USER_NAME]
-    }/submitted`
-  ).then(submissionData => {
-    store.dispatch(constants.UPDATE_REDDIT_POSTS, submissionData.data.children);
+    }/submitted`,
+    commentsOrPosts: "posts",
+    itemArray: []
   });
 };
 
