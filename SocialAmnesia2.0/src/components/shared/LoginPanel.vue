@@ -272,6 +272,13 @@ export default class LoginPanel extends LoginPanelProps {
     this.loginError = false;
 
     // TODO(NG): remove cookies that auto login to reddit
+    const { BrowserWindow } = electron.remote;
+    const mainWindow = electron.remote.getCurrentWindow();
+    // this removes the cookie that will auto login to twitter
+    mainWindow.webContents.session.cookies.remove(
+      "https://reddit.com",
+      "reddit_session"
+    );
 
     this.loginMessage = "Not Logged In!";
     store.dispatch(constants.LOGOUT_OF_REDDIT);
