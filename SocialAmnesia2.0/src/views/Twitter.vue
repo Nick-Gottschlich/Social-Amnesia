@@ -46,7 +46,7 @@ export default {
 };
 
 if (store.state.twitter[constants.TWITTER_LOGGED_IN]) {
-  helpers.refreshTwitterItems();
+  helpers.refreshTwitterContent();
 }
 </script>
 
