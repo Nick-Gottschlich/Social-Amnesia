@@ -103,14 +103,12 @@ const redditGatherAndSetItemsHelper = ({
   maxId,
   apiUrl,
   commentsOrPosts,
-  itemArray,
-  oldestItem
+  itemArray
 }: {
   maxId?: string;
   apiUrl: string;
   commentsOrPosts: string;
   itemArray: any;
-  oldestItem?: string;
 }) => {
   const params = {
     limit: 100
@@ -129,17 +127,17 @@ const redditGatherAndSetItemsHelper = ({
       } else {
         store.dispatch(constants.UPDATE_REDDIT_POSTS, itemArray);
       }
+      return;
     }
 
     itemArray = itemArray.concat(items);
-    oldestItem = itemArray.slice(-1)[0].data.name;
+    const oldestItem = itemArray.slice(-1)[0].data.name;
 
     redditGatherAndSetItemsHelper({
       maxId: oldestItem,
       apiUrl,
       commentsOrPosts,
-      itemArray,
-      oldestItem
+      itemArray
     });
   });
 };
@@ -211,13 +209,24 @@ const refreshRedditAccessToken = () => {
   }, 3540000);
 };
 
+// see https://stackoverflow.com/questions/4959975/generate-random-number-between-two-numbers-in-javascript
+// and https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+const generateRandomText = () => {
+  const randomNumber = Math.floor(Math.random() * 200) + 1;
+
+  return Array(randomNumber + 1)
+    .join(`${Math.random().toString(36)}00000000000000000`.slice(2, 18))
+    .slice(0, randomNumber);
+};
+
 const helpers = {
   twitterGatherAndSetItems,
   makeRedditGetRequest,
   makeRedditPostRequest,
   redditGatherAndSetItems,
   stopRedditAccessTokenRefresh,
-  refreshRedditAccessToken
+  refreshRedditAccessToken,
+  generateRandomText
 };
 
 export default helpers;

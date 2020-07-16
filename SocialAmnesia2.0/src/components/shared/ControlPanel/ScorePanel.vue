@@ -47,7 +47,7 @@
             aria-label="Favorites high score input"
             min="0"
             placeholder="Enter a number"
-            :v-model="site === 'Twitter' ? favoritesValue : upvotesValue"
+            v-model="favoritesOrUpvotesValue"
             v-on:change="
               site === 'Twitter'
                 ? handleFavoritesScoreChange(favoritesOrUpvotesValue)
@@ -144,9 +144,11 @@ export default class ScorePanel extends ScorePanelProps {
 
   data() {
     return {
-      favoritesValue: store.state.twitter[constants.TWITTER_FAVORITES_SCORE],
-      retweetsValue: store.state.twitter[constants.TWITTER_RETWEETS_SCORE],
-      upvotesValue: store.state.reddit[constants.REDDIT_UPVOTES_SCORE]
+      favoritesOrUpvotesValue:
+        this.site === "Twitter"
+          ? store.state.twitter[constants.TWITTER_FAVORITES_SCORE]
+          : store.state.reddit[constants.REDDIT_UPVOTES_SCORE],
+      retweetsValue: store.state.twitter[constants.TWITTER_RETWEETS_SCORE]
     };
   }
 }

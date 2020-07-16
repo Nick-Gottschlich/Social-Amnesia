@@ -85,6 +85,7 @@
 </template>
 
 <script>
+/* eslint-disable @typescript-eslint/camelcase */
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
 import constants from "@/store/constants";
@@ -137,11 +138,28 @@ export default class UserItemsPanel extends UserItemsPanelProps {
       )
     ) {
       helpers
-        .makeRedditPostRequest("https://oauth.reddit.com/api/del/", {
-          id: item.data.name
+        .makeRedditPostRequest("https://oauth.reddit.com/api/editusertext/", {
+          thing_id: item.data.name,
+          text: helpers.generateRandomText()
         })
         .then(() => {
-          helpers.redditGatherAndSetItems();
+          helpers
+            .makeRedditPostRequest("https://oauth.reddit.com/api/del/", {
+              id: item.data.name
+            })
+            .then(() => {
+              helpers.redditGatherAndSetItems();
+            })
+            .catch(error => {
+              console.log(
+                `Failed to delete item with error: ${JSON.stringify(error)}`
+              );
+            });
+        })
+        .catch(error => {
+          console.log(
+            `Failed to edit item with error: ${JSON.stringify(error)}`
+          );
         });
     }
   }
@@ -151,9 +169,6 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   }
 
   get userItems() {
-    console.log("comments", store.state.reddit[constants.REDDIT_COMMENTS]);
-    console.log("posts", store.state.reddit[constants.REDDIT_POSTS]);
-
     if (this.itemtype === "comments") {
       return store.state.reddit[constants.REDDIT_COMMENTS].slice(
         (this.currentPage - 1) * this.perPage,

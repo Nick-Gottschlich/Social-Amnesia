@@ -29,6 +29,7 @@
 
 <script>
 /* eslint-disable no-alert */
+/* eslint-disable @typescript-eslint/camelcase */
 import { Component, Vue } from "vue-property-decorator";
 import store from "@/store/index";
 import constants from "@/store/constants";
@@ -237,17 +238,34 @@ export default class DeletionPanel extends DeletionPanelProps {
         if (shouldDeleteItem(item)) {
           promiseArray.push(
             helpers
-              .makeRedditPostRequest("https://oauth.reddit.com/api/del/", {
-                id: item.data.name
-              })
+              .makeRedditPostRequest(
+                "https://oauth.reddit.com/api/editusertext/",
+                {
+                  thing_id: item.data.name,
+                  text: helpers.generateRandomText()
+                }
+              )
               .then(() => {
-                store.commit(
-                  constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED
-                );
+                helpers
+                  .makeRedditPostRequest("https://oauth.reddit.com/api/del/", {
+                    id: item.data.name
+                  })
+                  .then(() => {
+                    store.commit(
+                      constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED
+                    );
+                  })
+                  .catch(error => {
+                    console.log(
+                      `Failed to delete item with error: ${JSON.stringify(
+                        error
+                      )}`
+                    );
+                  });
               })
               .catch(error => {
                 console.log(
-                  `Failed to delete item with error: ${JSON.stringify(error)}`
+                  `Failed to edit item with error: ${JSON.stringify(error)}`
                 );
               })
           );
