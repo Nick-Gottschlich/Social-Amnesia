@@ -46,15 +46,7 @@ export default {
 };
 
 if (store.state.twitter[constants.TWITTER_LOGGED_IN]) {
-  // when the app is loaded, automatically refresh items
-  helpers.twitterGatherAndSetItems({
-    apiRoute: "statuses/user_timeline",
-    itemArray: []
-  });
-  helpers.twitterGatherAndSetItems({
-    apiRoute: "favorites/list",
-    itemArray: []
-  });
+  helpers.refreshTwitterItems();
 }
 </script>
 

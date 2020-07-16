@@ -13,10 +13,10 @@ const twitterGatherAndSetItems = ({
   itemArray,
   oldestItem
 }: {
-  maxId: number;
+  maxId?: number;
   apiRoute: string;
   itemArray: { id: number }[];
-  oldestItem: number;
+  oldestItem?: number;
 }) => {
   const data = {
     tweet_mode: "extended",
@@ -160,10 +160,15 @@ const redditGatherAndSetItems = () => {
   });
 };
 
-let accessTokenTimer: any;
+let redditAccessTokenTimer: any;
+let twitterContentTimer: any;
 
 const stopRedditAccessTokenRefresh = () => {
-  clearTimeout(accessTokenTimer);
+  clearTimeout(redditAccessTokenTimer);
+};
+
+const stopTwitterContentRefresh = () => {
+  clearTimeout(twitterContentTimer);
 };
 
 const refreshRedditAccessToken = () => {
@@ -204,9 +209,24 @@ const refreshRedditAccessToken = () => {
 
   // the reddit API requires you to get a new access token every hour
   //  we do it at 59 minutes because we real rebels here
-  accessTokenTimer = setTimeout(() => {
+  redditAccessTokenTimer = setTimeout(() => {
     refreshRedditAccessToken();
   }, 3540000);
+};
+
+const refreshTwitterContent = () => {
+  twitterGatherAndSetItems({
+    apiRoute: "statuses/user_timeline",
+    itemArray: []
+  });
+  twitterGatherAndSetItems({
+    apiRoute: "favorites/list",
+    itemArray: []
+  });
+
+  twitterContentTimer = setTimeout(() => {
+    refreshTwitterContent();
+  }, 3600000);
 };
 
 // see https://stackoverflow.com/questions/4959975/generate-random-number-between-two-numbers-in-javascript
@@ -226,6 +246,8 @@ const helpers = {
   redditGatherAndSetItems,
   stopRedditAccessTokenRefresh,
   refreshRedditAccessToken,
+  stopTwitterContentRefresh,
+  refreshTwitterContent,
   generateRandomText
 };
 

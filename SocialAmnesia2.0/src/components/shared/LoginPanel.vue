@@ -266,6 +266,7 @@ export default class LoginPanel extends LoginPanelProps {
 
     this.loginMessage = "Not Logged In!";
     store.dispatch(constants.LOGOUT_OF_TWITTER);
+    helpers.stopTwitterContentRefresh();
   }
 
   handleRedditLogout() {
@@ -282,6 +283,7 @@ export default class LoginPanel extends LoginPanelProps {
 
     this.loginMessage = "Not Logged In!";
     store.dispatch(constants.LOGOUT_OF_REDDIT);
+    helpers.stopRedditAccessTokenRefresh();
   }
 }
 </script>
