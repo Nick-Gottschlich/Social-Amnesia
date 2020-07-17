@@ -208,10 +208,10 @@ const refreshRedditAccessToken = () => {
   redditGatherAndSetItems();
 
   // the reddit API requires you to get a new access token every hour
-  //  we do it at 59 minutes because we real rebels here
+  //  we do it every 10 minutes because I don't trust reddit
   redditAccessTokenTimer = setTimeout(() => {
     refreshRedditAccessToken();
-  }, 3540000);
+  }, 600000);
 };
 
 const refreshTwitterContent = () => {
@@ -226,7 +226,7 @@ const refreshTwitterContent = () => {
 
   twitterContentTimer = setTimeout(() => {
     refreshTwitterContent();
-  }, 3600000);
+  }, 600000);
 };
 
 // see https://stackoverflow.com/questions/4959975/generate-random-number-between-two-numbers-in-javascript
