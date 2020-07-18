@@ -1,4 +1,5 @@
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, Tray } from "electron";
+import path from 'path';
 import {
   createProtocol
   /* installVueDevtools */
@@ -6,9 +7,10 @@ import {
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-// Keep a global reference of the window object, if you don't, the window will
+// Keep a global reference of the window and tray object, if you don't, the window/tray will
 // be closed automatically when the JavaScript object is garbage collected.
 let win: BrowserWindow | null;
+let tray = null;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -18,8 +20,8 @@ protocol.registerSchemesAsPrivileged([
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false
@@ -35,6 +37,9 @@ function createWindow() {
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
   }
+
+  const iconPath = path.join(__dirname, '../assets/SALogoWhiteTransparentIcon@4x.png');
+  tray = new Tray(iconPath);
 
   win.on("closed", () => {
     win = null;
