@@ -14,6 +14,8 @@ const UPDATE_TWITTER_TIME_RANGE = "updateTwitterTimeRange";
 const UPDATE_TWITTER_SCORE_ENABLED = "updateTwitterScoreEnabled";
 const UPDATE_TWITTER_FAVORITES_SCORE = "updateTwitterFavoritesScore";
 const UPDATE_TWITTER_RETWEETS_SCORE = "updateTwitterRetweetsScore";
+const UPDATE_TWITTER_SCHEDULE_DELETION_ENABLED =
+  "updateTwitterScheduleDeletionEnabled";
 
 const LOGIN_TO_REDDIT = "loginToReddit";
 const LOGOUT_OF_REDDIT = "logoutOfReddit";
@@ -28,6 +30,8 @@ const UPDATE_REDDIT_TIME_RANGE_ENABLED = "updatedRedditTimeRangeEnabled";
 const UPDATE_REDDIT_TIME_RANGE = "updateRedditTimeRange";
 const UPDATE_REDDIT_SCORE_ENABLED = "updateRedditScoreEnabled";
 const UPDATE_REDDIT_UPVOTES_SCORE = "updatedRedditUpvotesScore";
+const UPDATE_REDDIT_SCHEDULE_DELETION_ENABLED =
+  "updatedRedditScheduleDeletionEnabled";
 
 const INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED =
   "incrementCurrentlyDeletingItemsDeleted";
@@ -51,6 +55,7 @@ const TWITTER_TIME_RANGE = "twitterTimeRange";
 const TWITTER_SCORE_ENABLED = "twitterScoreEnabled";
 const TWITTER_FAVORITES_SCORE = "twitterFavoritesScore";
 const TWITTER_RETWEETS_SCORE = "twitterRetweetsScore";
+const TWITTER_SCHEDULE_DELETION_ENABLED = "twitterScheduleDeletionEnabled";
 
 const REDDIT_LOGGED_IN = "redditLoggedIn";
 const REDDIT_USER_NAME = "redditUserName";
@@ -64,6 +69,7 @@ const REDDIT_TIME_RANGE_ENABLED = "redditTimeRangeEnabled";
 const REDDIT_TIME_RANGE = "redditTimeRange";
 const REDDIT_SCORE_ENABLED = "redditScoreEnabled";
 const REDDIT_UPVOTES_SCORE = "redditUpvotesScore";
+const REDDIT_SCHEDULE_DELETION_ENABLED = "redditScheduleDeletionEnabled";
 
 const CURRENTLY_DELETING = "currentlyDeleting";
 
@@ -90,6 +96,7 @@ const constants = {
   UPDATE_TWITTER_SCORE_ENABLED,
   UPDATE_TWITTER_FAVORITES_SCORE,
   UPDATE_TWITTER_RETWEETS_SCORE,
+  UPDATE_TWITTER_SCHEDULE_DELETION_ENABLED,
   LOGIN_TO_REDDIT,
   LOGOUT_OF_REDDIT,
   UPDATE_REDDIT_USER_NAME,
@@ -103,6 +110,7 @@ const constants = {
   UPDATE_REDDIT_TIME_RANGE,
   UPDATE_REDDIT_SCORE_ENABLED,
   UPDATE_REDDIT_UPVOTES_SCORE,
+  UPDATE_REDDIT_SCHEDULE_DELETION_ENABLED,
   TWITTER_LOGGED_IN,
   TWITTER_SCREEN_NAME,
   TWITTER_USER_ID,
@@ -118,6 +126,7 @@ const constants = {
   TWITTER_SCORE_ENABLED,
   TWITTER_FAVORITES_SCORE,
   TWITTER_RETWEETS_SCORE,
+  TWITTER_SCHEDULE_DELETION_ENABLED,
   REDDIT_LOGGED_IN,
   REDDIT_USER_NAME,
   REDDIT_ACCESS_TOKEN,
@@ -130,6 +139,7 @@ const constants = {
   REDDIT_TIME_RANGE,
   REDDIT_SCORE_ENABLED,
   REDDIT_UPVOTES_SCORE,
+  REDDIT_SCHEDULE_DELETION_ENABLED,
   TWEETS_ROUTE,
   FAVORITES_ROUTE
 };

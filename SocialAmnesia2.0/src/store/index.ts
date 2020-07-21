@@ -66,7 +66,8 @@ const twitterStoreDefault = {
   },
   [constants.TWITTER_SCORE_ENABLED]: false,
   [constants.TWITTER_FAVORITES_SCORE]: 0,
-  [constants.TWITTER_RETWEETS_SCORE]: 0
+  [constants.TWITTER_RETWEETS_SCORE]: 0,
+  [constants.TWITTER_SCHEDULE_DELETION_ENABLED]: false
 };
 
 const redditStoreDefault = {
@@ -86,7 +87,8 @@ const redditStoreDefault = {
     Years: 0
   },
   [constants.REDDIT_SCORE_ENABLED]: false,
-  [constants.REDDIT_UPVOTES_SCORE]: 0
+  [constants.REDDIT_UPVOTES_SCORE]: 0,
+  [constants.REDDIT_SCHEDULE_DELETION_ENABLED]: false
 };
 
 export default new Vuex.Store({
@@ -129,7 +131,11 @@ export default new Vuex.Store({
       [constants.TWITTER_FAVORITES_SCORE]:
         twitterPersistentStore.get(constants.TWITTER_FAVORITES_SCORE) || 0,
       [constants.TWITTER_RETWEETS_SCORE]:
-        twitterPersistentStore.get(constants.TWITTER_RETWEETS_SCORE) || 0
+        twitterPersistentStore.get(constants.TWITTER_RETWEETS_SCORE) || 0,
+      [constants.TWITTER_SCHEDULE_DELETION_ENABLED]:
+        twitterPersistentStore.get(
+          constants.TWITTER_SCHEDULE_DELETION_ENABLED
+        ) || false
     },
     reddit: {
       [constants.REDDIT_LOGGED_IN]:
@@ -161,7 +167,10 @@ export default new Vuex.Store({
       [constants.REDDIT_SCORE_ENABLED]:
         redditPersistentStore.get(constants.REDDIT_SCORE_ENABLED) || false,
       [constants.REDDIT_UPVOTES_SCORE]:
-        redditPersistentStore.get(constants.REDDIT_UPVOTES_SCORE) || 0
+        redditPersistentStore.get(constants.REDDIT_UPVOTES_SCORE) || 0,
+      [constants.REDDIT_SCHEDULE_DELETION_ENABLED]:
+        redditPersistentStore.get(constants.REDDIT_SCHEDULE_DELETION_ENABLED) ||
+        false
     },
     [constants.CURRENTLY_DELETING]: {
       totalItems: 0,
@@ -273,6 +282,17 @@ export default new Vuex.Store({
         TWITTER_CONSTANT
       );
     },
+    [constants.UPDATE_TWITTER_SCHEDULE_DELETION_ENABLED](
+      state,
+      enabled: boolean
+    ) {
+      updateStore(
+        state,
+        constants.TWITTER_SCHEDULE_DELETION_ENABLED,
+        enabled,
+        TWITTER_CONSTANT
+      );
+    },
     [constants.LOGIN_TO_REDDIT](state) {
       updateStore(state, constants.REDDIT_LOGGED_IN, true, REDDIT_CONSTANT);
     },
@@ -360,6 +380,17 @@ export default new Vuex.Store({
         score,
         REDDIT_CONSTANT
       );
+    },
+    [constants.UPDATE_REDDIT_SCHEDULE_DELETION_ENABLED](
+      state,
+      enabled: boolean
+    ) {
+      updateStore(
+        state,
+        constants.REDDIT_SCHEDULE_DELETION_ENABLED,
+        enabled,
+        REDDIT_CONSTANT
+      );
     }
   },
   actions: {
@@ -417,6 +448,12 @@ export default new Vuex.Store({
     [constants.UPDATE_TWITTER_RETWEETS_SCORE](store, score: number) {
       store.commit(constants.UPDATE_TWITTER_RETWEETS_SCORE, score);
     },
+    [constants.UPDATE_TWITTER_SCHEDULE_DELETION_ENABLED](
+      store,
+      enabled: boolean
+    ) {
+      store.commit(constants.UPDATE_TWITTER_SCHEDULE_DELETION_ENABLED, enabled);
+    },
     [constants.LOGIN_TO_REDDIT](store) {
       store.commit(constants.LOGIN_TO_REDDIT);
     },
@@ -455,6 +492,12 @@ export default new Vuex.Store({
     },
     [constants.UPDATE_REDDIT_UPVOTES_SCORE](store, score: number) {
       store.commit(constants.UPDATE_REDDIT_UPVOTES_SCORE, score);
+    },
+    [constants.UPDATE_REDDIT_SCHEDULE_DELETION_ENABLED](
+      store,
+      enabled: boolean
+    ) {
+      store.commit(constants.UPDATE_REDDIT_SCHEDULE_DELETION_ENABLED, enabled);
     }
   },
   modules: {}

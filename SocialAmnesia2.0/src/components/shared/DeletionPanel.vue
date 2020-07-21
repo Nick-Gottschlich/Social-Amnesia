@@ -23,6 +23,17 @@
       >
         Click to delete {{ site === "Twitter" ? "❤️'s (favorites)" : "posts" }}
       </b-button>
+      <div>
+        <h3>
+          Schedule Daily Clean
+        </h3>
+        <b-form-checkbox
+          switch
+          id="scheduleDeletionSwitch"
+          v-on:change="handleScheduleDeletionSwitch()"
+          :checked="checkIfScheduleDeletionSelected()"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -296,6 +307,27 @@ export default class DeletionPanel extends DeletionPanelProps {
       "reddit posts",
       store.state.reddit[constants.REDDIT_WHITELISTED_POSTS]
     );
+  }
+
+  handleScheduleDeletionSwitch() {
+    if (this.site === "Twitter") {
+      store.dispatch(
+        constants.UPDATE_TWITTER_SCHEDULE_DELETION_ENABLED,
+        store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED] !==
+          true
+      );
+    } else if (this.site === "Reddit") {
+      store.dispatch(
+        constants.UPDATE_REDDIT_SCHEDULE_DELETION_ENABLED,
+        store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED] !== true
+      );
+    }
+  }
+
+  checkIfScheduleDeletionSelected() {
+    return this.site === "Twitter"
+      ? store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED]
+      : store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED];
   }
 
   get loggedIn() {
