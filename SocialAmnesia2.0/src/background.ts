@@ -1,5 +1,5 @@
-import { app, protocol, BrowserWindow, Tray } from "electron";
-import path from 'path';
+import { app, protocol, BrowserWindow, Tray, Menu } from "electron";
+import path from "path";
 import {
   createProtocol
   /* installVueDevtools */
@@ -38,29 +38,52 @@ function createWindow() {
     win.loadURL("app://./index.html");
   }
 
-  const iconPath = path.join(__dirname, '../assets/SALogoWhiteTransparentIcon@4x.png');
+  const iconPath = path.join(
+    __dirname,
+    "../assets/SALogoWhiteTransparentIcon@4x.png"
+  );
   tray = new Tray(iconPath);
 
-  win.on("closed", () => {
-    win = null;
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "Open Social Amnesia",
+      click() {
+        win.show();
+      }
+    },
+    {
+      label: "Quit",
+      click() {
+        app.isQuiting = true;
+        app.quit();
+      }
+    }
+  ]);
+  tray.setContextMenu(contextMenu);
+
+  win.on("minimize", event => {
+    event.preventDefault();
+    win.hide();
+  });
+
+  win.on("close", event => {
+    if (!app.isQuiting) {
+      event.preventDefault();
+      win.hide();
+    }
+
+    return false;
   });
 }
 
-// Quit when all windows are closed.
 app.on("window-all-closed", () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+  // Do nothing
 });
 
 app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (win === null) {
-    createWindow();
-  }
+  win.show()
 });
 
 // This method will be called when Electron has finished
