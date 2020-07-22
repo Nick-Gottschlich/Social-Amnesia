@@ -98,7 +98,12 @@
             />
           </div>
         </div>
-        <b-time v-model="value" locale="en" @context="onContext"></b-time>
+        <b-time
+          v-model="value"
+          locale="en"
+          @context="onContext"
+          :readonly="!scheduleEnabled"
+        ></b-time>
       </div>
     </div>
   </div>
@@ -415,6 +420,17 @@ export default class DeletionPanel extends DeletionPanelProps {
     return this.site === "Twitter"
       ? store.state.twitter[constants.TWITTER_LOGGED_IN]
       : store.state.reddit[constants.REDDIT_LOGGED_IN];
+  }
+
+  get scheduleEnabled() {
+    return this.site === "Twitter"
+      ? store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED]
+          .tweets ||
+          store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED]
+            .favorites
+      : store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED]
+          .comments ||
+          store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED].posts;
   }
 
   data() {
