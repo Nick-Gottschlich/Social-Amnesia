@@ -1,38 +1,104 @@
 <template>
-  <div class="deletionContainer" v-if="loggedIn">
-    <h1>Clean {{ site }}</h1>
-    <div class="deletionButtonContainer">
-      <b-button
-        class="deletionButton"
-        variant="danger"
-        v-on:click="
-          site === 'Twitter'
-            ? handleDeleteTwitterTweets()
-            : handleDeleteRedditComments()
-        "
-      >
-        Click to delete {{ site === "Twitter" ? "tweets" : "comments" }}
-      </b-button>
-      <b-button
-        variant="danger"
-        v-on:click="
-          site === 'Twitter'
-            ? handleDeleteTwitterFavorites()
-            : handleDeleteRedditPosts()
-        "
-      >
-        Click to delete {{ site === "Twitter" ? "❤️'s (favorites)" : "posts" }}
-      </b-button>
-      <div>
-        <h3>
-          Schedule Daily Clean
-        </h3>
-        <b-form-checkbox
-          switch
-          id="scheduleDeletionSwitch"
-          v-on:change="handleScheduleDeletionSwitch()"
-          :checked="checkIfScheduleDeletionSelected()"
-        />
+  <div class="deletionPanelSurroundingContainer" v-if="loggedIn">
+    <div class="deletionPanelContainer">
+      <h1>Clean {{ site }}</h1>
+      <div class="deletionButtonContainer">
+        <b-button
+          class="deletionButton"
+          variant="danger"
+          v-on:click="
+            site === 'Twitter'
+              ? handleDeleteTwitterTweets()
+              : handleDeleteRedditComments()
+          "
+        >
+          Click to delete {{ site === "Twitter" ? "tweets" : "comments" }}
+        </b-button>
+        <b-button
+          variant="danger"
+          v-on:click="
+            site === 'Twitter'
+              ? handleDeleteTwitterFavorites()
+              : handleDeleteRedditPosts()
+          "
+        >
+          Click to delete
+          {{ site === "Twitter" ? "❤️'s (favorites)" : "posts" }}
+        </b-button>
+      </div>
+    </div>
+    <div class="deletionPanelContainer">
+      <h1>
+        Schedule Daily Clean
+      </h1>
+      <div class="switchAndTimeContainer">
+        <div class="switchesContainer">
+          <div class="textAndSwitchContainer">
+            <span>
+              Schedule {{ site === "Twitter" ? "tweets" : "comments" }} deletion
+              <b-icon
+                icon="question-circle-fill"
+                id="schedule-delete-first-target"
+              />
+            </span>
+            <b-tooltip
+              target="schedule-delete-first-target"
+              triggers="hover"
+              placement="bottom"
+            >
+              This will clean your
+              {{ site === "Twitter" ? "tweets" : "comments" }} daily at the time
+              specified.
+            </b-tooltip>
+            <b-form-checkbox
+              switch
+              id="scheduleDeletionSwitchFirst"
+              v-on:change="
+                handleScheduleDeletionSwitch(
+                  site === 'Twitter' ? 'tweets' : 'comments'
+                )
+              "
+              :checked="
+                checkIfScheduleDeletionSelected(
+                  site === 'Twitter' ? 'tweets' : 'comments'
+                )
+              "
+            />
+          </div>
+          <div class="textAndSwitchContainer">
+            <span>
+              Schedule {{ site === "Twitter" ? "favorites" : "posts" }} deletion
+              <b-icon
+                icon="question-circle-fill"
+                id="schedule-delete-second-target"
+              />
+            </span>
+            <b-tooltip
+              target="schedule-delete-second-target"
+              triggers="hover"
+              placement="bottom"
+            >
+              This will clean your
+              {{ site === "Twitter" ? "favorites" : "posts" }} daily at the time
+              specified.
+            </b-tooltip>
+            <b-form-checkbox
+              switch
+              id="scheduleDeletionSwitchSecond"
+              v-on:change="
+                handleScheduleDeletionSwitch(
+                  site === 'Twitter' ? 'favorites' : 'posts'
+                )
+              "
+              :checked="
+                checkIfScheduleDeletionSelected(
+                  site === 'Twitter' ? 'favorites' : 'posts'
+                )
+              "
+            />
+          </div>
+        </div>
+        <b-time v-model="value" locale="en" @context="onContext"></b-time>
       </div>
     </div>
   </div>
@@ -309,25 +375,32 @@ export default class DeletionPanel extends DeletionPanelProps {
     );
   }
 
-  handleScheduleDeletionSwitch() {
+  handleScheduleDeletionSwitch(key) {
     if (this.site === "Twitter") {
-      store.dispatch(
-        constants.UPDATE_TWITTER_SCHEDULE_DELETION_ENABLED,
-        store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED] !==
-          true
-      );
+      const obj = {
+        ...store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED],
+        [key]: !store.state.twitter[
+          constants.TWITTER_SCHEDULE_DELETION_ENABLED
+        ][key]
+      };
+
+      store.dispatch(constants.UPDATE_TWITTER_SCHEDULE_DELETION_ENABLED, obj);
     } else if (this.site === "Reddit") {
-      store.dispatch(
-        constants.UPDATE_REDDIT_SCHEDULE_DELETION_ENABLED,
-        store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED] !== true
-      );
+      const obj = {
+        ...store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED],
+        [key]: !store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED][
+          key
+        ]
+      };
+
+      store.dispatch(constants.UPDATE_REDDIT_SCHEDULE_DELETION_ENABLED, obj);
     }
   }
 
-  checkIfScheduleDeletionSelected() {
+  checkIfScheduleDeletionSelected(key) {
     return this.site === "Twitter"
-      ? store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED]
-      : store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED];
+      ? store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED][key]
+      : store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED][key];
   }
 
   get loggedIn() {
@@ -339,18 +412,40 @@ export default class DeletionPanel extends DeletionPanelProps {
 </script>
 
 <style lang="scss">
-.deletionContainer {
+.deletionPanelSurroundingContainer {
+  display: flex;
+}
+
+.deletionPanelContainer {
   border: 4mm ridge #dc3545;
   padding: 20px;
   margin-top: 10px;
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .deletionButtonContainer {
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .deletionButton {
   margin-bottom: 5px;
+}
+
+.switchAndTimeContainer {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.textAndSwitchContainer {
+  display: flex;
+  flex-direction: column;
+  padding-right: 20px;
+  padding-bottom: 20px;
 }
 </style>
