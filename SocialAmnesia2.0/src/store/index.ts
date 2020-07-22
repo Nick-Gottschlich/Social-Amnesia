@@ -70,7 +70,8 @@ const twitterStoreDefault = {
   [constants.TWITTER_SCHEDULE_DELETION_ENABLED]: {
     tweets: false,
     favorites: false
-  }
+  },
+  [constants.TWITTER_SCHEDULE_TIME]: ""
 };
 
 const redditStoreDefault = {
@@ -94,7 +95,8 @@ const redditStoreDefault = {
   [constants.REDDIT_SCHEDULE_DELETION_ENABLED]: {
     comments: false,
     posts: false
-  }
+  },
+  [constants.REDDIT_SCHEDULE_TIME]: ""
 };
 
 export default new Vuex.Store({
@@ -140,7 +142,9 @@ export default new Vuex.Store({
         twitterPersistentStore.get(constants.TWITTER_RETWEETS_SCORE) || 0,
       [constants.TWITTER_SCHEDULE_DELETION_ENABLED]: twitterPersistentStore.get(
         constants.TWITTER_SCHEDULE_DELETION_ENABLED
-      ) || { tweets: false, favorites: false }
+      ) || { tweets: false, favorites: false },
+      [constants.TWITTER_SCHEDULE_TIME]:
+        twitterPersistentStore.get(constants.TWITTER_SCHEDULE_TIME) || ""
     },
     reddit: {
       [constants.REDDIT_LOGGED_IN]:
@@ -175,7 +179,9 @@ export default new Vuex.Store({
         redditPersistentStore.get(constants.REDDIT_UPVOTES_SCORE) || 0,
       [constants.REDDIT_SCHEDULE_DELETION_ENABLED]: redditPersistentStore.get(
         constants.REDDIT_SCHEDULE_DELETION_ENABLED
-      ) || { comments: false, posts: false }
+      ) || { comments: false, posts: false },
+      [constants.REDDIT_SCHEDULE_TIME]:
+        redditPersistentStore.get(constants.REDDIT_SCHEDULE_TIME) || ""
     },
     [constants.CURRENTLY_DELETING]: {
       totalItems: 0,
@@ -295,6 +301,14 @@ export default new Vuex.Store({
         TWITTER_CONSTANT
       );
     },
+    [constants.UPDATE_TWITTER_SCHEDULE_TIME](state, time) {
+      updateStore(
+        state,
+        constants.TWITTER_SCHEDULE_TIME,
+        time,
+        TWITTER_CONSTANT
+      );
+    },
     [constants.LOGIN_TO_REDDIT](state) {
       updateStore(state, constants.REDDIT_LOGGED_IN, true, REDDIT_CONSTANT);
     },
@@ -390,6 +404,9 @@ export default new Vuex.Store({
         enabledObject,
         REDDIT_CONSTANT
       );
+    },
+    [constants.UPDATE_REDDIT_SCHEDULE_TIME](state, time) {
+      updateStore(state, constants.REDDIT_SCHEDULE_TIME, time, REDDIT_CONSTANT);
     }
   },
   actions: {
@@ -453,6 +470,9 @@ export default new Vuex.Store({
         enabledObject
       );
     },
+    [constants.UPDATE_TWITTER_SCHEDULE_TIME](store, time) {
+      store.commit(constants.UPDATE_TWITTER_SCHEDULE_TIME, time);
+    },
     [constants.LOGIN_TO_REDDIT](store) {
       store.commit(constants.LOGIN_TO_REDDIT);
     },
@@ -497,6 +517,9 @@ export default new Vuex.Store({
         constants.UPDATE_REDDIT_SCHEDULE_DELETION_ENABLED,
         enabledObject
       );
+    },
+    [constants.UPDATE_REDDIT_SCHEDULE_TIME](store, time) {
+      store.commit(constants.UPDATE_REDDIT_SCHEDULE_TIME, time);
     }
   },
   modules: {}

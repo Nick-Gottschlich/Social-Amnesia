@@ -403,10 +403,27 @@ export default class DeletionPanel extends DeletionPanelProps {
       : store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED][key];
   }
 
+  onContext(context) {
+    if (this.site === "Twitter") {
+      store.dispatch(constants.UPDATE_TWITTER_SCHEDULE_TIME, context.value);
+    } else if (this.site === "Reddit") {
+      store.dispatch(constants.UPDATE_REDDIT_SCHEDULE_TIME, context.value);
+    }
+  }
+
   get loggedIn() {
     return this.site === "Twitter"
       ? store.state.twitter[constants.TWITTER_LOGGED_IN]
       : store.state.reddit[constants.REDDIT_LOGGED_IN];
+  }
+
+  data() {
+    return {
+      value:
+        this.site === "Twitter"
+          ? store.state.twitter[constants.TWITTER_SCHEDULE_TIME]
+          : store.state.reddit[constants.REDDIT_SCHEDULE_TIME]
+    };
   }
 }
 </script>
