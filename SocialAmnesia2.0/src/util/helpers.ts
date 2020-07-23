@@ -4,6 +4,7 @@ import store from "@/store/index";
 import constants from "@/store/constants";
 import redditAPI from "@/redditSecrets";
 import axios, { AxiosResponse } from "axios";
+import schedule from "node-schedule";
 // @ts-ignore
 import qs from "qs";
 
@@ -282,10 +283,10 @@ const deleteTwitterItems = (
   };
 
   if (
+    skipConfirm ||
     window.confirm(
       `Are you sure you want to delete your ${itemString}? THIS ACTION IS PERMANENT!`
-    ) ||
-    skipConfirm
+    )
   ) {
     const promiseArray = [];
 
@@ -357,7 +358,12 @@ const deleteTwitterItems = (
   }
 };
 
-const deleteRedditItems = (items, itemString, whitelistedItems) => {
+const deleteRedditItems = (
+  items,
+  itemString,
+  whitelistedItems,
+  skipConfirm
+) => {
   const redditItemInSavedTimeRange = item => {
     const timeRangeObject = store.state.reddit[constants.REDDIT_TIME_RANGE];
 
@@ -389,6 +395,7 @@ const deleteRedditItems = (items, itemString, whitelistedItems) => {
   };
 
   if (
+    skipConfirm ||
     window.confirm(
       `Are you sure you want to delete your ${itemString}? THIS ACTION IS PERMANENT!`
     )
@@ -460,6 +467,116 @@ const deleteRedditItems = (items, itemString, whitelistedItems) => {
   }
 };
 
+const updateTwitterScheduler = () => {
+  if (
+    store.state.twitter[constants.TWITTER_LOGGED_IN] &&
+    (store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED].tweets ||
+      store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED]
+        .favorites)
+  ) {
+    const hours = store.state.twitter[constants.TWITTER_SCHEDULE_TIME].split(
+      ":"
+    )[0];
+    const minutes = store.state.twitter[constants.TWITTER_SCHEDULE_TIME].split(
+      ":"
+    )[1];
+
+    if (global.twitterScheduleJob) {
+      global.twitterScheduleJob.cancel();
+    }
+
+    global.twitterScheduleJob = schedule.scheduleJob(
+      `${minutes || "00"} ${hours || "00"} * * *`,
+      () => {
+        if (
+          store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED]
+            .tweets
+        ) {
+          deleteTwitterItems(
+            store.state.twitter[constants.USER_TWEETS],
+            "twitter tweets",
+            store.state.twitter[constants.WHITELISTED_TWEETS],
+            true
+          ).then(() => {
+            twitterGatherAndSetItems({
+              apiRoute: "statuses/user_timeline",
+              itemArray: []
+            });
+          });
+        }
+
+        if (
+          store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED]
+            .favorites
+        ) {
+          deleteTwitterItems(
+            store.state.twitter[constants.USER_FAVORITES],
+            "twitter favorites",
+            store.state.twitter[constants.WHITELISTED_FAVORITES],
+            true
+          ).then(() => {
+            twitterGatherAndSetItems({
+              apiRoute: "favorites/list",
+              itemArray: []
+            });
+          });
+        }
+      }
+    );
+  }
+};
+
+const updateRedditScheduler = () => {
+  if (
+    store.state.reddit[constants.REDDIT_LOGGED_IN] &&
+    (store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED].comments ||
+      store.state.reddits[constants.REDDIT_SCHEDULE_DELETION_ENABLED].posts)
+  ) {
+    const hours = store.state.reddit[constants.REDDIT_SCHEDULE_TIME].split(
+      ":"
+    )[0];
+    const minutes = store.state.reddit[constants.REDDIT_SCHEDULE_TIME].split(
+      ":"
+    )[1];
+
+    if (global.redditScheduleJob) {
+      global.redditScheduleJob.cancel();
+    }
+
+    global.redditScheduleJob = schedule.scheduleJob(
+      `${minutes || "00"} ${hours || "00"} * * *`,
+      () => {
+        if (
+          store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED]
+            .comments
+        ) {
+          deleteRedditItems(
+            store.state.reddit[constants.REDDIT_COMMENTS],
+            "reddit comments",
+            store.state.reddit[constants.REDDIT_WHITELISTED_COMMENTS],
+            true
+          ).then(() => {
+            redditGatherAndSetItems();
+          });
+        }
+
+        if (
+          store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED].posts
+        ) {
+          deleteRedditItems(
+            store.state.reddit[constants.REDDIT_POSTS],
+            "reddit posts",
+            store.state.reddit[constants.REDDIT_WHITELISTED_POSTS],
+            true
+          ).then(() => {
+            redditGatherAndSetItems();
+          });
+        }
+      }
+    );
+  }
+};
+
 const helpers = {
   twitterGatherAndSetItems,
   makeRedditGetRequest,
@@ -471,7 +588,9 @@ const helpers = {
   refreshTwitterContent,
   generateRandomText,
   deleteTwitterItems,
-  deleteRedditItems
+  deleteRedditItems,
+  updateTwitterScheduler,
+  updateRedditScheduler
 };
 
 export default helpers;

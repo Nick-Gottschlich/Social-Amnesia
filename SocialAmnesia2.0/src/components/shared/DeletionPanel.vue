@@ -167,6 +167,8 @@ export default class DeletionPanel extends DeletionPanelProps {
       };
 
       store.dispatch(constants.UPDATE_TWITTER_SCHEDULE_DELETION_ENABLED, obj);
+
+      helpers.updateTwitterScheduler();
     } else if (this.site === "Reddit") {
       const obj = {
         ...store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED],
@@ -176,6 +178,7 @@ export default class DeletionPanel extends DeletionPanelProps {
       };
 
       store.dispatch(constants.UPDATE_REDDIT_SCHEDULE_DELETION_ENABLED, obj);
+      helpers.updateRedditScheduler();
     }
   }
 
@@ -188,8 +191,10 @@ export default class DeletionPanel extends DeletionPanelProps {
   onContext(context) {
     if (this.site === "Twitter") {
       store.dispatch(constants.UPDATE_TWITTER_SCHEDULE_TIME, context.value);
+      helpers.updateTwitterScheduler();
     } else if (this.site === "Reddit") {
       store.dispatch(constants.UPDATE_REDDIT_SCHEDULE_TIME, context.value);
+      helpers.updateRedditScheduler();
     }
   }
 
