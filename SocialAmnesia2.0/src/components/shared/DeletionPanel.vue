@@ -125,247 +125,24 @@ const DeletionPanelProps = Vue.extend({
 
 @Component
 export default class DeletionPanel extends DeletionPanelProps {
-  deleteTwitterItems(items, itemString, whitelistedItems) {
-    const itemInSavedTimeRange = item => {
-      const timeRangeObject = store.state.twitter[constants.TWITTER_TIME_RANGE];
-
-      const hoursBackToSave =
-        timeRangeObject.Hours +
-        timeRangeObject.Days * 24 +
-        timeRangeObject.Weeks * 168 +
-        timeRangeObject.Years * 8766;
-      const dateOfHoursBackToSave = new Date();
-      dateOfHoursBackToSave.setHours(
-        dateOfHoursBackToSave.getHours() - hoursBackToSave
-      );
-
-      return (
-        new Date(item.created_at) >
-        new Date(dateOfHoursBackToSave.toGMTString())
-      );
-    };
-
-    const itemLowerThanScore = item => {
-      if (
-        item.favorite_count >=
-        store.state.twitter[constants.TWITTER_FAVORITES_SCORE]
-      ) {
-        return false;
-      }
-
-      if (
-        item.retweet_count >=
-        store.state.twitter[constants.TWITTER_RETWEETS_SCORE]
-      ) {
-        return false;
-      }
-
-      return true;
-    };
-
-    if (
-      window.confirm(
-        `Are you sure you want to delete your ${itemString}? THIS ACTION IS PERMANENT!`
-      )
-    ) {
-      const promiseArray = [];
-
-      const shouldDeleteItem = item => {
-        const itemIsWhitelisted = whitelistedItems[`${itemString}-${item.id}`];
-
-        const shouldDelete =
-          !itemIsWhitelisted &&
-          (!itemInSavedTimeRange(item) ||
-            !store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED]) &&
-          (itemString === "favorites" ||
-            itemLowerThanScore(item) ||
-            !store.state.twitter[constants.TWITTER_SCORE_ENABLED]);
-
-        return shouldDelete;
-      };
-
-      const totalItemsLength = items.filter(item => {
-        return shouldDeleteItem(item);
-      }).length;
-
-      store.dispatch(constants.RESET_CURRENTLY_DELETING_ITEMS_DELETED);
-      store.dispatch(
-        constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS,
-        totalItemsLength
-      );
-
-      items.forEach(item => {
-        if (shouldDeleteItem(item)) {
-          promiseArray.push(
-            store.state.twitter[constants.TWITTER_USER_CLIENT]
-              .post(
-                itemString === "tweets"
-                  ? "statuses/destroy"
-                  : "favorites/destroy",
-                {
-                  id: item.id_str
-                }
-              )
-              .then(() => {
-                store.commit(
-                  constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED
-                );
-              })
-              .catch(error => {
-                console.log(
-                  `Failed to delete item with error: ${JSON.stringify(error)}`
-                );
-              })
-          );
-        }
-      });
-
-      Promise.allSettled(promiseArray).then(() => {
-        helpers.twitterGatherAndSetItems({
-          apiRoute:
-            itemString === "tweets"
-              ? constants.TWEETS_ROUTE
-              : constants.FAVORITES_ROUTE,
-          itemArray: []
-        });
-
-        setTimeout(() => {
-          store.dispatch(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, 0);
-        }, 2500);
-      });
-    }
-  }
-
   handleDeleteTwitterTweets() {
-    this.deleteTwitterItems(
+    helpers.deleteTwitterItems(
       store.state.twitter[constants.USER_TWEETS],
       "twitter tweets",
       store.state.twitter[constants.WHITELISTED_TWEETS]
     );
   }
 
-  handleDeleteFavorites() {
-    this.deleteTwitterItems(
+  handleDeleteTwitterFavorites() {
+    helpers.deleteTwitterItems(
       store.state.twitter[constants.USER_FAVORITES],
       "twitter favorites",
       store.state.twitter[constants.WHITELISTED_FAVORITES]
     );
   }
 
-  deleteRedditItems(items, itemString, whitelistedItems) {
-    const redditItemInSavedTimeRange = item => {
-      const timeRangeObject = store.state.reddit[constants.REDDIT_TIME_RANGE];
-
-      const hoursBackToSave =
-        timeRangeObject.Hours +
-        timeRangeObject.Days * 24 +
-        timeRangeObject.Weeks * 168 +
-        timeRangeObject.Years * 8766;
-      const dateOfHoursBackToSave = new Date();
-      dateOfHoursBackToSave.setHours(
-        dateOfHoursBackToSave.getHours() - hoursBackToSave
-      );
-
-      const convertedItemDate = new Date(
-        new Date(item.data.created_utc * 1000).toGMTString()
-      );
-      const convertedDateRangeDate = new Date(
-        dateOfHoursBackToSave.toGMTString()
-      );
-      return convertedItemDate > convertedDateRangeDate;
-    };
-
-    const redditItemLowerThanScore = item => {
-      if (
-        item.data.score >= store.state.reddit[constants.REDDIT_UPVOTES_SCORE]
-      ) {
-        return false;
-      }
-
-      return true;
-    };
-
-    if (
-      window.confirm(
-        `Are you sure you want to delete your ${itemString}? THIS ACTION IS PERMANENT!`
-      )
-    ) {
-      const promiseArray = [];
-
-      const shouldDeleteItem = item => {
-        const itemIsWhitelisted =
-          whitelistedItems[`${itemString}-${item.data.name}`];
-
-        const shouldDelete =
-          !itemIsWhitelisted &&
-          (!redditItemInSavedTimeRange(item) ||
-            !store.state.reddit[constants.REDDIT_TIME_RANGE_ENABLED]) &&
-          (redditItemLowerThanScore(item) ||
-            !store.state.reddit[constants.REDDIT_SCORE_ENABLED]);
-
-        return shouldDelete;
-      };
-
-      const totalItemsLength = items.filter(item => {
-        return shouldDeleteItem(item);
-      }).length;
-
-      store.dispatch(constants.RESET_CURRENTLY_DELETING_ITEMS_DELETED);
-      store.dispatch(
-        constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS,
-        totalItemsLength
-      );
-
-      items.forEach(item => {
-        if (shouldDeleteItem(item)) {
-          promiseArray.push(
-            helpers
-              .makeRedditPostRequest(
-                "https://oauth.reddit.com/api/editusertext/",
-                {
-                  thing_id: item.data.name,
-                  text: helpers.generateRandomText()
-                }
-              )
-              .then(() => {
-                helpers
-                  .makeRedditPostRequest("https://oauth.reddit.com/api/del/", {
-                    id: item.data.name
-                  })
-                  .then(() => {
-                    store.commit(
-                      constants.INCREMENT_CURRENTLY_DELETING_ITEMS_DELETED
-                    );
-                  })
-                  .catch(error => {
-                    console.log(
-                      `Failed to delete item with error: ${JSON.stringify(
-                        error
-                      )}`
-                    );
-                  });
-              })
-              .catch(error => {
-                console.log(
-                  `Failed to edit item with error: ${JSON.stringify(error)}`
-                );
-              })
-          );
-        }
-      });
-
-      Promise.allSettled(promiseArray).then(() => {
-        helpers.redditGatherAndSetItems();
-
-        setTimeout(() => {
-          store.dispatch(constants.UPDATE_CURRENTLY_DELETING_TOTAL_ITEMS, 0);
-        }, 2500);
-      });
-    }
-  }
-
   handleDeleteRedditComments() {
-    this.deleteRedditItems(
+    helpers.deleteRedditItems(
       store.state.reddit[constants.REDDIT_COMMENTS],
       "reddit comments",
       store.state.reddit[constants.REDDIT_WHITELISTED_COMMENTS]
@@ -373,7 +150,7 @@ export default class DeletionPanel extends DeletionPanelProps {
   }
 
   handleDeleteRedditPosts() {
-    this.deleteRedditItems(
+    helpers.deleteRedditItems(
       store.state.reddit[constants.REDDIT_POSTS],
       "reddit posts",
       store.state.reddit[constants.REDDIT_WHITELISTED_POSTS]

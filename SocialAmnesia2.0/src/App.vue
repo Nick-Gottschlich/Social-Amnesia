@@ -9,6 +9,64 @@
   </div>
 </template>
 
+<script>
+import store from "@/store/index";
+import constants from "@/store/constants";
+import helpers from "@/util/helpers";
+import schedule from "node-schedule";
+
+// Twitter scheduler
+if (
+  store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED].tweets ||
+  store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED].favorites
+) {
+  const hours = store.state.twitter[constants.TWITTER_SCHEDULE_TIME].split(
+    ":"
+  )[0];
+  const minutes = store.state.twitter[constants.TWITTER_SCHEDULE_TIME].split(
+    ":"
+  )[1];
+
+  schedule.scheduleJob(`${minutes} ${hours} * * *`, () => {
+    if (
+      store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED].tweets
+    ) {
+      helpers.deleteTwitterItems(
+        store.state.twitter[constants.USER_TWEETS],
+        "twitter tweets",
+        store.state.twitter[constants.WHITELISTED_TWEETS],
+        true
+      );
+
+      helpers.twitterGatherAndSetItems({
+        apiRoute: "statuses/user_timeline",
+        itemArray: []
+      });
+    }
+
+    if (
+      store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED].favorites
+    ) {
+      helpers.deleteTwitterItems(
+        store.state.twitter[constants.USER_FAVORITES],
+        "twitter favorites",
+        store.state.twitter[constants.WHITELISTED_FAVORITES],
+        true
+      );
+
+      helpers.twitterGatherAndSetItems({
+        apiRoute: "favorites/list",
+        itemArray: []
+      });
+    }
+  });
+}
+
+export default {
+  name: "app"
+};
+</script>
+
 <style lang="scss">
 #app {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
