@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { app, protocol, BrowserWindow, Tray, Menu } from "electron";
 import path from "path";
 import {

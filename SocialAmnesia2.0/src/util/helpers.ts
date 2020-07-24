@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable no-param-reassign */
 import store from "@/store/index";
