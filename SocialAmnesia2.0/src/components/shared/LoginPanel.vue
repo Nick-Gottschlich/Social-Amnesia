@@ -191,8 +191,10 @@ export default class LoginPanel extends LoginPanelProps {
       parent: mainWindow
     });
 
+    // mysteriously, using just reddit.com gets some bizarre bug where all passwords are treated incorectly
+    //   using the old.reddit.com works fine though
     redditAPIWindow.loadURL(
-      `https://www.reddit.com/api/v1/authorize?client_id=${redditAPI.clientId}&response_type=code&state=randomString&redirect_uri=https://google.com&duration=permanent&scope=identity,history,read,edit`
+      `https://old.reddit.com/api/v1/authorize?client_id=${redditAPI.clientId}&response_type=code&state=randomString&redirect_uri=https://google.com&duration=permanent&scope=identity,history,read,edit`
     );
 
     redditAPIWindow.webContents.on("did-navigate", (event, url) => {

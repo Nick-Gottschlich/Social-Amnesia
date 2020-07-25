@@ -298,7 +298,7 @@ const deleteTwitterItems = (
         !itemIsWhitelisted &&
         (!itemInSavedTimeRange(item) ||
           !store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED]) &&
-        (itemString === "favorites" ||
+        (itemString === "twitter favorites" ||
           itemLowerThanScore(item) ||
           !store.state.twitter[constants.TWITTER_SCORE_ENABLED]);
 
@@ -316,9 +316,7 @@ const deleteTwitterItems = (
     );
 
     items.forEach(item => {
-      console.log("item", item);
       if (shouldDeleteItem(item)) {
-        console.log("gonna delete item", item.id_str);
         promiseArray.push(
           store.state.twitter[constants.TWITTER_USER_CLIENT]
             .post(
@@ -498,12 +496,7 @@ const updateTwitterScheduler = () => {
             "twitter tweets",
             store.state.twitter[constants.WHITELISTED_TWEETS],
             true
-          ).then(() => {
-            twitterGatherAndSetItems({
-              apiRoute: "statuses/user_timeline",
-              itemArray: []
-            });
-          });
+          );
         }
 
         if (
@@ -515,12 +508,7 @@ const updateTwitterScheduler = () => {
             "twitter favorites",
             store.state.twitter[constants.WHITELISTED_FAVORITES],
             true
-          ).then(() => {
-            twitterGatherAndSetItems({
-              apiRoute: "favorites/list",
-              itemArray: []
-            });
-          });
+          );
         }
       }
     );
@@ -531,7 +519,7 @@ const updateRedditScheduler = () => {
   if (
     store.state.reddit[constants.REDDIT_LOGGED_IN] &&
     (store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED].comments ||
-      store.state.reddits[constants.REDDIT_SCHEDULE_DELETION_ENABLED].posts)
+      store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED].posts)
   ) {
     const hours = store.state.reddit[constants.REDDIT_SCHEDULE_TIME].split(
       ":"
@@ -556,9 +544,7 @@ const updateRedditScheduler = () => {
             "reddit comments",
             store.state.reddit[constants.REDDIT_WHITELISTED_COMMENTS],
             true
-          ).then(() => {
-            redditGatherAndSetItems();
-          });
+          );
         }
 
         if (
@@ -569,9 +555,7 @@ const updateRedditScheduler = () => {
             "reddit posts",
             store.state.reddit[constants.REDDIT_WHITELISTED_POSTS],
             true
-          ).then(() => {
-            redditGatherAndSetItems();
-          });
+          );
         }
       }
     );
