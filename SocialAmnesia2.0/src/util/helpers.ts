@@ -467,6 +467,10 @@ const deleteRedditItems = (
 };
 
 const updateTwitterScheduler = () => {
+  if (global.twitterScheduleJob) {
+    global.twitterScheduleJob.cancel();
+  }
+
   if (
     store.state.twitter[constants.TWITTER_LOGGED_IN] &&
     (store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED].tweets ||
@@ -480,10 +484,6 @@ const updateTwitterScheduler = () => {
       ":"
     )[1];
 
-    if (global.twitterScheduleJob) {
-      global.twitterScheduleJob.cancel();
-    }
-
     global.twitterScheduleJob = schedule.scheduleJob(
       `${minutes || "00"} ${hours || "00"} * * *`,
       () => {
@@ -491,24 +491,43 @@ const updateTwitterScheduler = () => {
           store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED]
             .tweets
         ) {
-          deleteTwitterItems(
-            store.state.twitter[constants.USER_TWEETS],
-            "twitter tweets",
-            store.state.twitter[constants.WHITELISTED_TWEETS],
-            true
-          );
+          twitterGatherAndSetItems({
+            apiRoute: "statuses/user_timeline",
+            itemArray: []
+          });
+
+          // using set timeout is obviously not ideal here
+          //  but I haven't been able to get async/await working with
+          //  gathering items.
+          // I already refresh items every 10 min everyway so that's the max amount of
+          //  content we will lose out on indexing and removing
+          setTimeout(() => {
+            deleteTwitterItems(
+              store.state.twitter[constants.USER_TWEETS],
+              "twitter tweets",
+              store.state.twitter[constants.WHITELISTED_TWEETS],
+              true
+            );
+          }, 2500);
         }
 
         if (
           store.state.twitter[constants.TWITTER_SCHEDULE_DELETION_ENABLED]
             .favorites
         ) {
-          deleteTwitterItems(
-            store.state.twitter[constants.USER_FAVORITES],
-            "twitter favorites",
-            store.state.twitter[constants.WHITELISTED_FAVORITES],
-            true
-          );
+          twitterGatherAndSetItems({
+            apiRoute: "favorites/list",
+            itemArray: []
+          });
+
+          setTimeout(() => {
+            deleteTwitterItems(
+              store.state.twitter[constants.USER_FAVORITES],
+              "twitter favorites",
+              store.state.twitter[constants.WHITELISTED_FAVORITES],
+              true
+            );
+          }, 2500);
         }
       }
     );
@@ -516,6 +535,10 @@ const updateTwitterScheduler = () => {
 };
 
 const updateRedditScheduler = () => {
+  if (global.redditScheduleJob) {
+    global.redditScheduleJob.cancel();
+  }
+
   if (
     store.state.reddit[constants.REDDIT_LOGGED_IN] &&
     (store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED].comments ||
@@ -528,35 +551,35 @@ const updateRedditScheduler = () => {
       ":"
     )[1];
 
-    if (global.redditScheduleJob) {
-      global.redditScheduleJob.cancel();
-    }
-
     global.redditScheduleJob = schedule.scheduleJob(
       `${minutes || "00"} ${hours || "00"} * * *`,
       () => {
-        if (
-          store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED]
-            .comments
-        ) {
-          deleteRedditItems(
-            store.state.reddit[constants.REDDIT_COMMENTS],
-            "reddit comments",
-            store.state.reddit[constants.REDDIT_WHITELISTED_COMMENTS],
-            true
-          );
-        }
+        redditGatherAndSetItems();
 
-        if (
-          store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED].posts
-        ) {
-          deleteRedditItems(
-            store.state.reddit[constants.REDDIT_POSTS],
-            "reddit posts",
-            store.state.reddit[constants.REDDIT_WHITELISTED_POSTS],
-            true
-          );
-        }
+        setTimeout(() => {
+          if (
+            store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED]
+              .comments
+          ) {
+            deleteRedditItems(
+              store.state.reddit[constants.REDDIT_COMMENTS],
+              "reddit comments",
+              store.state.reddit[constants.REDDIT_WHITELISTED_COMMENTS],
+              true
+            );
+          }
+
+          if (
+            store.state.reddit[constants.REDDIT_SCHEDULE_DELETION_ENABLED].posts
+          ) {
+            deleteRedditItems(
+              store.state.reddit[constants.REDDIT_POSTS],
+              "reddit posts",
+              store.state.reddit[constants.REDDIT_WHITELISTED_POSTS],
+              true
+            );
+          }
+        }, 2500);
       }
     );
   }

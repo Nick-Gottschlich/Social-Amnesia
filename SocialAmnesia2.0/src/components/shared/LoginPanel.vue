@@ -72,9 +72,9 @@ export default class LoginPanel extends LoginPanelProps {
     }
     if (this.site === "Reddit") {
       if (store.state.reddit[constants.REDDIT_LOGGED_IN]) {
-        this.loginMessage = `Logged in to Reddit as @${
+        this.loginMessage = `Logged in to Reddit as '${
           store.state.reddit[constants.REDDIT_USER_NAME]
-        }`;
+        }'`;
       }
 
       return store.state.reddit[constants.REDDIT_LOGGED_IN];
