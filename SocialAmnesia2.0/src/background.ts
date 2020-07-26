@@ -39,11 +39,17 @@ function createWindow() {
     win.loadURL("app://./index.html");
   }
 
-  const iconPath = path.join(
+  // Mac Dock
+  app.dock.setIcon(path.join(
+    __dirname,
+    "../assets/SALogoWhiteTransparent.png"
+  ));
+
+  const trayIconPath = path.join(
     __dirname,
     "../assets/SALogoWhiteTransparentIcon@4x.png"
   );
-  tray = new Tray(iconPath);
+  tray = new Tray(trayIconPath);
 
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -71,14 +77,14 @@ function createWindow() {
     if (!app.isQuiting) {
       event.preventDefault();
       win.hide();
-    }
+    };
 
     return false;
   });
 }
 
-app.on("window-all-closed", () => {
-  // Do nothing
+app.on('before-quit', function () {
+  app.isQuiting = true;
 });
 
 app.on("activate", () => {
