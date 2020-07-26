@@ -1,7 +1,19 @@
 {
-  "name": "SocialAmnesia",
+  "name": "social_amnesia",
+  "productName": "Social Amnesia",
   "version": "2.0.0-b3",
+  "description": "Forget the past. Social Amnesia makes sure your social media accounts only show your posts from recent history, not from 'that phase' 5 years ago. ",
+  "homepage": "https://socialamnesia.com",
+  "license": "GPL-3.0",
   "private": true,
+  "author": {
+    "name": "Nick Gottschlich",
+    "url": "https://nickpgott.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nick-Gottschlich/Social-Amnesia"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
