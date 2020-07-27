@@ -12,57 +12,75 @@
         Click on the Social Media links above to log in and get started.
       </h5>
     </div>
-    <div class="sectionTopPadding">
-      <h3>🚨 API Limit Warning 🚨</h3>
-      <h5>
-        <div>
-          Due to limitations set by twitter and reddit, Social Amnesia is only
-          able to index:
-        </div>
-        <div>
+    <div class="aboutTwoColumn">
+      <div class="aboutAuthorInfoColumn">
+        <h3>
+          Created by Nick Gottschlich
+        </h3>
+        <h5>
           <img class="aboutSMLogo" src="./About/TwitterLogo.png" />
-          3200 tweets and 3200 favorites
-        </div>
-        <div>
-          <img class="aboutSMLogo" src="./About/RedditLogo.png" />
-          1000 comments and 1000 posts
-        </div>
-      </h5>
+          Follow me on twitter
+          <a
+            href="https://twitter.com/NickGottschlich"
+            target="_blank"
+            @click.prevent="
+              openExternalBrowser('https://twitter.com/NickGottschlich')
+            "
+            >@NickGottschlich</a
+          >
+          to get updates on future Social Amnesia development.
+        </h5>
+        <h5>
+          <img class="aboutSMLogo" src="./About/GitHubLogo.png" />
+          View the source code for Social Amnesia on the
+          <a
+            href="https://github.com/Nick-Gottschlich/Social-Amnesia"
+            target="_blank"
+            @click.prevent="
+              openExternalBrowser(
+                'https://github.com/Nick-Gottschlich/Social-Amnesia'
+              )
+            "
+            >official GitHub repo</a
+          >
+        </h5>
+      </div>
+      <div class="aboutAPIWarningColumn">
+        <h3>🚨 API Limit Warning 🚨</h3>
+        <h5>
+          <div>
+            Due to limitations set by twitter and reddit, Social Amnesia is only
+            able to index:
+          </div>
+          <div>
+            <img class="aboutSMLogo" src="./About/TwitterLogo.png" />
+            3200 tweets and 3200 favorites
+          </div>
+          <div>
+            <img class="aboutSMLogo" src="./About/RedditLogo.png" />
+            1000 comments and 1000 posts
+          </div>
+        </h5>
+      </div>
     </div>
-    <div class="authorInfoContainer">
+    <div class="aboutSponsor">
       <h3>
-        Created by Nick Gottschlich
+        Sponsor the continued development of Social Amnesia
       </h3>
       <h5>
-        <img class="aboutSMLogo" src="./About/TwitterLogo.png" />
-        Follow me on twitter
+        <img
+          class="aboutSMLogo"
+          src="./About/GitHubLogo.png"
+          style="padding-right: 5px;"
+        />
         <a
-          href="https://twitter.com/NickGottschlich"
+          href="https://github.com/sponsors/Nick-Gottschlich/"
           target="_blank"
           @click.prevent="
-            openExternalBrowser('https://twitter.com/NickGottschlich')
+            openExternalBrowser('https://github.com/sponsors/Nick-Gottschlich/')
           "
-          >@NickGottschlich</a
+          >Sponsor me on GitHub</a
         >
-        to get updates on future Social Amnesia development.
-      </h5>
-      <h5>
-        <img class="aboutSMLogo" src="./About/GitHubLogo.png" />
-        View the source code for Social Amnesia on the
-        <a
-          href="https://github.com/Nick-Gottschlich/Social-Amnesia"
-          target="_blank"
-          @click.prevent="
-            openExternalBrowser(
-              'https://github.com/Nick-Gottschlich/Social-Amnesia'
-            )
-          "
-          >official GitHub repo</a
-        >
-      </h5>
-      <h5>
-        Want to support the continued development of Social Amnesia? Any amount
-        helps! Thank you!! 😁
       </h5>
       <div class="aboutPaymentLinks">
         <div class="aboutPaymentIndvLink">
@@ -125,8 +143,8 @@ export default class About extends Vue {
 }
 
 .aboutIntro {
-  padding-left: 200px;
-  padding-right: 200px;
+  padding-left: 300px;
+  padding-right: 300px;
 }
 
 .aboutSMLogo {
@@ -156,11 +174,27 @@ export default class About extends Vue {
   height: 200px;
 }
 
-.authorInfoContainer {
+.sectionTopPadding {
   padding-top: 20px;
 }
 
-.sectionTopPadding {
+.aboutTwoColumn {
+  padding-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.aboutAuthorInfoColumn {
+  padding-left: 50px;
+  padding-right: 10px;
+}
+
+.aboutAPIWarningColumn {
+  padding-left: 10px;
+  padding-right: 50px;
+}
+
+.aboutSponsor {
   padding-top: 20px;
 }
 </style>
