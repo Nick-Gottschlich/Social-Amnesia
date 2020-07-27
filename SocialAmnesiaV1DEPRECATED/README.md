@@ -1,3 +1,7 @@
+# THIS APP HAS BEEN DEPRECATED
+# IT IS KEPT HERE FOR ARCHIVAL PURPOSES
+# PLEASE HEAD TO THE ROOT LEVEL FOLDER FOR THE NEW VERSION OF SOCIAL AMNESIA
+
 ![Social Amnesia Logo](/images/FullLogo.png)
 ![Social Amnesia Main Window](/images/MainWindow.png)
 ![Social Amnesia Deletion Window](/images/DeletionWindow.png)
