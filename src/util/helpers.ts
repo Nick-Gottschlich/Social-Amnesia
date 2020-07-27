@@ -298,7 +298,7 @@ const deleteTwitterItems = (
         !itemIsWhitelisted &&
         (!itemInSavedTimeRange(item) ||
           !store.state.twitter[constants.TWITTER_TIME_RANGE_ENABLED]) &&
-        (itemString === "twitter favorites" ||
+        (itemString === "favorites" ||
           itemLowerThanScore(item) ||
           !store.state.twitter[constants.TWITTER_SCORE_ENABLED]);
 
@@ -320,7 +320,7 @@ const deleteTwitterItems = (
         promiseArray.push(
           store.state.twitter[constants.TWITTER_USER_CLIENT]
             .post(
-              itemString === "twitter tweets"
+              itemString === "tweets"
                 ? "statuses/destroy"
                 : "favorites/destroy",
               {
@@ -344,7 +344,7 @@ const deleteTwitterItems = (
     Promise.allSettled(promiseArray).then(() => {
       twitterGatherAndSetItems({
         apiRoute:
-          itemString === "twitter tweets"
+          itemString === "tweets"
             ? constants.TWEETS_ROUTE
             : constants.FAVORITES_ROUTE,
         itemArray: []
@@ -504,7 +504,7 @@ const updateTwitterScheduler = () => {
           setTimeout(() => {
             deleteTwitterItems(
               store.state.twitter[constants.USER_TWEETS],
-              "twitter tweets",
+              "tweets",
               store.state.twitter[constants.WHITELISTED_TWEETS],
               true
             );
@@ -523,7 +523,7 @@ const updateTwitterScheduler = () => {
           setTimeout(() => {
             deleteTwitterItems(
               store.state.twitter[constants.USER_FAVORITES],
-              "twitter favorites",
+              "favorites",
               store.state.twitter[constants.WHITELISTED_FAVORITES],
               true
             );
@@ -563,7 +563,7 @@ const updateRedditScheduler = () => {
           ) {
             deleteRedditItems(
               store.state.reddit[constants.REDDIT_COMMENTS],
-              "reddit comments",
+              "comments",
               store.state.reddit[constants.REDDIT_WHITELISTED_COMMENTS],
               true
             );
@@ -574,7 +574,7 @@ const updateRedditScheduler = () => {
           ) {
             deleteRedditItems(
               store.state.reddit[constants.REDDIT_POSTS],
-              "reddit posts",
+              "posts",
               store.state.reddit[constants.REDDIT_WHITELISTED_POSTS],
               true
             );

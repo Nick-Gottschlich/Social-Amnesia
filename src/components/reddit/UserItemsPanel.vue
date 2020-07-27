@@ -107,10 +107,10 @@ export default class UserItemsPanel extends UserItemsPanelProps {
   checkIfSelected(item) {
     return this.itemtype === "comments"
       ? store.state.reddit[constants.REDDIT_WHITELISTED_COMMENTS][
-          `reddit-comment-${item.data.name}`
+          `comments-${item.data.name}`
         ]
       : store.state.reddit[constants.REDDIT_WHITELISTED_POSTS][
-          `reddit-post-${item.data.name}`
+          `posts-${item.data.name}`
         ];
   }
 
@@ -118,12 +118,12 @@ export default class UserItemsPanel extends UserItemsPanelProps {
     if (this.itemtype === "comments") {
       store.dispatch(
         constants.UPDATE_REDDIT_WHITELISTED_COMMENTS,
-        `reddit-comment-${item.data.name}`
+        `comments-${item.data.name}`
       );
     } else if (this.itemtype === "posts") {
       store.dispatch(
         constants.UPDATE_REDDIT_WHITELISTED_POSTS,
-        `reddit-post-${item.data.name}`
+        `posts-${item.data.name}`
       );
     }
   }

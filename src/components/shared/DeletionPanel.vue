@@ -128,7 +128,7 @@ export default class DeletionPanel extends DeletionPanelProps {
   handleDeleteTwitterTweets() {
     helpers.deleteTwitterItems(
       store.state.twitter[constants.USER_TWEETS],
-      "twitter tweets",
+      "tweets",
       store.state.twitter[constants.WHITELISTED_TWEETS]
     );
   }
@@ -136,7 +136,7 @@ export default class DeletionPanel extends DeletionPanelProps {
   handleDeleteTwitterFavorites() {
     helpers.deleteTwitterItems(
       store.state.twitter[constants.USER_FAVORITES],
-      "twitter favorites",
+      "favorites",
       store.state.twitter[constants.WHITELISTED_FAVORITES]
     );
   }
@@ -144,7 +144,7 @@ export default class DeletionPanel extends DeletionPanelProps {
   handleDeleteRedditComments() {
     helpers.deleteRedditItems(
       store.state.reddit[constants.REDDIT_COMMENTS],
-      "reddit comments",
+      "comments",
       store.state.reddit[constants.REDDIT_WHITELISTED_COMMENTS]
     );
   }
@@ -152,7 +152,7 @@ export default class DeletionPanel extends DeletionPanelProps {
   handleDeleteRedditPosts() {
     helpers.deleteRedditItems(
       store.state.reddit[constants.REDDIT_POSTS],
-      "reddit posts",
+      "posts",
       store.state.reddit[constants.REDDIT_WHITELISTED_POSTS]
     );
   }

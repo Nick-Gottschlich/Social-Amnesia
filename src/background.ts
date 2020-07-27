@@ -21,13 +21,10 @@ protocol.registerSchemesAsPrivileged([
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    title: 'Social Amnesia',
+    title: "Social Amnesia",
     width: 1200,
     height: 800,
-    icon: path.join(
-      __dirname,
-      "../assets/SALogoWhiteTransparent.png"
-    ),
+    icon: path.join(__dirname, "../assets/SALogoWhiteTransparent.png"),
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false
@@ -36,8 +33,8 @@ function createWindow() {
 
   win.maximize();
 
-  win.on('page-title-updated', function(e) {
-    e.preventDefault()
+  win.on("page-title-updated", function(e) {
+    e.preventDefault();
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -51,10 +48,9 @@ function createWindow() {
   }
 
   // Mac Dock
-  app.dock.setIcon(path.join(
-    __dirname,
-    "../assets/SALogoWhiteTransparent.png"
-  ));
+  app.dock.setIcon(
+    path.join(__dirname, "../assets/SALogoWhiteTransparent.png")
+  );
 
   const trayIconPath = path.join(
     __dirname,
@@ -88,13 +84,13 @@ function createWindow() {
     if (!app.isQuiting) {
       event.preventDefault();
       win.hide();
-    };
+    }
 
     return false;
   });
 }
 
-app.on('before-quit', function () {
+app.on("before-quit", function() {
   app.isQuiting = true;
 });
 
@@ -108,7 +104,7 @@ app.on("activate", () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
-  app.setName('Social Amnesia');
+  app.setName("Social Amnesia");
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     // Devtools extensions are broken in Electron 6.0.0 and greater
