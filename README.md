@@ -5,6 +5,17 @@
 # Social Amnesia
 Social Amnesia aims to make your social media (twitter/reddit) only exist within a time period that you choose. For many people, there is no reason they want to have years old tweets or reddit comments publicly accessible. With Social Amnesia, set the time period you want to keep, whitelist posts and items you want to preserve indefinitely, and let Social Amnesia wipe the rest out of existence.
 
+## Sponsor the development of Social Amnesia
+
+You can [sponsor me on GitHub](https://github.com/sponsors/Nick-Gottschlich) to fund the continued development of Social Amnesia!
+You can also make a one-time donation directly via:
+
+- [Venmo](https://venmo.com/code?user_id=1345298144165889018)
+- [Paypal](https://www.paypal.me/nickpgott)
+- Send Bitcoin to 36Bq7F2JZdYEWLyB8jPWB1XuLCBCCkLvHn
+
+![DonateQR](/assets/DonateQR/png)
+
 ## How to build/run Social Amnesia
 
 ### Executables
