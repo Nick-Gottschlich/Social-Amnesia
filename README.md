@@ -14,7 +14,7 @@ You can also make a one-time donation directly via:
 - [Paypal](https://www.paypal.me/nickpgott)
 - Send Bitcoin to 36Bq7F2JZdYEWLyB8jPWB1XuLCBCCkLvHn
 
-![DonateQR](/assets/DonateQR/png)
+![DonateQR](/assets/DonateQR.png)
 
 ## How to build/run Social Amnesia
 
