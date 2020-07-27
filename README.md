@@ -16,6 +16,8 @@ You can also make a one-time donation directly via:
 
 ![DonateQR](/assets/DonateQR.png)
 
+And please [follow me on Twitter](https://twitter.com/NickGottschlich) to receive updates on the development of Social Amnesia!
+
 ## How to build/run Social Amnesia
 
 ### Executables
