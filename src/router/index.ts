@@ -24,6 +24,7 @@ const routes = [
   }
 ];
 
+// @ts-ignore
 const router = new VueRouter({
   routes
 });
