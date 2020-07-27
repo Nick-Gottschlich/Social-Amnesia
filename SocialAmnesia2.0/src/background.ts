@@ -34,6 +34,8 @@ function createWindow() {
     }
   });
 
+  win.maximize();
+
   win.on('page-title-updated', function(e) {
     e.preventDefault()
   });
