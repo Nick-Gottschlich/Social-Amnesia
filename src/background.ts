@@ -51,18 +51,18 @@ function createWindow() {
   }
 
   // Mac Dock
-  app.dock.setIcon(
-    path.join(
-      isDevelopment ? __dirname : __static,
-      isDevelopment ? "../assets/SALogoWhiteTransparent.png" : "icon.png"
-    )
-  );
+  if (process.platform === "darwin") {
+    app.dock.setIcon(
+      path.join(
+        isDevelopment ? __dirname : __static,
+        isDevelopment ? "../assets/SALogoWhiteTransparent.png" : "icon.png"
+      )
+    );
+  }
 
   const trayIconPath = path.join(
     isDevelopment ? __dirname : process.resourcesPath,
-    isDevelopment
-      ? "../assets/SALogoWhiteTransparentIcon@4x.png"
-      : "SALogoWhiteTransparentIcon@4x.png"
+    isDevelopment ? "../assets/SALogoWhiteTransparentIcon@4x.png" : "SALogoWhiteTransparentIcon@4x.png"
   );
   tray = new Tray(trayIconPath);
 
@@ -82,6 +82,10 @@ function createWindow() {
     }
   ]);
   tray.setContextMenu(contextMenu);
+
+  tray.on("click", () => {
+    win.show();
+  });
 
   win.on("minimize", event => {
     event.preventDefault();
