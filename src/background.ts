@@ -24,7 +24,10 @@ function createWindow() {
     title: "Social Amnesia",
     width: 1200,
     height: 800,
-    icon: path.join(__dirname, "../assets/SALogoWhiteTransparent.png"),
+    icon: path.join(
+      isDevelopment ? __dirname : __static,
+      isDevelopment ? "../assets/SALogoWhiteTransparent.png" : "icon.png"
+    ),
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false
@@ -49,12 +52,17 @@ function createWindow() {
 
   // Mac Dock
   app.dock.setIcon(
-    path.join(__dirname, "../assets/SALogoWhiteTransparent.png")
+    path.join(
+      isDevelopment ? __dirname : __static,
+      isDevelopment ? "../assets/SALogoWhiteTransparent.png" : "icon.png"
+    )
   );
 
   const trayIconPath = path.join(
-    __dirname,
-    "../assets/SALogoWhiteTransparentIcon@4x.png"
+    isDevelopment ? __dirname : process.resourcesPath,
+    isDevelopment
+      ? "../assets/SALogoWhiteTransparentIcon@4x.png"
+      : "SALogoWhiteTransparentIcon@4x.png"
   );
   tray = new Tray(trayIconPath);
 
