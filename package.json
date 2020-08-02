@@ -21,6 +21,7 @@
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build --mac --win --linux",
+    "electron:build32bit": "vue-cli-service electron:build --win --ia32",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "patch-package",
     "postuninstall": "electron-builder install-app-deps"
