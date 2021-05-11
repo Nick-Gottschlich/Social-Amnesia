@@ -46,10 +46,10 @@ For Twitter, create an app using https://developer.twitter.com/en/apps, enable `
 
 ```javascript
 const twitterAPI = {
-  consumer_key: "YOUR_CONSUMER_KEY",
-  consumer_secret: "YOUR_CONSUMER_SECRET",
-  access_token: "YOUR_ACCESS_TOKEN",
-  access_token_secret: "YOUR_ACCESS_TOKEN_SECRET"
+  consumerKey: "YOUR_CONSUMER_KEY",
+  consumerSecret: "YOUR_CONSUMER_SECRET",
+  accessToken: "YOUR_ACCESS_TOKEN",
+  accessTokenSecret: "YOUR_ACCESS_TOKEN_SECRET"
 };
 
 export default twitterAPI;
