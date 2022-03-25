@@ -9,7 +9,7 @@ Social Amnesia aims to make your social media (twitter/reddit) only exist within
 
 ## Sponsor the development of Social Amnesia
 
-You can [sponsor me on GitHub](https://github.com/sponsors/Nick-Gottschlich) to fund the continued development of Social Amnesia!
+You can [sponsor me on GitHub](https://github.com/sponsors/Nick-Gottschlich) to fund the continued development of Social Amnesia! ❤️
 You can also make a one-time donation directly via:
 
 - [Venmo](https://venmo.com/code?user_id=1345298144165889018)
