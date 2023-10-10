@@ -1,3 +1,11 @@
+# 2023 Update
+
+**I am not actively maintaining this project. No one is actively maintaining this project. USE AT YOUR OWN RISK.**
+
+It's unlikely that this works anymore, given all the API changes at reddit and whatever the hell twitter/x is now.
+
+---
+
 ![Social Amnesia Logo](/assets/FullLogo.png)
 ![Quick Delete Demo](/assets/QuickDeleteDemo.gif)
 
